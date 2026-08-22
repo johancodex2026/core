@@ -1,0 +1,13 @@
+{
+  "name": "@johancodex/core-v5",
+  "version": "5.0.0-candidate.1",
+  "private": true,
+  "type": "module",
+  "description": "Governed architecture and evaluation foundation for Johan Core V5.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "node scripts/validate-foundation.mjs"
+  }
+}
