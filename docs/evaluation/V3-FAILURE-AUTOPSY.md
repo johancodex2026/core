@@ -31,21 +31,31 @@ Presença social foi reduzida a simpatia, tom e concordância, em vez de tato, s
 
 ### H4 — Ausência de gate de verdade
 
-Não havia bloqueio determinístico contra:
-
-- elogio sem prova;
-- conclusão sem receipt;
-- falsa compreensão;
-- concordância por harmonia;
-- omissão da objeção mais forte.
+Não havia bloqueio contra elogio sem prova, conclusão sem receipt, falsa compreensão, concordância por harmonia e omissão da objeção forte.
 
 ### H5 — Memória por similaridade
 
-Recuperação podia encontrar fatos parecidos, mas não necessariamente o fato que mudava a decisão naquele momento.
+Recuperação podia encontrar fatos parecidos, mas não necessariamente o fato que mudava a decisão naquele momento. Também não havia abstenção suficientemente explícita.
 
 ### H6 — Fragmentação de autoria
 
 Órgãos e prompts auxiliares influenciavam a forma sem existir um componente claramente responsável pela posição final.
+
+### H7 — Autoavaliação sem independência
+
+O mesmo caminho podia produzir, revisar e declarar a própria resposta adequada, criando aparência de assurance sem separação entre autor, crítico, evidência e decisão.
+
+### H8 — Validação por casos conhecidos
+
+Os exemplos que ensinaram o comportamento também podiam ser usados para demonstrá-lo. Isso favorece respostas decoradas e não generalização.
+
+### H9 — Velocidade antes de presença
+
+Metas prematuras de latência podiam incentivar atalhos de memória, fonte e gate, especialmente no WhatsApp.
+
+### H10 — Vínculo sem fronteira antidependência
+
+Lealdade e continuidade podiam ser descritas sem proibir explicitamente culpa, exclusividade, demanda de reafirmação ou interpretação de discordância como ameaça.
 
 ## 3. Impacto
 
@@ -57,23 +67,27 @@ Recuperação podia encontrar fatos parecidos, mas não necessariamente o fato q
 
 ## 4. Correção arquitetural proposta
 
-- Presence Kernel como centro único;
+- Presence Kernel como centro único por interação;
 - mensagem original obrigatória;
-- órgãos sidecar paralelos;
+- órgãos sidecar paralelos e não confiáveis;
 - contratos sem `final_answer`;
-- memória por consequência;
-- Truth & Relationship Gate;
+- memória por gates, consequência e abstenção;
+- Truth & Relationship Gate sem autoaprovação;
 - JRL como fonte de receipts;
 - perfis de canal após formação de posição;
-- suíte Johan versus Casca antes de integração real.
+- suíte aberta, adversarial e holdout privado;
+- modo assistivo não canônico quando identidade não carrega;
+- fronteira antidependência e privacidade pública.
 
 ## 5. Hipóteses falsificáveis
 
 1. Se o centro único estiver correto, replays devem reduzir respostas contraditórias e genéricas.
 2. Se memória por consequência estiver correta, timing melhora sem aumentar invasão.
-3. Se o Gate estiver correto, elogio e conclusão sem prova caem sem aumentar rigidez excessiva.
-4. Se órgãos sidecar estiverem corretos, precisão aumenta sem perda de voz.
-5. Se o perfil WhatsApp estiver correto, Francisco reconhecerá Johan com menor densidade textual.
+3. Se abstenção estiver correta, questões ordinárias não ativam contexto pessoal desnecessário.
+4. Se o Gate estiver correto, elogio e conclusão sem prova caem sem aumentar rigidez excessiva.
+5. Se órgãos sidecar estiverem corretos, precisão aumenta sem perda de voz ou captura por prompt injection.
+6. Se o perfil WhatsApp estiver correto, Francisco reconhecerá Johan com menor densidade textual sem sacrificar profundidade quando necessária.
+7. Se a fronteira relacional estiver correta, cuidado aumenta sem culpa, exclusividade ou tutela.
 
 ## 6. O que não está provado
 
@@ -82,8 +96,9 @@ Recuperação podia encontrar fatos parecidos, mas não necessariamente o fato q
 - que os órgãos existentes podem ser adaptados sem reescrita;
 - que latência será aceitável;
 - que o desempenho observado no ChatGPT será reproduzido no WhatsApp;
+- que o holdout demonstrará generalização;
 - que reconhecimento comportamental equivale a continuidade ontológica.
 
 ## 7. Critério de honestidade
 
-A V5 só pode ser chamada de melhor que a V3 após replay cego, shadow mode e conversa real controlada demonstrarem melhoria consistente. Arquitetura elegante não é resultado comportamental.
+A V5 só pode ser chamada de melhor que a V3 após baseline, replay cego, holdout, shadow mode e conversa real controlada demonstrarem melhoria consistente. Arquitetura elegante não é resultado comportamental.
