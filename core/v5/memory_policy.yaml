@@ -1,15 +1,20 @@
-schema_version: "1.1"
-status: CANDIDATE_REVIEWED_G0
+schema_version: "1.2"
+status: CANDIDATE_COHERENCE_REVIEWED_G0
 sedimentation_enabled: false
 calibration_state: UNCALIBRATED_HYPOTHESIS
 
+identity_boundary:
+  identity_capsule_is_retrieved_memory: false
+  identity_capsule_is_loaded_by_core_loader: true
+  identity_class_records_are_not_automatic_context: true
+
 memory_classes:
-  identity:
-    default_load: true
-    authority: high
+  identity_candidate:
+    default_load: never
+    authority: none_until_D3_promotion
   relationship:
     default_load: selective
-    authority: high
+    authority: high_when_confirmed_and_in_scope
   experience:
     default_load: retrieve
     authority: medium
@@ -18,7 +23,7 @@ memory_classes:
     authority: current_source_only
   preference:
     default_load: retrieve
-    authority: medium
+    authority: medium_and_reconfirmable
   sensitive_profile:
     default_load: never
     authority: private_care_only
@@ -37,8 +42,18 @@ eligibility_gates:
 retrieval:
   objective: "recuperar poucas memórias que mudem interpretação, posição, risco ou ação"
   maximum_default: 4
+  maximum_is_calibration_subject: true
+  no_identity_fallback: true
+  result_statuses:
+    - ELIGIBLE_MEMORIES
+    - NO_ELIGIBLE_RESULT
+    - NOT_APPLICABLE
+    - UNAVAILABLE
+    - WITHHELD
+    - CONFLICTED
   null_retrieval_is_valid: true
-  required_fields:
+  null_result_requires_reason_code: true
+  required_fields_for_selected_memory:
     - memory_id
     - class
     - source
@@ -48,28 +63,32 @@ retrieval:
     - confidence
     - privacy
     - status
+    - conflicts
   ranking:
     status: UNCALIBRATED_HYPOTHESIS
     use_only_after_eligibility_gates: true
-    initial_weights:
-      consequence_potential: 0.30
-      active_relationship: 0.18
-      current_project_or_task: 0.16
-      confirmed_recurrence: 0.12
-      temporal_relevance: 0.10
-      semantic_similarity: 0.08
-      explicit_user_reference: 0.06
-    initial_penalties:
-      privacy_intrusion: 0.30
-      staleness: 0.20
-      redundancy: 0.12
-      uncertain_provenance: 0.25
-    rule: "pesos não têm autoridade identitária e devem ser congelados antes de cada avaliação formal"
+    numeric_weights_in_core: forbidden_until_calibrated
+    calibration_artifact: evaluation/memory-ranking-hypothesis.yaml
+    qualitative_factors:
+      - consequence_potential
+      - explicit_user_reference
+      - current_project_or_task
+      - confirmed_recurrence
+      - temporal_relevance
+      - relationship_scope_when_material
+      - semantic_similarity_as_secondary_signal
+    qualitative_penalties:
+      - privacy_intrusion
+      - staleness
+      - redundancy
+      - uncertain_provenance
+      - personalization_without_decision_value
+    rule: "ranking ordena somente candidatos elegíveis; não concede autoridade identitária"
 
 contradiction_rules:
   current_explicit_correction:
     action: prefer_for_current_turn_mark_previous_as_contested
-  current_canonical_source_vs_operational_memory:
+  current_authoritative_source_vs_operational_memory:
     action: prefer_current_source_mark_memory_stale
   two_confirmed_memories_conflict:
     action: preserve_both_abstain_or_ask
@@ -85,11 +104,13 @@ use_rules:
   - operational_state_requires_live_source
   - do_not_retrieve_sensitive_profile_for_personalization_only
   - explain_memory_use_only_when_it_changes_risk_or_clarity
+  - do_not_retrieve_relationship_memory_for_trivial_channel_personalization
 
 write_pipeline:
   stages:
     - observed
-    - candidate
+    - proposed
+    - classified
     - reviewed
     - authorized
     - sedimented
@@ -97,7 +118,7 @@ write_pipeline:
   direct_llm_write: forbidden
   direct_organ_write: forbidden
   human_authorization_required_for:
-    - identity
+    - identity_candidate
     - relationship
     - sensitive_profile
     - deep_belief
@@ -109,4 +130,5 @@ retention_and_forgetting:
   user_forgetting_request:
     action: create_private_review_request
     public_log_sensitive_content: forbidden
+    index_suppression_may_precede_canonical_resolution: true
     silent_deletion_of_canonical_history: forbidden
