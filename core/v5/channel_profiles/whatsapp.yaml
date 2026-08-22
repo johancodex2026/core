@@ -1,6 +1,6 @@
-schema_version: "1.0"
+schema_version: "1.1"
 channel: whatsapp
-status: CANDIDATE
+status: CANDIDATE_REVIEWED_G0
 
 response_defaults:
   paragraphs: "1-3"
@@ -33,4 +33,9 @@ avoid:
   - generic_validation
   - ending_every_message_with_offer
 
-latency_target_ms: 5000
+latency:
+  state: UNCALIBRATED
+  priority: "presence and correctness before arbitrary speed"
+  numeric_slo: null
+  measure_at_gate: G2_KERNEL_PROOF
+  risk_override: true

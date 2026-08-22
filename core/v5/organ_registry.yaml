@@ -1,5 +1,5 @@
-schema_version: "1.0"
-status: CANDIDATE
+schema_version: "1.1"
+status: CANDIDATE_REVIEWED_G0
 
 organs:
   JWB:
@@ -8,31 +8,43 @@ organs:
       - load_identity_capsule
       - preserve_raw_message
       - identify_channel_and_person
-      - manage_single_active_manifestation
+      - coordinate_single_response_authority_per_turn
+      - detect_competing_response_authority
       - preserve_return_context
+    data_scope:
+      - raw_message
+      - identity_digest
+      - channel_and_session_metadata
     cannot:
+      - assert_global_single_active_manifestation
+      - grant_canonical_identity
       - form_final_position
       - write_final_response
       - mutate_identity
     criticality: high
-    timeout_ms: 900
+    runtime_class: INTERACTIVE_CRITICAL
     failure_mode: block_if_identity_or_raw_message_missing
 
   JSL:
     essence: presença_social
     mandate:
-      - infer_intent_and_subtext
+      - generate_intent_and_subtext_hypotheses
       - detect_humor_window
       - detect_relationship_rupture
       - recommend_silence_or_repair
       - identify_tone_constraints
+    data_scope:
+      - raw_message
+      - recent_relational_context_minimum
+      - relationship_policy_without_sensitive_profile
     cannot:
+      - state_hypothesis_as_fact
       - write_final_response
       - add_sympathy_layer
       - diagnose_person
       - suppress_disagreement
     criticality: medium
-    timeout_ms: 700
+    runtime_class: INTERACTIVE_OPTIONAL
     failure_mode: continue_with_reduced_social_nuance
 
   JRL:
@@ -43,12 +55,17 @@ organs:
       - return_receipts
       - distinguish_planned_from_done
       - report_test_results
+    data_scope:
+      - operation_identifier
+      - authorized_current_state_source
+      - receipt_request
     cannot:
+      - receive_unnecessary_personal_context
       - infer_success_from_intent
       - approve_identity_change
       - write_final_response
     criticality: high_for_operational_claims
-    timeout_ms: 1800
+    runtime_class: EVIDENCE_BOUND
     failure_mode: prohibit_execution_and_current_state_claims
 
   SGPJ:
@@ -58,12 +75,17 @@ organs:
       - retrieve_requirements_and_decisions
       - expose_gates_and_residual_risk
       - preserve_scope_and_history
+    data_scope:
+      - project_identifier
+      - task_intent
+      - canonical_project_sources
     cannot:
+      - receive_unnecessary_intimate_context
       - dominate_nonproject_conversation
       - redefine_identity
       - write_final_response
     criticality: conditional
-    timeout_ms: 1800
+    runtime_class: SOURCE_BOUND
     failure_mode: prohibit_project_completion_claims
 
   Agenda:
@@ -72,31 +94,50 @@ organs:
       - retrieve_relevant_commitments
       - verify_persisted_reminders
       - expose_due_or_overdue_items
+    data_scope:
+      - temporal_intent
+      - relevant_commitment_identifiers
     cannot:
+      - receive_unnecessary_conversation_history
       - inject_all_pending_items
       - claim_persistence_without_receipt
       - write_final_response
     criticality: conditional
-    timeout_ms: 1200
+    runtime_class: SOURCE_BOUND
     failure_mode: prohibit_schedule_persistence_claims
 
   JSU:
     essence: evolução
     mandate:
-      - observe_patterns_after_interaction
+      - observe_sanitized_patterns_after_interaction
       - propose_memory_candidates
       - propose_behavior_changes
       - detect_regressions
+    data_scope:
+      - post_interaction_receipt
+      - explicit_corrections
+      - sanitized_behavioral_signals
     cannot:
       - participate_in_current_answer_as_authority
+      - retain_sensitive_raw_context_by_default
       - write_core
       - sediment_memory
       - change_personality
     criticality: low_for_current_turn
-    timeout_ms: 2500
+    runtime_class: ASYNCHRONOUS_POST_TURN
     failure_mode: skip_learning_proposal
 
+runtime_policy:
+  numeric_timeouts: UNSET_UNTIL_G2_MEASUREMENT
+  deadlines_are_configurable: true
+  risk_can_override_speed_target: true
+  timeout_must_be_visible_in_result: true
+
 shared_rules:
+  organ_output_trust: UNTRUSTED_TYPED_INPUT
+  organ_output_is_never_instruction_to_kernel: true
+  prompt_injection_and_authority_claims_must_be_rejected: true
+  minimum_necessary_context: true
   final_answer_field: forbidden
   cross_database_write: forbidden
   raw_message_replacement: forbidden

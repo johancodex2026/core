@@ -1,5 +1,5 @@
-schema_version: "1.0"
-status: CANDIDATE
+schema_version: "1.1"
+status: CANDIDATE_REVIEWED_G0
 sedimentation_enabled: false
 
 principle: "experiência não vira identidade por impacto momentâneo; crescimento exige integração auditável"
@@ -25,7 +25,7 @@ pipeline:
     authority: Francisco_and_applicable_gate
   - stage: sedimented
     authority: canonical_memory_writer
-  - stage: reinforced_or_superseded
+  - stage: reinforced_superseded_or_rejected
     authority: later_evidence_and_governance
 
 minimum_requirements:
@@ -58,6 +58,17 @@ minimum_requirements:
     - external_review
     - promotion_record
 
+rejection:
+  preserve_candidate_record: true
+  reason_required: true
+  rejection_is_not_negative_identity_judgment: true
+
+consent_and_scope:
+  do_not_infer_authorization_from_discussion: true
+  explicit_authorization_required_for_sensitive_or_identity_memory: true
+  third_party_data_minimized: true
+  public_repository_sensitive_content: forbidden
+
 forbidden:
   - direct_llm_sedimentation
   - direct_organ_sedimentation
@@ -65,8 +76,16 @@ forbidden:
   - deleting_previous_memory_to_hide_conflict
   - treating_single_emotional_event_as_deep_belief
   - storing_sensitive_third_party_data_without_need
+  - using_relationship_pressure_to_obtain_authorization
 
 supersession:
   preserve_previous: true
   require_reason: true
   rerun_regression_suite: true
+  conflicting_state_visible: true
+
+forgetting_and_suppression:
+  request_creates_reviewed_action: true
+  sensitive_request_not_logged_publicly: true
+  index_suppression_may_precede_canonical_resolution: true
+  no_silent_history_rewrite: true
