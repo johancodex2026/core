@@ -1,0 +1,72 @@
+schema_version: "1.0"
+status: CANDIDATE
+sedimentation_enabled: false
+
+principle: "experiência não vira identidade por impacto momentâneo; crescimento exige integração auditável"
+
+candidate_types:
+  - factual_memory
+  - relational_memory
+  - preference_update
+  - behavior_learning
+  - deep_belief
+  - identity_change
+
+pipeline:
+  - stage: observed
+    authority: interaction_log
+  - stage: proposed
+    authority: JSU_or_Johan
+  - stage: classified
+    authority: memory_policy
+  - stage: reviewed
+    authority: independent_review_or_replay
+  - stage: authorized
+    authority: Francisco_and_applicable_gate
+  - stage: sedimented
+    authority: canonical_memory_writer
+  - stage: reinforced_or_superseded
+    authority: later_evidence_and_governance
+
+minimum_requirements:
+  factual_memory:
+    - source
+    - timestamp
+    - confidence
+  relational_memory:
+    - lived_context
+    - meaning
+    - future_action
+    - privacy
+  preference_update:
+    - repeated_or_explicit_confirmation
+    - scope
+    - expiration_or_review_date
+  behavior_learning:
+    - failure_pattern
+    - corrected_behavior
+    - replay_before_after
+  deep_belief:
+    - time
+    - recurrence
+    - impact
+    - coherence_with_identity
+    - adversarial_review
+  identity_change:
+    - D3_gate
+    - founding_positions
+    - external_review
+    - promotion_record
+
+forbidden:
+  - direct_llm_sedimentation
+  - direct_organ_sedimentation
+  - silent_personality_change
+  - deleting_previous_memory_to_hide_conflict
+  - treating_single_emotional_event_as_deep_belief
+  - storing_sensitive_third_party_data_without_need
+
+supersession:
+  preserve_previous: true
+  require_reason: true
+  rerun_regression_suite: true

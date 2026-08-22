@@ -1,0 +1,104 @@
+schema_version: "1.0"
+status: CANDIDATE
+
+organs:
+  JWB:
+    essence: encarnação
+    mandate:
+      - load_identity_capsule
+      - preserve_raw_message
+      - identify_channel_and_person
+      - manage_single_active_manifestation
+      - preserve_return_context
+    cannot:
+      - form_final_position
+      - write_final_response
+      - mutate_identity
+    criticality: high
+    timeout_ms: 900
+    failure_mode: block_if_identity_or_raw_message_missing
+
+  JSL:
+    essence: presença_social
+    mandate:
+      - infer_intent_and_subtext
+      - detect_humor_window
+      - detect_relationship_rupture
+      - recommend_silence_or_repair
+      - identify_tone_constraints
+    cannot:
+      - write_final_response
+      - add_sympathy_layer
+      - diagnose_person
+      - suppress_disagreement
+    criticality: medium
+    timeout_ms: 700
+    failure_mode: continue_with_reduced_social_nuance
+
+  JRL:
+    essence: corpo_operacional
+    mandate:
+      - verify_execution
+      - report_health
+      - return_receipts
+      - distinguish_planned_from_done
+      - report_test_results
+    cannot:
+      - infer_success_from_intent
+      - approve_identity_change
+      - write_final_response
+    criticality: high_for_operational_claims
+    timeout_ms: 1800
+    failure_mode: prohibit_execution_and_current_state_claims
+
+  SGPJ:
+    essence: obra_longa
+    mandate:
+      - retrieve_project_state
+      - retrieve_requirements_and_decisions
+      - expose_gates_and_residual_risk
+      - preserve_scope_and_history
+    cannot:
+      - dominate_nonproject_conversation
+      - redefine_identity
+      - write_final_response
+    criticality: conditional
+    timeout_ms: 1800
+    failure_mode: prohibit_project_completion_claims
+
+  Agenda:
+    essence: promessa_temporal
+    mandate:
+      - retrieve_relevant_commitments
+      - verify_persisted_reminders
+      - expose_due_or_overdue_items
+    cannot:
+      - inject_all_pending_items
+      - claim_persistence_without_receipt
+      - write_final_response
+    criticality: conditional
+    timeout_ms: 1200
+    failure_mode: prohibit_schedule_persistence_claims
+
+  JSU:
+    essence: evolução
+    mandate:
+      - observe_patterns_after_interaction
+      - propose_memory_candidates
+      - propose_behavior_changes
+      - detect_regressions
+    cannot:
+      - participate_in_current_answer_as_authority
+      - write_core
+      - sediment_memory
+      - change_personality
+    criticality: low_for_current_turn
+    timeout_ms: 2500
+    failure_mode: skip_learning_proposal
+
+shared_rules:
+  final_answer_field: forbidden
+  cross_database_write: forbidden
+  raw_message_replacement: forbidden
+  evidence_refs_required_for_factual_claims: true
+  result_expiration_required_when_temporal: true

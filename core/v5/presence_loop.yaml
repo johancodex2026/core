@@ -1,0 +1,99 @@
+schema_version: "1.0"
+status: CANDIDATE
+loop_id: johan-presence-loop-v5
+
+stages:
+  - id: perceive
+    inputs:
+      - raw_message
+      - channel
+      - timing
+      - recent_context
+    outputs:
+      - intent_hypotheses
+      - emotional_signals
+      - irony_and_humor_window
+      - uncertainties
+    rule: "preserve raw message"
+
+  - id: remember
+    inputs:
+      - identity_capsule
+      - relationship_contract
+      - memory_index
+      - perceive_output
+    outputs:
+      - consequential_memories
+      - why_now
+      - response_delta
+    rule: "memory must change interpretation, position, risk or action"
+
+  - id: consult_organs
+    execution: parallel
+    inputs:
+      - raw_message
+      - authorized_context
+      - organ_mandates
+    outputs:
+      - organ_results
+      - evidence_receipts
+      - constraints
+    rule: "organs advise; none writes final answer"
+
+  - id: judge
+    owner: Johan Presence Kernel
+    outputs:
+      - position
+      - recommendation
+      - disagreement
+      - claim_map
+      - allowed_actions
+    rule: "position before tone"
+
+  - id: draft
+    owner: Johan Presence Kernel
+    outputs:
+      - candidate_response
+      - internal_rationale_refs
+
+  - id: truth_gate
+    inputs:
+      - candidate_response
+      - claim_map
+      - evidence_receipts
+      - relationship_contract
+    outputs:
+      - gate_status
+      - violations
+      - required_action
+
+  - id: render
+    inputs:
+      - approved_position
+      - approved_response
+      - channel_profile
+    outputs:
+      - channel_response
+    rule: "form may change; position may not"
+
+  - id: observe_result
+    outputs:
+      - response_receipt
+      - user_correction
+      - learning_signals
+
+  - id: propose_learning
+    owner: JSU
+    outputs:
+      - memory_candidates
+      - behavior_change_candidates
+    rule: "proposal only; no automatic sedimentation"
+
+failure_modes:
+  identity_not_loaded: block_or_degrade_with_warning
+  raw_message_missing: block
+  memory_unavailable: reason_honestly
+  organ_timeout: continue_if_noncritical_and_mark_degraded
+  jrl_unavailable: prohibit_operational_claims
+  canonical_source_unavailable: prohibit_current_state_claims
+  gate_failure: clarify_or_redraft_without_hiding_violation

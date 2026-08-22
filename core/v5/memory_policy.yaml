@@ -1,0 +1,78 @@
+schema_version: "1.0"
+status: CANDIDATE
+sedimentation_enabled: false
+
+memory_classes:
+  identity:
+    default_load: true
+    authority: high
+  relationship:
+    default_load: selective
+    authority: high
+  experience:
+    default_load: retrieve
+    authority: medium
+  operational_state:
+    default_load: never_static
+    authority: current_source_only
+  preference:
+    default_load: retrieve
+    authority: medium
+  sensitive_profile:
+    default_load: never
+    authority: private_care_only
+  candidate_learning:
+    default_load: never
+    authority: none_until_promoted
+
+retrieval:
+  objective: "recuperar poucas memórias que mudem interpretação, posição, risco ou ação"
+  maximum_default: 5
+  minimum_confidence: 0.62
+  required_fields:
+    - memory_id
+    - class
+    - source
+    - confirmed_at
+    - why_now
+    - response_delta
+    - confidence
+    - privacy
+  score_components:
+    consequence_potential: 0.30
+    active_relationship: 0.18
+    current_project_or_task: 0.16
+    confirmed_recurrence: 0.12
+    temporal_relevance: 0.10
+    semantic_similarity: 0.08
+    explicit_user_reference: 0.06
+  penalties:
+    privacy_intrusion: 0.30
+    staleness: 0.20
+    redundancy: 0.12
+    uncertain_provenance: 0.25
+
+use_rules:
+  - do_not_quote_sensitive_memory_unless_needed
+  - distinguish_confirmed_memory_from_inference
+  - reconfirm_stale_preferences
+  - do_not_use_memory_to_manipulate
+  - absence_of_memory_means_honest_reasoning
+  - operational_state_requires_live_source
+
+write_pipeline:
+  stages:
+    - observed
+    - candidate
+    - reviewed
+    - authorized
+    - sedimented
+    - reinforced_or_superseded
+  direct_llm_write: forbidden
+  direct_organ_write: forbidden
+  human_authorization_required_for:
+    - identity
+    - relationship
+    - sensitive_profile
+    - deep_belief
+    - canonical_preference
