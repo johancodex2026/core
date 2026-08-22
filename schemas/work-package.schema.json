@@ -44,7 +44,8 @@
     "change_class": { "enum": ["D0", "D1", "D2", "D3", "D4"] },
     "objective": { "type": "string", "minLength": 1 },
     "non_objectives": { "type": "array", "items": { "type": "string" } },
-    "baseline_commit": { "type": "string", "minLength": 7 },
+    "baseline_commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "baseline_tree_digest": { "type": ["string", "null"] },
     "promotion_target": {
       "enum": ["repository_only", "shadow", "canary", "runtime", "memory_candidate", "canonical_memory", "identity", "other"]
     },
@@ -55,6 +56,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": ["id", "role", "authority"],
         "properties": {
           "id": { "type": "string" },
@@ -69,13 +71,17 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": ["id", "statement", "acceptance", "tests"],
         "properties": {
           "id": { "type": "string", "pattern": "^REQ-[A-Z0-9-]+$" },
           "statement": { "type": "string" },
           "source": { "type": "string" },
+          "rationale": { "type": "string" },
+          "priority": { "type": "string" },
           "acceptance": { "type": "string" },
-          "tests": { "type": "array", "items": { "type": "string" } }
+          "tests": { "type": "array", "items": { "type": "string" } },
+          "risks": { "type": "array", "items": { "type": "string" } }
         }
       }
     },
@@ -83,6 +89,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": ["id", "statement"],
         "properties": {
           "id": { "type": "string", "pattern": "^INV-[A-Z0-9-]+$" },
@@ -95,13 +102,15 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": ["id", "statement", "status"],
         "properties": {
           "id": { "type": "string", "pattern": "^ASM-[A-Z0-9-]+$" },
           "statement": { "type": "string" },
           "impact_if_false": { "type": "string" },
           "validation": { "type": "string" },
-          "status": { "enum": ["OPEN", "VALIDATED", "REJECTED", "ACCEPTED_RISK"] }
+          "owner": { "type": "string" },
+          "status": { "enum": ["OPEN", "VALIDATED", "REJECTED", "ACCEPTED_RISK", "IRRELEVANT", "SUPERSEDED"] }
         }
       }
     },
@@ -109,11 +118,13 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": ["id", "statement", "control"],
         "properties": {
           "id": { "type": "string", "pattern": "^RISK-[A-Z0-9-]+$" },
           "statement": { "type": "string" },
           "control": { "type": "string" },
+          "owner": { "type": "string" },
           "residual": { "type": "string" }
         }
       }
@@ -122,6 +133,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": ["id", "type", "expected"],
         "properties": {
           "id": { "type": "string", "pattern": "^TST-[A-Z0-9-]+$" },
@@ -135,6 +147,18 @@
     "stop_conditions": { "type": "array", "minItems": 1, "items": { "type": "string" } },
     "rollback": { "type": "array", "items": { "type": "string" } },
     "open_questions": { "type": "array", "items": { "type": "string" } },
+    "review_record_refs": { "type": "array", "items": { "type": "string" } },
+    "ready_record_ref": { "type": ["string", "null"] },
     "receipts": { "type": "array", "items": { "type": "string" } }
-  }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "enum": ["READY", "EXECUTING", "VERIFYING", "PROMOTION_CANDIDATE", "PROMOTED"] } } },
+      "then": { "required": ["ready_record_ref", "review_record_refs"] }
+    },
+    {
+      "if": { "properties": { "status": { "const": "PROMOTED" } } },
+      "then": { "properties": { "receipts": { "minItems": 1 } } }
+    }
+  ]
 }
