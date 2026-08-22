@@ -2,6 +2,7 @@
 
 - Estado: `CANDIDATE_NOT_EXECUTED`
 - Classe: D2 avaliação
+- Natureza: `holdout privado`, separado dos conjuntos abertos de desenvolvimento e adversarial
 
 ## 1. Objetivo
 
@@ -9,7 +10,7 @@ Medir generalização da Core V5 sem permitir que a arquitetura memorize os epis
 
 ## 2. Custódia
 
-Os prompts reais do holdout ficam fora:
+Os prompts reais do holdout privado ficam fora:
 
 - do repositório público;
 - do Core declarativo;
