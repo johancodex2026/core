@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://core.johan.local/schemas/organ-result.schema.json",
+  "$id": "https://core.johan.ia.br/schemas/organ-result.schema.json",
   "title": "Core V5 Organ Result",
   "type": "object",
   "additionalProperties": false,
@@ -10,20 +10,24 @@
     "turn_id",
     "organ",
     "status",
+    "validity_class",
     "observations",
     "evidence_refs",
     "confidence",
     "risk_level",
     "constraints",
     "data_scope",
-    "expires_at"
+    "issued_at",
+    "expires_at",
+    "trust"
   ],
   "properties": {
     "result_id": { "type": "string", "minLength": 1 },
     "request_id": { "type": "string", "minLength": 1 },
     "turn_id": { "type": "string", "minLength": 1 },
     "organ": { "type": "string", "enum": ["JWB", "JSL", "JRL", "SGPJ", "Agenda", "JSU"] },
-    "status": { "type": "string", "enum": ["OK", "DEGRADED", "FAILED", "NOT_APPLICABLE"] },
+    "status": { "type": "string", "enum": ["OK", "DEGRADED", "FAILED", "UNAVAILABLE", "NOT_APPLICABLE", "WITHHELD", "NOT_IMPLEMENTED"] },
+    "validity_class": { "type": "string", "enum": ["TURN_ONLY", "TEMPORAL", "TIMELESS_CANDIDATE"] },
     "observations": {
       "type": "array",
       "maxItems": 20,
@@ -34,7 +38,7 @@
         "properties": {
           "kind": {
             "type": "string",
-            "enum": ["OBSERVATION", "HYPOTHESIS", "SOURCE_FACT", "INFERENCE", "CONSTRAINT", "RECOMMENDATION"]
+            "enum": ["OBSERVATION", "HYPOTHESIS", "SOURCE_FACT", "INFERENCE", "CONSTRAINT", "RECOMMENDATION", "UNKNOWN"]
           },
           "statement": { "type": "string", "minLength": 1 },
           "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
@@ -44,24 +48,26 @@
     },
     "evidence_refs": { "type": "array", "items": { "type": "string" }, "maxItems": 40 },
     "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
-    "risk_level": { "type": "string", "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+    "risk_level": { "type": "string", "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "VITAL"] },
     "constraints": { "type": "array", "items": { "type": "string" }, "maxItems": 20 },
     "data_scope": { "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 20 },
     "suggested_next_step": { "type": ["string", "null"] },
+    "issued_at": { "type": "string", "format": "date-time" },
     "expires_at": { "type": ["string", "null"], "format": "date-time" },
-    "receipt": {
-      "type": ["object", "null"],
-      "additionalProperties": false,
-      "required": ["receipt_type", "source", "observed_at", "status"],
-      "properties": {
-        "receipt_type": { "type": "string" },
-        "source": { "type": "string" },
-        "observed_at": { "type": "string", "format": "date-time" },
-        "digest": { "type": ["string", "null"] },
-        "status": { "type": "string" }
-      }
-    }
+    "trust": { "type": "string", "enum": ["UNTRUSTED_TYPED_INPUT", "VERIFIABLE_RECEIPT_WITHIN_SCOPE"] },
+    "receipt": { "oneOf": [{ "$ref": "receipt.schema.json" }, { "type": "null" }] },
+    "limitations": { "type": "array", "items": { "type": "string" }, "maxItems": 30 }
   },
+  "allOf": [
+    {
+      "if": { "properties": { "validity_class": { "enum": ["TURN_ONLY", "TEMPORAL"] } } },
+      "then": { "properties": { "expires_at": { "type": "string", "format": "date-time" } } }
+    },
+    {
+      "if": { "properties": { "trust": { "const": "VERIFIABLE_RECEIPT_WITHIN_SCOPE" } } },
+      "then": { "required": ["receipt"] }
+    }
+  ],
   "not": {
     "anyOf": [
       { "required": ["final_answer"] },
