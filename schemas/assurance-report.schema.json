@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://core.johan.ia.br/schemas/assurance-report.schema.json",
+  "title": "Core V5 Unified Assurance Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "suite_version", "generated_at", "repository_head", "overall_status",
+    "layers", "summary", "limitations"
+  ],
+  "properties": {
+    "suite_version": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "repository_head": { "type": ["string", "null"] },
+    "overall_status": { "type": "string", "enum": ["PASS", "FAIL"] },
+    "layers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "status", "checks"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "status": { "type": "string", "enum": ["PASS", "FAIL", "SKIP"] },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "status", "message", "evidence"],
+              "properties": {
+                "id": { "type": "string" },
+                "status": { "type": "string", "enum": ["PASS", "FAIL", "INFO"] },
+                "message": { "type": "string" },
+                "evidence": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed", "failed", "informational"],
+      "properties": {
+        "passed": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "informational": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  }
+}
