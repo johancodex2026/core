@@ -5,23 +5,16 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "decision_id",
-    "turn_id",
-    "authorization_kind",
-    "subject_digest",
-    "status",
-    "scope",
-    "decided_at",
-    "valid_until",
-    "authority",
-    "policy_refs",
-    "evidence_refs"
+    "decision_id", "turn_id", "authorization_kind", "subject_type",
+    "subject_digest", "status", "scope", "decided_at", "valid_until",
+    "authority", "policy_refs", "evidence_refs", "risk_class"
   ],
   "properties": {
     "decision_id": { "type": "string", "minLength": 1 },
     "turn_id": { "type": "string", "minLength": 1 },
     "authorization_kind": { "type": "string", "enum": ["RESPONSE_SEND", "EXTERNAL_ACTION"] },
-    "subject_digest": { "type": "string", "minLength": 1 },
+    "subject_type": { "type": "string", "enum": ["RENDERED_RESPONSE", "ACTION_REQUEST"] },
+    "subject_digest": { "$ref": "digest-reference.schema.json" },
     "status": { "type": "string", "enum": ["AUTHORIZED", "DENIED", "REQUIRES_CONFIRMATION", "EXPIRED", "NOT_APPLICABLE"] },
     "scope": { "type": "array", "minItems": 1, "maxItems": 30, "items": { "type": "string" } },
     "decided_at": { "type": "string", "format": "date-time" },
@@ -32,7 +25,7 @@
       "required": ["authority_id", "authority_type"],
       "properties": {
         "authority_id": { "type": "string", "minLength": 1 },
-        "authority_type": { "type": "string", "enum": ["HUMAN", "RUNTIME_POLICY", "CONSTITUTIONAL_GATE", "OTHER"] }
+        "authority_type": { "type": "string", "enum": ["HUMAN", "RUNTIME_POLICY", "CONSTITUTIONAL_GATE"] }
       }
     },
     "policy_refs": { "type": "array", "minItems": 1, "maxItems": 30, "items": { "type": "string" } },
@@ -43,8 +36,19 @@
   },
   "allOf": [
     {
-      "if": { "properties": { "authorization_kind": { "const": "EXTERNAL_ACTION" }, "status": { "const": "AUTHORIZED" } } },
-      "then": { "required": ["idempotency_key", "risk_class"] }
+      "if": {"required": ["authorization_kind"], "properties": {"authorization_kind": {"const": "RESPONSE_SEND"}}},
+      "then": {"properties": {"subject_type": {"const": "RENDERED_RESPONSE"}, "idempotency_key": {"type": "null"}}}
+    },
+    {
+      "if": {"required": ["authorization_kind"], "properties": {"authorization_kind": {"const": "EXTERNAL_ACTION"}}},
+      "then": {"properties": {"subject_type": {"const": "ACTION_REQUEST"}}}
+    },
+    {
+      "if": {
+        "required": ["authorization_kind", "status"],
+        "properties": {"authorization_kind": {"const": "EXTERNAL_ACTION"}, "status": {"const": "AUTHORIZED"}}
+      },
+      "then": {"required": ["idempotency_key"], "properties": {"idempotency_key": {"type": "string", "minLength": 1}}}
     }
   ]
 }
