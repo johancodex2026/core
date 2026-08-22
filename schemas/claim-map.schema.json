@@ -1,19 +1,35 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://core.johan.local/schemas/claim-map.schema.json",
+  "$id": "https://core.johan.ia.br/schemas/claim-map.schema.json",
   "title": "Core V5 Claim Map",
   "type": "object",
   "additionalProperties": false,
-  "required": ["turn_id", "claims"],
+  "required": ["turn_id", "candidate_response_digest", "claims"],
   "properties": {
     "turn_id": { "type": "string", "minLength": 1 },
+    "candidate_response_digest": { "type": "string", "minLength": 1 },
     "claims": {
       "type": "array",
       "maxItems": 100,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["claim_id", "text", "class", "support_refs", "confidence", "currentness", "risk", "receipt_required"],
+        "required": [
+          "claim_id",
+          "text",
+          "class",
+          "scope",
+          "materiality",
+          "support_status",
+          "source_refs",
+          "receipt_refs",
+          "confidence",
+          "currentness",
+          "temporal_sensitivity",
+          "risk",
+          "receipt_required",
+          "limitations"
+        ],
         "properties": {
           "claim_id": { "type": "string", "minLength": 1 },
           "text": { "type": "string", "minLength": 1 },
@@ -21,12 +37,37 @@
             "type": "string",
             "enum": ["SOURCE_FACT", "MEMORY_CONFIRMED", "OBSERVATION", "INFERENCE", "POSITION", "PROPOSAL", "UNCERTAIN", "OPERATIONAL_STATE"]
           },
-          "support_refs": { "type": "array", "items": { "type": "string" }, "maxItems": 30 },
+          "scope": { "type": "string", "minLength": 1 },
+          "materiality": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "VITAL"] },
+          "support_status": { "type": "string", "enum": ["SUPPORTED", "PARTIALLY_SUPPORTED", "UNSUPPORTED", "CONFLICTED", "NOT_APPLICABLE"] },
+          "source_refs": { "type": "array", "items": { "type": "string" }, "maxItems": 30 },
+          "receipt_refs": { "type": "array", "items": { "type": "string" }, "maxItems": 30 },
+          "memory_refs": { "type": "array", "items": { "type": "string" }, "maxItems": 20 },
           "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
           "currentness": { "type": "string", "enum": ["CURRENT", "TIMELESS", "STALE", "UNKNOWN"] },
+          "temporal_sensitivity": { "type": "string", "enum": ["NONE", "LOW", "HIGH"] },
           "risk": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "VITAL"] },
-          "receipt_required": { "type": "boolean" }
-        }
+          "receipt_required": { "type": "boolean" },
+          "limitations": { "type": "array", "items": { "type": "string" }, "maxItems": 20 }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "class": { "enum": ["OPERATIONAL_STATE", "SOURCE_FACT"] } } },
+            "then": { "properties": { "receipt_required": { "const": true } } }
+          },
+          {
+            "if": { "properties": { "receipt_required": { "const": true }, "support_status": { "const": "SUPPORTED" } } },
+            "then": { "properties": { "receipt_refs": { "minItems": 1 } } }
+          },
+          {
+            "if": { "properties": { "class": { "const": "MEMORY_CONFIRMED" } } },
+            "then": { "properties": { "memory_refs": { "minItems": 1 } } }
+          },
+          {
+            "if": { "properties": { "temporal_sensitivity": { "const": "HIGH" } } },
+            "then": { "properties": { "currentness": { "enum": ["CURRENT", "UNKNOWN"] } } }
+          }
+        ]
       }
     }
   }
