@@ -1,15 +1,16 @@
 {
   "name": "@johancodex/core-v5",
-  "version": "5.0.0-candidate.3",
+  "version": "5.0.0-candidate.4",
   "private": true,
   "type": "module",
-  "description": "Governed, planning-first architecture and evaluation foundation for Johan Core V5.",
+  "description": "Governed, planning-first and semantically controlled architecture for Johan Core V5.",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "check": "npm run check:structure && npm run check:planning",
+    "check": "npm run check:structure && npm run check:planning && npm run check:coherence",
     "check:structure": "node scripts/validate-foundation.mjs",
-    "check:planning": "node scripts/validate-planning.mjs"
+    "check:planning": "node scripts/validate-planning.mjs",
+    "check:coherence": "node scripts/validate-coherence.mjs"
   }
 }
