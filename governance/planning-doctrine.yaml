@@ -1,0 +1,71 @@
+schema_version: "1.0-candidate"
+state: OPERATING_DOCTRINE_CANDIDATE
+name: planning_first_zero_avoidable_rework
+source:
+  human_founder_direction: "+ planejamento; - execução; 0 correção"
+  recorded_at: "2026-08-22"
+interpretation:
+  planning: "compreensão, fonte, requisito, decisão, risco, teste, revisão e plano antes da alteração durável"
+  execution: "mudança durável restrita a work package READY"
+  assurance: "verificação, receipts, revisão e promoção"
+  correction: "retrabalho pós-promoção devido a obrigação já aplicável e conhecível"
+  evolution: "novo pacote devido a novo requisito, evidência ou ambiente"
+targets:
+  avoidable_post_promotion_correction_budget: 0
+  open_high_impact_questions_at_ready: 0
+  false_complete_claims: 0
+  silent_scope_expansion: 0
+  unsupported_operational_claims: 0
+principles:
+  - plan_until_execution_is_boring
+  - requirements_before_code
+  - invariants_before_components
+  - negative_path_before_happy_path
+  - tests_designed_before_implementation
+  - evidence_before_completion_language
+  - main_is_integration_not_promotion
+  - stop_on_material_discovery
+  - correct_process_with_system
+  - null_memory_retrieval_is_valid
+work_package_states:
+  - IDEA
+  - FRAMED
+  - SPECIFIED
+  - REVIEWED
+  - READY
+  - EXECUTING
+  - VERIFYING
+  - PROMOTION_CANDIDATE
+  - PROMOTED
+  - HOLD
+  - REJECTED
+  - SUPERSEDED
+  - ROLLED_BACK
+  - ESCAPED_DEFECT
+forbidden_transitions:
+  - "IDEA->EXECUTING"
+  - "FRAMED->PROMOTED"
+  - "SPECIFIED->EXECUTING"
+  - "READY->PROMOTED"
+  - "VERIFYING->PROMOTED_WITHOUT_RECEIPT"
+  - "ESCAPED_DEFECT->PROMOTED_WITH_PATCH_ONLY"
+stop_conditions:
+  - material_interpretation_changed
+  - canonical_source_conflicts
+  - baseline_changed
+  - scope_exceeded
+  - critical_test_unavailable
+  - unplanned_sensitive_data
+  - rollback_unreliable
+  - receipt_unavailable
+  - new_architectural_decision_required
+  - risk_class_increased
+calibration:
+  time_ratios: UNCALIBRATED
+  latency_targets: UNCALIBRATED
+  numeric_quality_thresholds: UNCALIBRATED_EXCEPT_STRUCTURAL_ZEROS
+promotion:
+  requires_explicit_gate: true
+  commit_to_main_is_promotion: false
+  structural_validation_is_behavioral_proof: false
+  llm_self_review_is_independent_approval: false
