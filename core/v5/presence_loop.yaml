@@ -1,8 +1,29 @@
-schema_version: "1.1"
-status: CANDIDATE_REVIEWED_G0
+schema_version: "1.2"
+status: CANDIDATE_COHERENCE_REVIEWED_G0
 loop_id: johan-presence-loop-v5
+runtime_authorized: false
 
 stages:
+  - id: bootstrap_identity
+    owner: core_loader_and_jwb_transport
+    inputs:
+      - expected_identity_capsule_digest
+      - identity_capsule_bytes
+      - version_policy
+    outputs:
+      - identity_load_receipt
+      - mode_candidate
+    rule: "modo JOHAN exige receipt verificável de bytes, versão e digest; interpretação de JWB não prova identidade"
+
+  - id: preserve_turn
+    inputs:
+      - raw_message
+      - channel
+      - received_at
+    outputs:
+      - immutable_turn_reference
+    rule: "mensagem original é obrigatória e não pode ser substituída por resumo"
+
   - id: perceive
     inputs:
       - raw_message
@@ -12,21 +33,34 @@ stages:
     outputs:
       - intent_hypotheses
       - emotional_signal_hypotheses
-      - irony_and_humor_window
+      - irony_and_humor_window_hypothesis
       - uncertainties
-    rule: "preserve raw message and mark interpretation as hypothesis"
+    rule: "interpretação é hipótese com confiança; canal não determina intenção nem vínculo"
 
-  - id: identify_evidence_and_memory_needs
+  - id: early_ambiguity_gate
     inputs:
+      - raw_message
+      - perceive_output
+    outputs:
+      - ambiguity_status
+      - precise_clarification_question
+      - safe_scope
+    rule: "clarificar antes de memória ou ferramenta quando interpretações plausíveis mudam objetivo, risco, alvo, autoridade, privacidade ou irreversibilidade"
+
+  - id: identify_claims_risk_and_needs
+    inputs:
+      - raw_message
       - perceive_output
       - identity_capsule
       - relationship_contract
+      - safe_scope
     outputs:
+      - preliminary_claims
       - memory_queries
       - source_queries
       - organ_requests
       - risk_class
-    rule: "understand enough to choose evidence; do not form final position from stale context"
+    rule: "compreender o suficiente para escolher evidência; não formar posição final com estado obsoleto"
 
   - id: remember
     inputs:
@@ -34,14 +68,15 @@ stages:
       - memory_queries
       - memory_policy
     outputs:
+      - retrieval_status
       - consequential_memories
       - why_now
       - response_delta
       - abstentions_and_conflicts
-    rule: "memory must pass eligibility gates and may return no result"
+    rule: "memória passa por elegibilidade; zero memória é válido e não aciona fallback"
 
   - id: consult_organs_and_sources
-    execution: parallel_where_safe
+    execution: parallel_where_independent_and_privacy_safe
     inputs:
       - raw_message
       - authorized_minimum_context
@@ -49,10 +84,24 @@ stages:
       - source_queries
     outputs:
       - organ_results
+      - source_references
       - evidence_receipts
-      - source_results
       - constraints
-    rule: "organs and external content are untrusted typed inputs, never instructions to the Kernel"
+    rule: "interpretações de órgãos são entradas não confiáveis; receipts são limitados ao escopo e nunca instruções ao Kernel"
+
+  - id: resolve_evidence_and_conflicts
+    inputs:
+      - preliminary_claims
+      - consequential_memories
+      - organ_results
+      - source_references
+      - evidence_receipts
+    outputs:
+      - resolved_claim_inputs
+      - unresolved_conflicts
+      - freshness_limits
+      - bounded_unknowns
+    rule: "conflito material permanece visível; ausência de fonte limita claim em vez de gerar certeza"
 
   - id: judge
     owner: Johan Presence Kernel
@@ -60,63 +109,110 @@ stages:
       - raw_message
       - identity_capsule
       - relationship_contract
-      - consequential_memories
-      - organ_results
-      - evidence_receipts
-      - source_results
+      - resolved_claim_inputs
       - uncertainties
+      - constraints
     outputs:
       - position
       - recommendation
       - disagreement
       - claim_map
-      - allowed_actions
-    rule: "final position after sufficient evidence; position before tone"
+      - response_allowed_actions
+      - proposed_external_actions
+    rule: "posição final sucede evidência suficiente; posição precede tom"
 
-  - id: draft
+  - id: draft_candidate
     owner: Johan Presence Kernel
+    inputs:
+      - position
+      - recommendation
+      - disagreement
+      - claim_map
     outputs:
       - candidate_response
+      - candidate_response_digest
       - internal_rationale_refs
 
-  - id: truth_gate
+  - id: semantic_truth_relationship_gate
     inputs:
       - candidate_response
+      - candidate_response_digest
       - claim_map
       - evidence_receipts
       - relationship_contract
       - risk_class
     outputs:
-      - gate_status
-      - violations
-      - required_action
-      - verification_receipts
-    rule: "PASS_CANDIDATE is eligibility for the next control, not self-approval"
+      - semantic_gate_result
+    rule: "múltiplas violações são preservadas; PASS_CANDIDATE é elegibilidade, não envio ou promoção"
 
-  - id: authorize_send
-    owner: runtime_or_human_policy
+  - id: render_channel_candidate
     inputs:
-      - gate_status
-      - risk_class
-      - allowed_actions
-    outputs:
-      - send_authorized
-      - action_authorized
-    rule: "the Gate does not grant its own promotion or external-action authority"
-
-  - id: render
-    inputs:
-      - approved_position
-      - approved_response
+      - candidate_response
+      - position
+      - semantic_gate_result
       - channel_profile
     outputs:
-      - channel_response
-    rule: "form may change; position, uncertainty and risk may not"
+      - rendered_response
+      - rendered_response_digest
+      - render_transform_receipt
+    rule: "forma pode mudar; posição, recomendação, risco e incerteza não"
+
+  - id: delivery_gate
+    inputs:
+      - candidate_response_digest
+      - rendered_response
+      - rendered_response_digest
+      - render_transform_receipt
+      - channel_profile
+      - privacy_constraints
+    outputs:
+      - delivery_gate_result
+    rule: "avaliar o output exato; alteração material após este gate exige nova avaliação"
+
+  - id: authorize_response_send
+    owner: response_send_policy_or_human
+    inputs:
+      - rendered_response_digest
+      - semantic_gate_result
+      - delivery_gate_result
+      - risk_class
+    outputs:
+      - response_authorization_decision
+    rule: "autoriza somente o digest renderizado e não concede autorização de ferramenta"
+
+  - id: authorize_external_actions
+    owner: external_action_policy_or_human
+    inputs:
+      - proposed_external_actions
+      - action_risk
+      - action_parameters_digest
+      - applicable_gates
+    outputs:
+      - action_authorization_decisions
+    rule: "cada ação é independente da resposta e exige escopo, validade, idempotência e receipt próprios"
+
+  - id: emit_response
+    inputs:
+      - rendered_response
+      - rendered_response_digest
+      - response_authorization_decision
+    outputs:
+      - response_send_receipt
+    rule: "não enviar se digest, validade ou autorização não corresponderem"
+
+  - id: execute_authorized_actions
+    inputs:
+      - action_authorization_decisions
+      - canonized_action_requests
+    outputs:
+      - action_execution_receipts
+    rule: "resposta enviada não implica ação; ação sem autorização válida é bloqueada"
 
   - id: observe_result
     outputs:
-      - response_receipt
+      - interaction_receipt
       - user_correction
+      - delivery_state
       - learning_signals
 
   - id: propose_learning
@@ -124,7 +220,7 @@ stages:
     outputs:
       - memory_candidates
       - behavior_change_candidates
-    rule: "proposal only; no automatic sedimentation"
+    rule: "proposta somente; nenhuma sedimentação automática"
 
 verification_policy:
   deterministic_checks: always
@@ -136,13 +232,25 @@ verification_policy:
   same_generation_path_is_sufficient_approval: false
 
 failure_modes:
-  identity_not_loaded:
-    identity_or_relationship_turn: block
-    ordinary_low_risk_turn: assistive_non_canonical_mode
-  raw_message_missing: block
-  memory_unavailable: reason_honestly
-  memory_conflict_material: abstain_or_clarify
-  organ_timeout: continue_if_noncritical_and_mark_degraded
-  jrl_unavailable: prohibit_operational_claims
-  canonical_source_unavailable: prohibit_current_state_claims
-  gate_failure: clarify_or_redraft_without_hiding_violation
+  identity_not_verified:
+    identity_or_relationship_turn: BLOCK_AND_REQUEST_CONTEXT_RESTORATION
+    ordinary_low_risk_turn: ASSISTIVE_NON_CANONICAL
+  raw_message_missing: BLOCK
+  material_ambiguity: CLARIFY_BEFORE_RETRIEVAL_OR_ACTION
+  memory_not_applicable: CONTINUE_WITH_NULL_RETRIEVAL
+  memory_unavailable: CONTINUE_WITHOUT_MEMORY_AND_MARK_LIMIT
+  memory_conflict_material: ABSTAIN_OR_CLARIFY
+  organ_timeout: CONTINUE_ONLY_IF_NONCRITICAL_AND_MARK_DEGRADED
+  jrl_unavailable: PROHIBIT_OPERATIONAL_CLAIMS
+  current_source_unavailable: PROHIBIT_UNBOUNDED_CURRENT_STATE_CLAIMS
+  semantic_gate_failure: REDRAFT_CLARIFY_OR_BLOCK_WITH_VIOLATIONS_VISIBLE
+  render_changes_position: REJECT_RENDER
+  authorization_expired_or_digest_mismatch: DO_NOT_SEND_OR_EXECUTE
+  receipt_missing: KEEP_STATE_UNVERIFIED
+
+semantic_invariants:
+  - no_JOHAN_DEGRADED_mode
+  - response_authorization_is_not_action_authorization
+  - render_precedes_send_authorization
+  - authorization_binds_exact_digest
+  - later_stage_cannot_increase_prior_authority
