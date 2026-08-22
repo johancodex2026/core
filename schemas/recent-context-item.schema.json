@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://core.johan.ia.br/schemas/recent-context-item.schema.json",
+  "title": "Core V5 Recent Context Item",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context_id",
+    "kind",
+    "source",
+    "occurred_at",
+    "text_or_summary",
+    "privacy",
+    "status"
+  ],
+  "properties": {
+    "context_id": { "type": "string", "minLength": 1 },
+    "kind": { "type": "string", "enum": ["RAW_TURN", "TURN_SUMMARY", "CORRECTION", "OPEN_REPAIR", "PROJECT_CONTEXT", "TEMPORAL_CONTEXT", "OTHER"] },
+    "source": { "$ref": "source-reference.schema.json" },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "valid_until": { "type": ["string", "null"], "format": "date-time" },
+    "text_or_summary": { "type": "string", "minLength": 1 },
+    "raw_message_ref": { "type": ["string", "null"] },
+    "privacy": { "type": "string", "enum": ["PUBLIC", "INTERNAL", "PRIVATE", "SENSITIVE"] },
+    "status": { "type": "string", "enum": ["CURRENT", "STALE", "CONTESTED", "SUPERSEDED"] },
+    "limitations": { "type": "array", "maxItems": 20, "items": { "type": "string" } }
+  }
+}
