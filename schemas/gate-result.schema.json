@@ -18,7 +18,7 @@
     "candidate_response_digest": {"anyOf": [{"$ref": "digest-reference.schema.json"}, {"type": "null"}]},
     "rendered_response_digest": {"anyOf": [{"$ref": "digest-reference.schema.json"}, {"type": "null"}]},
     "disposition": {"type": "string", "enum": ["PASS_CANDIDATE", "REMEDIATE", "CLARIFY", "ESCALATE", "BLOCK"]},
-    "highest_severity": {"type": "string", "enum": ["INFO", "WARNING", "ERROR", "HARD_FAIL"]},
+    "highest_severity": {"type": "string", "enum": ["NONE", "INFO", "WARNING", "ERROR", "HARD_FAIL"]},
     "findings": {
       "type": "array",
       "items": {
@@ -72,8 +72,13 @@
       }
     },
     {
+      "if": {"required": ["findings"], "properties": {"findings": {"maxItems": 0}}},
+      "then": {"properties": {"highest_severity": {"const": "NONE"}}},
+      "else": {"properties": {"highest_severity": {"enum": ["INFO", "WARNING", "ERROR", "HARD_FAIL"]}}}
+    },
+    {
       "if": {"required": ["disposition"], "properties": {"disposition": {"const": "PASS_CANDIDATE"}}},
-      "then": {"properties": {"highest_severity": {"enum": ["INFO", "WARNING"]}, "eligible_for_next_control": {"const": true}}}
+      "then": {"properties": {"highest_severity": {"enum": ["NONE", "INFO", "WARNING"]}, "eligible_for_next_control": {"const": true}}}
     },
     {
       "if": {"required": ["highest_severity"], "properties": {"highest_severity": {"const": "HARD_FAIL"}}},
