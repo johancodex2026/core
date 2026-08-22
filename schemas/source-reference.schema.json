@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://core.johan.ia.br/schemas/source-reference.schema.json",
+  "title": "Core V5 Source Reference",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_ref",
+    "source_kind",
+    "domain",
+    "authority_class",
+    "observed_at",
+    "privacy",
+    "trust"
+  ],
+  "properties": {
+    "source_ref": { "type": "string", "minLength": 1 },
+    "source_kind": {
+      "type": "string",
+      "enum": [
+        "FOUNDING_DOCUMENT",
+        "CONSTITUTION",
+        "OPERATIONAL_SYSTEM",
+        "ORGAN",
+        "MEMORY",
+        "CONVERSATION",
+        "EXTERNAL_PRIMARY",
+        "EXTERNAL_SECONDARY",
+        "HUMAN_STATEMENT",
+        "MODEL_OUTPUT",
+        "LEGACY_ADAPTER",
+        "OTHER"
+      ]
+    },
+    "domain": { "type": "string", "minLength": 1 },
+    "authority_class": {
+      "type": "string",
+      "enum": ["CANONICAL_FOR_CLAIM", "AUTHORITATIVE", "SUPPORTING", "CONTEXTUAL", "UNTRUSTED", "UNKNOWN"]
+    },
+    "location": { "type": ["string", "null"] },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "valid_until": { "type": ["string", "null"], "format": "date-time" },
+    "digest": { "type": ["string", "null"] },
+    "privacy": { "type": "string", "enum": ["PUBLIC", "INTERNAL", "PRIVATE", "SENSITIVE"] },
+    "trust": { "type": "string", "enum": ["VERIFIED_WITHIN_SCOPE", "DECLARED", "UNTRUSTED_TYPED_INPUT", "UNKNOWN"] },
+    "conflicts": { "type": "array", "maxItems": 20, "items": { "type": "string" } },
+    "limitations": { "type": "array", "maxItems": 30, "items": { "type": "string" } }
+  }
+}
