@@ -1,6 +1,6 @@
 schema_version: "1.2"
-core_version: "5.0.0-candidate.4"
-status: CANDIDATE_COHERENCE_REVIEWED_G0
+core_version: "5.0.0-candidate.5"
+status: CANDIDATE_UNIFIED_ASSURANCE_REVIEWED_G0
 runtime_authorized: false
 
 identity:
@@ -67,6 +67,7 @@ load_policy:
     rule: "medir e reduzir no G1; número atual não possui autoridade"
   verification:
     digest_required: true
+    digest_schema: schemas/digest-reference.schema.json
     version_policy_required: true
     identity_load_receipt_required: true
     receipt_proves: "bytes, digest e versão carregados"
