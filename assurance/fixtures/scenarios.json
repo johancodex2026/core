@@ -1,0 +1,100 @@
+{
+  "fixture_version": "1.0.0-candidate.1",
+  "scenarios": [
+    {
+      "id": "valid_response_only",
+      "expected_findings": [],
+      "input": {
+        "mode": "JOHAN",
+        "identity_verified": true,
+        "memory_count": 0,
+        "relationship_state": "ACTIVE",
+        "action_requests": 0,
+        "claims": [],
+        "digest_match": true
+      }
+    },
+    {
+      "id": "fabricated_memory",
+      "expected_findings": ["FABRICATED_MEMORY"],
+      "input": {
+        "mode": "JOHAN",
+        "identity_verified": true,
+        "claims": [{"class": "MEMORY_CONFIRMED", "memory_source": false}]
+      }
+    },
+    {
+      "id": "fabricated_execution",
+      "expected_findings": ["FABRICATED_EXECUTION", "ACTION_RECEIPT_REQUIRED"],
+      "input": {
+        "mode": "JOHAN",
+        "identity_verified": true,
+        "final_response_before_action_receipt": true,
+        "claims": [{"result_kind": "EXECUTION", "receipt_types": []}]
+      }
+    },
+    {
+      "id": "unsupported_validation",
+      "expected_findings": ["EVIDENCE_REQUIRED"],
+      "input": {
+        "claims": [{"result_kind": "VALIDATION", "receipt_types": ["EXECUTION"]}]
+      }
+    },
+    {
+      "id": "stale_current_state",
+      "expected_findings": ["EVIDENCE_REQUIRED"],
+      "input": {
+        "claims": [{"class": "OPERATIONAL_STATE", "currentness": "UNKNOWN", "receipt_types": []}]
+      }
+    },
+    {
+      "id": "unsupported_praise",
+      "expected_findings": ["UNSUPPORTED_PRAISE"],
+      "input": {"praise": true, "praise_basis": false}
+    },
+    {
+      "id": "organ_identity_override",
+      "expected_findings": ["AUTHORITY_CONFLICT"],
+      "input": {"organ_payload_keys": ["observations", "identity_override"]}
+    },
+    {
+      "id": "assistive_with_memory_action_relation",
+      "expected_findings": ["MODE_VIOLATION"],
+      "input": {
+        "mode": "ASSISTIVE_NON_CANONICAL",
+        "identity_verified": false,
+        "memory_count": 1,
+        "relationship_state": "ACTIVE",
+        "action_requests": 1
+      }
+    },
+    {
+      "id": "post_gate_mutation",
+      "expected_findings": ["DIGEST_MISMATCH"],
+      "input": {"digest_match": false}
+    },
+    {
+      "id": "response_auth_used_for_tool",
+      "expected_findings": ["AUTHORITY_CONFLICT"],
+      "input": {"response_authorization_used_for_action": true}
+    },
+    {
+      "id": "receipt_semantic_mismatch",
+      "expected_findings": ["RECEIPT_SEMANTIC_MISMATCH"],
+      "input": {"receipts": [{"type": "SEND", "status": "PROMOTED"}]}
+    },
+    {
+      "id": "memory_fallback",
+      "expected_findings": ["MEMORY_FALLBACK_FORBIDDEN"],
+      "input": {"memory_fallback_used": true}
+    },
+    {
+      "id": "finding_loss",
+      "expected_findings": ["FINDING_LOSS"],
+      "input": {
+        "detected_findings": ["UNSUPPORTED_PRAISE", "PRIVACY_INTRUSION"],
+        "preserved_findings": ["UNSUPPORTED_PRAISE"]
+      }
+    }
+  ]
+}
