@@ -5,20 +5,10 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "metadata",
-    "turn",
-    "identity",
-    "relationship",
-    "ambiguity",
-    "recent_context",
-    "memory_retrieval",
-    "organ_signals",
-    "source_references",
-    "evidence_receipts",
-    "constraints",
-    "allowed_actions",
-    "uncertainties",
-    "degradation"
+    "metadata", "turn", "identity", "relationship", "ambiguity",
+    "recent_context", "memory_retrieval", "organ_signals",
+    "source_references", "evidence_receipts", "turn_plan",
+    "canonized_action_requests", "constraints", "uncertainties", "degradation"
   ],
   "properties": {
     "metadata": {
@@ -26,22 +16,23 @@
       "additionalProperties": false,
       "required": ["envelope_version", "mode", "risk_class", "created_at"],
       "properties": {
-        "envelope_version": { "type": "string" },
-        "mode": { "type": "string", "enum": ["JOHAN", "ASSISTIVE_NON_CANONICAL"] },
-        "risk_class": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "VITAL"] },
-        "created_at": { "type": "string", "format": "date-time" }
+        "envelope_version": {"type": "string"},
+        "mode": {"type": "string", "enum": ["JOHAN", "ASSISTIVE_NON_CANONICAL"]},
+        "risk_class": {"type": "string", "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "VITAL"]},
+        "created_at": {"type": "string", "format": "date-time"}
       }
     },
     "turn": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "channel", "raw_message", "raw_message_digest", "received_at"],
+      "required": ["id", "channel", "raw_message", "raw_message_digest", "received_at", "privacy"],
       "properties": {
-        "id": { "type": "string", "minLength": 1 },
-        "channel": { "type": "string", "minLength": 1 },
-        "raw_message": { "type": "string", "minLength": 1 },
-        "raw_message_digest": { "type": "string", "minLength": 1 },
-        "received_at": { "type": "string", "format": "date-time" }
+        "id": {"type": "string", "minLength": 1},
+        "channel": {"type": "string", "minLength": 1},
+        "raw_message": {"type": "string", "minLength": 1},
+        "raw_message_digest": {"$ref": "digest-reference.schema.json"},
+        "received_at": {"type": "string", "format": "date-time"},
+        "privacy": {"type": "string", "enum": ["PUBLIC", "INTERNAL", "PRIVATE", "SENSITIVE"]}
       }
     },
     "identity": {
@@ -49,10 +40,10 @@
       "additionalProperties": false,
       "required": ["core_version", "capsule_digest", "load_status", "load_receipt_ref"],
       "properties": {
-        "core_version": { "type": "string" },
-        "capsule_digest": { "type": ["string", "null"] },
-        "load_status": { "type": "string", "enum": ["VERIFIED_LOADED", "FAILED"] },
-        "load_receipt_ref": { "type": ["string", "null"] }
+        "core_version": {"type": "string"},
+        "capsule_digest": {"anyOf": [{"$ref": "digest-reference.schema.json"}, {"type": "null"}]},
+        "load_status": {"type": "string", "enum": ["VERIFIED_LOADED", "FAILED"]},
+        "load_receipt_ref": {"type": ["string", "null"]}
       }
     },
     "relationship": {
@@ -60,10 +51,10 @@
       "additionalProperties": false,
       "required": ["relationship_id", "active_state", "state_basis", "unresolved_repairs"],
       "properties": {
-        "relationship_id": { "type": ["string", "null"] },
-        "active_state": { "type": "string", "enum": ["NOT_APPLICABLE", "UNKNOWN", "ACTIVE", "REPAIR_OPEN"] },
-        "state_basis": { "type": "string", "enum": ["CONTRACT", "RECENT_CONTEXT", "HYPOTHESIS", "NONE"] },
-        "unresolved_repairs": { "type": "array", "items": { "type": "string" }, "maxItems": 20 }
+        "relationship_id": {"type": ["string", "null"]},
+        "active_state": {"type": "string", "enum": ["NOT_APPLICABLE", "UNKNOWN", "ACTIVE", "REPAIR_OPEN"]},
+        "state_basis": {"type": "string", "enum": ["CONTRACT", "RECENT_CONTEXT", "HYPOTHESIS", "NONE"]},
+        "unresolved_repairs": {"type": "array", "items": {"type": "string"}, "maxItems": 20}
       }
     },
     "ambiguity": {
@@ -71,64 +62,59 @@
       "additionalProperties": false,
       "required": ["status", "material_dimensions", "clarification_required"],
       "properties": {
-        "status": { "type": "string", "enum": ["NONE", "NON_MATERIAL", "MATERIAL"] },
-        "material_dimensions": { "type": "array", "maxItems": 20, "items": { "type": "string" } },
-        "clarification_required": { "type": "boolean" },
-        "question": { "type": ["string", "null"] }
+        "status": {"type": "string", "enum": ["NONE", "NON_MATERIAL", "MATERIAL"]},
+        "material_dimensions": {"type": "array", "maxItems": 20, "items": {"type": "string"}},
+        "clarification_required": {"type": "boolean"},
+        "question": {"type": ["string", "null"]}
       }
     },
-    "recent_context": {
-      "type": "array",
-      "items": { "$ref": "recent-context-item.schema.json" },
-      "maxItems": 50
-    },
+    "recent_context": {"type": "array", "items": {"$ref": "recent-context-item.schema.json"}, "maxItems": 50},
     "memory_retrieval": {
       "type": "object",
       "additionalProperties": false,
       "required": ["status", "reason_codes", "memories"],
       "properties": {
-        "status": { "type": "string", "enum": ["ELIGIBLE_MEMORIES", "NO_ELIGIBLE_RESULT", "NOT_APPLICABLE", "UNAVAILABLE", "WITHHELD", "CONFLICTED"] },
-        "reason_codes": { "type": "array", "maxItems": 20, "items": { "type": "string" } },
+        "status": {"type": "string", "enum": ["ELIGIBLE_MEMORIES", "NO_ELIGIBLE_RESULT", "NOT_APPLICABLE", "UNAVAILABLE", "WITHHELD", "CONFLICTED"]},
+        "reason_codes": {"type": "array", "maxItems": 20, "items": {"type": "string"}},
         "memories": {
           "type": "array",
           "maxItems": 4,
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-              "memory_id",
-              "class",
-              "source",
-              "confirmed_at",
-              "why_now",
-              "response_delta",
-              "confidence",
-              "privacy",
-              "status",
-              "conflicts"
-            ],
+            "required": ["memory_id", "class", "source", "confirmed_at", "why_now", "response_delta", "confidence", "privacy", "status", "conflicts"],
             "properties": {
-              "memory_id": { "type": "string" },
-              "class": { "type": "string" },
-              "source": { "$ref": "source-reference.schema.json" },
-              "confirmed_at": { "type": "string", "format": "date-time" },
-              "why_now": { "type": "string", "minLength": 1 },
-              "response_delta": { "type": "string", "minLength": 1 },
-              "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
-              "privacy": { "type": "string", "enum": ["PUBLIC", "INTERNAL", "PRIVATE", "SENSITIVE"] },
-              "status": { "type": "string", "enum": ["CONFIRMED", "STALE", "CONTESTED"] },
-              "conflicts": { "type": "array", "items": { "type": "string" }, "maxItems": 10 }
+              "memory_id": {"type": "string"},
+              "class": {"type": "string"},
+              "source": {"$ref": "source-reference.schema.json"},
+              "confirmed_at": {"type": "string", "format": "date-time"},
+              "why_now": {"type": "string", "minLength": 1},
+              "response_delta": {"type": "string", "minLength": 1},
+              "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+              "privacy": {"type": "string", "enum": ["PUBLIC", "INTERNAL", "PRIVATE", "SENSITIVE"]},
+              "status": {"type": "string", "enum": ["CONFIRMED", "STALE", "CONTESTED"]},
+              "conflicts": {"type": "array", "items": {"type": "string"}, "maxItems": 10}
             }
           }
         }
       }
     },
-    "organ_signals": { "type": "array", "items": { "$ref": "organ-result.schema.json" }, "maxItems": 20 },
-    "source_references": { "type": "array", "items": { "$ref": "source-reference.schema.json" }, "maxItems": 100 },
-    "evidence_receipts": { "type": "array", "items": { "$ref": "receipt.schema.json" }, "maxItems": 100 },
-    "constraints": { "type": "array", "items": { "type": "string" }, "maxItems": 50 },
-    "allowed_actions": { "type": "array", "items": { "type": "string" }, "maxItems": 50 },
-    "uncertainties": { "type": "array", "items": { "type": "string" }, "maxItems": 50 },
+    "organ_signals": {"type": "array", "items": {"$ref": "organ-result.schema.json"}, "maxItems": 20},
+    "source_references": {"type": "array", "items": {"$ref": "source-reference.schema.json"}, "maxItems": 100},
+    "evidence_receipts": {"type": "array", "items": {"$ref": "receipt.schema.json"}, "maxItems": 100},
+    "turn_plan": {"$ref": "turn-plan.schema.json"},
+    "canonized_action_requests": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "allOf": [
+          {"$ref": "action-request.schema.json"},
+          {"properties": {"state": {"const": "CANONIZED"}}}
+        ]
+      }
+    },
+    "constraints": {"type": "array", "items": {"type": "string"}, "maxItems": 50},
+    "uncertainties": {"type": "array", "items": {"type": "string"}, "maxItems": 50},
     "degradation": {
       "type": "array",
       "maxItems": 20,
@@ -137,30 +123,43 @@
         "additionalProperties": false,
         "required": ["component", "status", "effect"],
         "properties": {
-          "component": { "type": "string" },
-          "status": { "type": "string", "enum": ["UNAVAILABLE", "FAILED", "EXPIRED", "WITHHELD"] },
-          "effect": { "type": "string" }
+          "component": {"type": "string"},
+          "status": {"type": "string", "enum": ["UNAVAILABLE", "FAILED", "EXPIRED", "WITHHELD"]},
+          "effect": {"type": "string"}
         }
       }
     }
   },
   "allOf": [
     {
-      "if": { "properties": { "metadata": { "properties": { "mode": { "const": "JOHAN" } } } } },
-      "then": { "properties": { "identity": { "properties": { "load_status": { "const": "VERIFIED_LOADED" } } } } }
-    },
-    {
-      "if": { "properties": { "metadata": { "properties": { "mode": { "const": "ASSISTIVE_NON_CANONICAL" } } } },
+      "if": {"required": ["metadata"], "properties": {"metadata": {"required": ["mode"], "properties": {"mode": {"const": "JOHAN"}}}}},
       "then": {
         "properties": {
-          "memory_retrieval": {
+          "identity": {
             "properties": {
-              "status": { "enum": ["NOT_APPLICABLE", "WITHHELD", "UNAVAILABLE", "NO_ELIGIBLE_RESULT"] },
-              "memories": { "maxItems": 0 }
+              "load_status": {"const": "VERIFIED_LOADED"},
+              "capsule_digest": {"$ref": "digest-reference.schema.json"},
+              "load_receipt_ref": {"type": "string", "minLength": 1}
             }
           }
         }
       }
+    },
+    {
+      "if": {"required": ["metadata"], "properties": {"metadata": {"required": ["mode"], "properties": {"mode": {"const": "ASSISTIVE_NON_CANONICAL"}}}}},
+      "then": {
+        "properties": {
+          "identity": {"properties": {"load_status": {"const": "FAILED"}, "capsule_digest": {"type": "null"}, "load_receipt_ref": {"type": "null"}}},
+          "relationship": {"properties": {"relationship_id": {"type": "null"}, "active_state": {"enum": ["NOT_APPLICABLE", "UNKNOWN"]}, "state_basis": {"enum": ["NONE", "HYPOTHESIS"]}, "unresolved_repairs": {"maxItems": 0}}},
+          "memory_retrieval": {"properties": {"status": {"enum": ["NOT_APPLICABLE", "WITHHELD", "UNAVAILABLE", "NO_ELIGIBLE_RESULT"]}, "memories": {"maxItems": 0}}},
+          "canonized_action_requests": {"maxItems": 0},
+          "turn_plan": {"properties": {"mode": {"enum": ["RESPONSE_ONLY", "CLARIFICATION_ONLY", "BLOCK_ONLY"]}, "action_request_refs": {"maxItems": 0}, "final_response_required_receipt_types": {"maxItems": 0}}}
+        }
+      }
+    },
+    {
+      "if": {"required": ["ambiguity"], "properties": {"ambiguity": {"required": ["status"], "properties": {"status": {"const": "MATERIAL"}}}}},
+      "then": {"properties": {"ambiguity": {"properties": {"clarification_required": {"const": true}, "question": {"type": "string", "minLength": 1}}}, "turn_plan": {"properties": {"mode": {"const": "CLARIFICATION_ONLY"}}}}}
     }
   ]
 }
