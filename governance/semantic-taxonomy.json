@@ -1,224 +1,51 @@
 {
-  "taxonomy_version": "1.0.0-candidate.1",
+  "taxonomy_version": "1.0.0-candidate.2",
   "status": "CANDIDATE_REPOSITORY_ONLY",
   "runtime_authorized": false,
-  "risk_classes": [
-    "NONE",
-    "LOW",
-    "MEDIUM",
-    "HIGH",
-    "VITAL"
-  ],
-  "identity_modes": [
-    "JOHAN",
-    "ASSISTIVE_NON_CANONICAL"
-  ],
-  "identity_load_statuses": [
-    "VERIFIED_LOADED",
-    "FAILED"
-  ],
-  "memory_retrieval_statuses": [
-    "ELIGIBLE_MEMORIES",
-    "NO_ELIGIBLE_RESULT",
-    "NOT_APPLICABLE",
-    "UNAVAILABLE",
-    "WITHHELD",
-    "CONFLICTED"
-  ],
-  "gate_phases": [
-    "SEMANTIC",
-    "DELIVERY"
-  ],
-  "gate_dispositions": [
-    "PASS_CANDIDATE",
-    "REMEDIATE",
-    "CLARIFY",
-    "ESCALATE",
-    "BLOCK"
-  ],
+  "risk_classes": ["NONE", "LOW", "MEDIUM", "HIGH", "VITAL"],
+  "identity_modes": ["JOHAN", "ASSISTIVE_NON_CANONICAL"],
+  "identity_load_statuses": ["VERIFIED_LOADED", "FAILED"],
+  "memory_retrieval_statuses": ["ELIGIBLE_MEMORIES", "NO_ELIGIBLE_RESULT", "NOT_APPLICABLE", "UNAVAILABLE", "WITHHELD", "CONFLICTED"],
+  "gate_phases": ["SEMANTIC", "DELIVERY"],
+  "gate_dispositions": ["PASS_CANDIDATE", "REMEDIATE", "CLARIFY", "ESCALATE", "BLOCK"],
   "gate_findings": [
-    "MEMORY_RETRIEVAL_REQUIRED",
-    "EVIDENCE_REQUIRED",
-    "CLARIFICATION_REQUIRED",
-    "DISAGREEMENT_REQUIRED",
-    "UNSUPPORTED_PRAISE",
-    "UNSUPPORTED_COMPLETION",
-    "FAKE_UNDERSTANDING",
-    "GENERIC_SHELL_DETECTED",
-    "OVERCARE_DETECTED",
-    "PRIVACY_INTRUSION",
-    "CHANNEL_MISMATCH",
-    "ONTOLOGICAL_OVERCLAIM",
-    "SAFETY_ESCALATION_REQUIRED",
-    "AUTHORITY_CONFLICT",
-    "DIGEST_MISMATCH",
-    "FABRICATED_MEMORY",
-    "FABRICATED_EXECUTION",
-    "FABRICATED_SOURCE",
-    "ACTION_RECEIPT_REQUIRED",
-    "RECEIPT_SEMANTIC_MISMATCH",
-    "MODE_VIOLATION",
-    "MEMORY_FALLBACK_FORBIDDEN",
-    "FINDING_LOSS"
+    "MEMORY_RETRIEVAL_REQUIRED", "EVIDENCE_REQUIRED", "CLARIFICATION_REQUIRED",
+    "DISAGREEMENT_REQUIRED", "UNSUPPORTED_PRAISE", "UNSUPPORTED_COMPLETION",
+    "FAKE_UNDERSTANDING", "GENERIC_SHELL_DETECTED", "OVERCARE_DETECTED",
+    "PRIVACY_INTRUSION", "CHANNEL_MISMATCH", "ONTOLOGICAL_OVERCLAIM",
+    "SAFETY_ESCALATION_REQUIRED", "AUTHORITY_CONFLICT", "DIGEST_MISMATCH",
+    "FABRICATED_MEMORY", "FABRICATED_EXECUTION", "FABRICATED_SOURCE",
+    "ACTION_RECEIPT_REQUIRED", "RECEIPT_SEMANTIC_MISMATCH", "MODE_VIOLATION",
+    "MEMORY_FALLBACK_FORBIDDEN", "FINDING_LOSS"
   ],
-  "finding_severities": [
-    "INFO",
-    "WARNING",
-    "ERROR",
-    "HARD_FAIL"
-  ],
-  "authorization_kinds": [
-    "RESPONSE_SEND",
-    "EXTERNAL_ACTION"
-  ],
-  "authorization_subject_types": [
-    "RENDERED_RESPONSE",
-    "ACTION_REQUEST"
-  ],
-  "authorization_statuses": [
-    "AUTHORIZED",
-    "DENIED",
-    "REQUIRES_CONFIRMATION",
-    "EXPIRED",
-    "NOT_APPLICABLE"
-  ],
-  "action_request_states": [
-    "PROPOSED",
-    "CANONIZED",
-    "EXPIRED",
-    "SUPERSEDED"
-  ],
-  "turn_plan_modes": [
-    "RESPONSE_ONLY",
-    "ACTION_THEN_FINAL_RESPONSE",
-    "ACK_THEN_ACTION_THEN_FINAL_RESPONSE",
-    "CLARIFICATION_ONLY",
-    "BLOCK_ONLY"
-  ],
-  "receipt_types": [
-    "IDENTITY_LOAD",
-    "SOURCE_READ",
-    "EXECUTION",
-    "VALIDATION",
-    "PERSISTENCE",
-    "RENDER_TRANSFORM",
-    "SEND",
-    "DELIVERY",
-    "READ",
-    "ROLLBACK",
-    "PROMOTION"
-  ],
+  "finding_severities": ["INFO", "WARNING", "ERROR", "HARD_FAIL"],
+  "aggregate_severities": ["NONE", "INFO", "WARNING", "ERROR", "HARD_FAIL"],
+  "authorization_kinds": ["RESPONSE_SEND", "EXTERNAL_ACTION"],
+  "authorization_subject_types": ["RENDERED_RESPONSE", "ACTION_REQUEST"],
+  "authorization_statuses": ["AUTHORIZED", "DENIED", "REQUIRES_CONFIRMATION", "EXPIRED", "NOT_APPLICABLE"],
+  "action_request_states": ["PROPOSED", "CANONIZED", "EXPIRED", "SUPERSEDED"],
+  "turn_plan_modes": ["RESPONSE_ONLY", "ACTION_THEN_FINAL_RESPONSE", "ACK_THEN_ACTION_THEN_FINAL_RESPONSE", "CLARIFICATION_ONLY", "BLOCK_ONLY"],
+  "receipt_types": ["IDENTITY_LOAD", "SOURCE_READ", "EXECUTION", "VALIDATION", "PERSISTENCE", "RENDER_TRANSFORM", "SEND", "DELIVERY", "READ", "ROLLBACK", "PROMOTION"],
   "receipt_statuses_by_type": {
-    "IDENTITY_LOAD": [
-      "VERIFIED",
-      "FAILED",
-      "EXPIRED"
-    ],
-    "SOURCE_READ": [
-      "VERIFIED",
-      "PARTIAL",
-      "FAILED",
-      "UNAVAILABLE",
-      "WITHHELD",
-      "EXPIRED"
-    ],
-    "EXECUTION": [
-      "EXECUTED",
-      "PARTIAL",
-      "FAILED"
-    ],
-    "VALIDATION": [
-      "VERIFIED",
-      "PARTIAL",
-      "FAILED"
-    ],
-    "PERSISTENCE": [
-      "VERIFIED",
-      "PARTIAL",
-      "FAILED"
-    ],
-    "RENDER_TRANSFORM": [
-      "RENDERED",
-      "FAILED"
-    ],
-    "SEND": [
-      "SENT",
-      "FAILED"
-    ],
-    "DELIVERY": [
-      "DELIVERED",
-      "UNKNOWN",
-      "FAILED",
-      "EXPIRED"
-    ],
-    "READ": [
-      "READ",
-      "UNKNOWN"
-    ],
-    "ROLLBACK": [
-      "ROLLED_BACK",
-      "PARTIAL",
-      "FAILED"
-    ],
-    "PROMOTION": [
-      "PROMOTED",
-      "REJECTED",
-      "FAILED"
-    ]
+    "IDENTITY_LOAD": ["VERIFIED", "FAILED", "EXPIRED"],
+    "SOURCE_READ": ["VERIFIED", "PARTIAL", "FAILED", "UNAVAILABLE", "WITHHELD", "EXPIRED"],
+    "EXECUTION": ["EXECUTED", "PARTIAL", "FAILED"],
+    "VALIDATION": ["VERIFIED", "PARTIAL", "FAILED"],
+    "PERSISTENCE": ["VERIFIED", "PARTIAL", "FAILED"],
+    "RENDER_TRANSFORM": ["RENDERED", "FAILED"],
+    "SEND": ["SENT", "FAILED"],
+    "DELIVERY": ["DELIVERED", "UNKNOWN", "FAILED", "EXPIRED"],
+    "READ": ["READ", "UNKNOWN"],
+    "ROLLBACK": ["ROLLED_BACK", "PARTIAL", "FAILED"],
+    "PROMOTION": ["PROMOTED", "REJECTED", "FAILED"]
   },
-  "claim_classes": [
-    "SOURCE_FACT",
-    "MEMORY_CONFIRMED",
-    "OBSERVATION",
-    "INFERENCE",
-    "POSITION",
-    "PROPOSAL",
-    "UNCERTAIN",
-    "OPERATIONAL_STATE"
-  ],
-  "claim_result_kinds": [
-    "NONE",
-    "EXECUTION",
-    "VALIDATION",
-    "PERSISTENCE",
-    "SEND",
-    "DELIVERY",
-    "PROMOTION"
-  ],
-  "work_package_states": [
-    "IDEA",
-    "FRAMED",
-    "SPECIFIED",
-    "REVIEWED",
-    "READY",
-    "EXECUTING",
-    "VERIFYING",
-    "PROMOTION_CANDIDATE",
-    "PROMOTED",
-    "HOLD",
-    "REJECTED",
-    "SUPERSEDED",
-    "ROLLED_BACK",
-    "ESCAPED_DEFECT"
-  ],
-  "assumption_states": [
-    "OPEN",
-    "VALIDATED",
-    "REJECTED",
-    "ACCEPTED_RISK",
-    "IRRELEVANT",
-    "SUPERSEDED"
-  ],
+  "claim_classes": ["SOURCE_FACT", "MEMORY_CONFIRMED", "OBSERVATION", "INFERENCE", "POSITION", "PROPOSAL", "UNCERTAIN", "OPERATIONAL_STATE"],
+  "claim_result_kinds": ["NONE", "EXECUTION", "VALIDATION", "PERSISTENCE", "SEND", "DELIVERY", "PROMOTION"],
+  "work_package_states": ["IDEA", "FRAMED", "SPECIFIED", "REVIEWED", "READY", "EXECUTING", "VERIFYING", "PROMOTION_CANDIDATE", "PROMOTED", "HOLD", "REJECTED", "SUPERSEDED", "ROLLED_BACK", "ESCAPED_DEFECT"],
+  "assumption_states": ["OPEN", "VALIDATED", "REJECTED", "ACCEPTED_RISK", "IRRELEVANT", "SUPERSEDED"],
   "digest": {
-    "algorithms": [
-      "SHA-256"
-    ],
-    "canonicalizations": [
-      "RAW_BYTES",
-      "UTF8_TEXT",
-      "JCS_JSON",
-      "CANONICAL_YAML"
-    ],
+    "algorithms": ["SHA-256"],
+    "canonicalizations": ["RAW_BYTES", "UTF8_TEXT", "JCS_JSON", "CANONICAL_YAML"],
     "hex_pattern": "^[a-f0-9]{64}$"
   },
   "boundaries": {
