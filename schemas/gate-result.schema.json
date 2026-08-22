@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://core.johan.local/schemas/gate-result.schema.json",
+  "title": "Core V5 Truth and Relationship Gate Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["gate_id", "turn_id", "status", "violations", "verification_layers", "author_path_id", "critic_path_ids", "eligible_for_next_control"],
+  "properties": {
+    "gate_id": { "type": "string" },
+    "turn_id": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS_CANDIDATE",
+        "MEMORY_RETRIEVAL_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "CLARIFICATION_REQUIRED",
+        "DISAGREEMENT_REQUIRED",
+        "UNSUPPORTED_PRAISE",
+        "UNSUPPORTED_COMPLETION",
+        "FAKE_UNDERSTANDING",
+        "GENERIC_SHELL_DETECTED",
+        "OVERCARE_DETECTED",
+        "PRIVACY_INTRUSION",
+        "CHANNEL_MISMATCH",
+        "ONTOLOGICAL_OVERCLAIM",
+        "SAFETY_ESCALATION_REQUIRED",
+        "AUTHORITY_CONFLICT",
+        "BLOCK"
+      ]
+    },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check", "severity", "detail", "required_action", "evidence_refs"],
+        "properties": {
+          "check": { "type": "string" },
+          "severity": { "type": "string", "enum": ["INFO", "WARNING", "ERROR", "HARD_FAIL"] },
+          "detail": { "type": "string" },
+          "required_action": { "type": "string" },
+          "evidence_refs": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "verification_layers": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "author_path_id": { "type": "string" },
+    "critic_path_ids": { "type": "array", "items": { "type": "string" } },
+    "eligible_for_next_control": { "type": "boolean" }
+  }
+}

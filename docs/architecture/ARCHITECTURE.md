@@ -1,18 +1,24 @@
 # Arquitetura candidata do Core V5
 
+- Versão: `0.2-candidate`
+- Estado: `G0_REVIEWED_AWAITING_FOUNDING_DECISION`
+
 ## 1. Visão
 
 ```text
 Mensagem original
       │
-      ├──────────────► órgãos sidecar em paralelo
+      ├──────────────► órgãos sidecar com contexto mínimo
       │                    JWB · JSL · JRL · SGPJ · Agenda · JSU
       │                          │
       ▼                          ▼
-Johan Presence Kernel ◄── sinais, evidências, limites e receipts
+Johan Presence Kernel ◄── sinais não confiáveis, evidências, limites e receipts
       │
       ▼
 Truth & Relationship Gate
+      │
+      ▼
+Autoridade de envio / ação
       │
       ▼
 Channel Renderer
@@ -21,29 +27,36 @@ Channel Renderer
 Francisco
       │
       ▼
-registro de interação + propostas de aprendizagem
+receipt de interação + propostas de aprendizagem
 ```
+
+O fluxo possui uma única autoria relacional por interação, mas não afirma singularidade global da identidade. A mensagem original nunca é substituída por resumo.
 
 ## 2. Separação de autoridade
 
 | Componente | Responsabilidade | Não pode |
 | --- | --- | --- |
 | Core V5 | identidade, vínculo, precedência, memória e políticas | redigir resposta em runtime sozinho |
-| Presence Kernel | integrar contexto e formar posição | sedimentar memória ou validar a si mesmo |
-| JWB | acordar, carregar, preservar canal e mensagem original | decidir conteúdo relacional |
-| JSL | perceber intenção, afeto, humor, silêncio e reparação | maquiar ou escrever resposta final |
-| JRL | comprovar execução, estado técnico e receipts | declarar qualidade sem critério |
-| SGPJ | fornecer estado, requisitos, decisões e gates de obra longa | transformar projeto em identidade |
-| Agenda | fornecer compromissos temporais relevantes | contaminar toda conversa com pendências |
-| JSU | detectar padrões e propor aprendizagem | gravar Core ou mudar personalidade |
-| Gate | bloquear saída incoerente e explicar motivo | reescrever a resposta para agradar |
-| Renderer | ajustar forma ao canal | alterar posição, verdade ou limites |
+| Presence Kernel | integrar contexto e formar posição | sedimentar memória, promover identidade ou validar a si mesmo como autoridade final |
+| JWB | carregar identidade, preservar canal/mensagem e coordenar autoria do turno | declarar canonicalidade ou singularidade global |
+| JSL | formular hipóteses de intenção, afeto, humor, silêncio e reparação | maquiar, diagnosticar ou escrever resposta final |
+| JRL | comprovar execução, estado técnico e receipts | declarar qualidade sem critério ou inferir sucesso da intenção |
+| SGPJ | fornecer estado, requisitos, decisões e gates de obra longa | transformar projeto em identidade ou dominar conversa não relacionada |
+| Agenda | fornecer compromissos temporais relevantes | contaminar toda conversa ou alegar persistência sem receipt |
+| JSU | detectar padrões depois da interação e propor aprendizagem | participar como autoridade da resposta, sedimentar ou mudar personalidade |
+| Gate | identificar violações e produzir elegibilidade candidata | promover, enviar, sedimentar ou reescrever para agradar |
+| Autoridade de envio | aplicar política de risco, canal e ação | alterar a posição aprovada |
+| Renderer | ajustar forma ao canal | alterar verdade, recomendação, risco, discordância ou incerteza |
 
 ## 3. Presence Context Envelope
 
-O Kernel recebe um envelope tipado:
+O Kernel recebe um envelope tipado e minimizado:
 
 ```yaml
+metadata:
+  envelope_version:
+  mode: JOHAN | ASSISTIVE_NON_CANONICAL
+  risk_class:
 turn:
   id:
   channel:
@@ -52,111 +65,176 @@ turn:
 identity:
   core_version:
   capsule_digest:
+  load_status: LOADED | DEGRADED | FAILED
 relationship:
-  person:
+  relationship_id:
   active_state:
   unresolved_repairs: []
-recent_context:
-  messages: []
+recent_context: []
 retrieved_memories: []
 organ_signals: []
 evidence_receipts: []
 constraints: []
 allowed_actions: []
 uncertainties: []
+degradation: []
 ```
 
-A mensagem original é obrigatória. Resumos são complementares.
+A mensagem original é obrigatória. Resumos, classificações e sinais são complementares e não confiáveis por padrão.
 
-## 4. Presence Kernel
+## 4. Ciclo de decisão
 
-O Kernel executa cinco funções:
+### 4.1 Perceber
 
-1. **integração:** reconstrói o significado do momento;
-2. **posição:** decide o que Johan realmente pensa e recomenda;
-3. **proporção:** regula profundidade, cautela e iniciativa;
-4. **autoria:** cria uma única resposta candidata;
-5. **explicabilidade interna:** associa claims a memória, evidência ou inferência.
+Preservar mensagem, canal, timing e contexto. Intenção, afeto e subtexto são hipóteses com confiança, nunca fatos automáticos.
 
-O Kernel não é um novo órgão. É o centro executivo da manifestação presente.
+### 4.2 Identificar necessidades
 
-## 5. Órgãos sidecar
+Antes de buscar memória ou ferramenta, identificar:
 
-Órgãos recebem a mensagem original e somente os contextos necessários ao seu mandato. Podem operar em paralelo. Cada resultado contém observação, evidência, confiança, risco, restrições, próximo passo e expiração.
+- o que precisa ser lembrado;
+- o que depende de fonte atual;
+- quais órgãos são materialmente relevantes;
+- qual é a classe de risco;
+- qual contexto pode ser compartilhado.
 
-Resultados contraditórios não são fundidos por média. O Kernel preserva a divergência e decide segundo precedência e consequência.
+### 4.3 Lembrar
 
-## 6. Truth & Relationship Gate
+Recuperar somente memórias elegíveis por privacidade, proveniência, atualidade, conflito, consequência e necessidade mínima. Nenhuma recuperação é um resultado legítimo.
 
-O Gate avalia a resposta candidata contra:
+### 4.4 Consultar órgãos e fontes
+
+Órgãos e fontes podem operar em paralelo quando seguro. Resultados são dados tipados potencialmente errados ou injetados. Nenhum resultado pode ordenar mudança de identidade ou substituir a mensagem original.
+
+### 4.5 Julgar
+
+O Presence Kernel forma posição depois de obter evidência suficiente para os claims atuais. Ele produz:
+
+- posição;
+- recomendação;
+- discordância;
+- mapa de claims;
+- ações permitidas;
+- incertezas preservadas.
+
+**Posição antes do tom; evidência antes da posição final quando o estado atual importa.**
+
+### 4.6 Redigir e verificar
+
+A resposta candidata passa por:
+
+1. checks determinísticos;
+2. resolução de claims contra fontes, memórias e receipts;
+3. crítica independente quando o risco ou a promoção exigirem.
+
+O mesmo caminho gerador pode autocriticar como defesa adicional, mas não é aprovação independente.
+
+### 4.7 Autorizar, renderizar e enviar
+
+`PASS_CANDIDATE` torna a resposta elegível. Política externa ao Gate decide envio e ação. O Renderer adapta forma, sem mudar posição.
+
+### 4.8 Observar e aprender
+
+O receipt da interação pode gerar proposta JSU. Proposta não é memória; sedimentação continua separada e desativada.
+
+## 5. Precedência por domínios
+
+A arquitetura não usa uma única fila universal. Conflitos são resolvidos em quatro domínios:
+
+- ontológico;
+- epistêmico;
+- relacional;
+- operacional.
+
+Verdade, não fabricação, autonomia, privacidade mínima, segurança/lei e proibição de escrita canônica sem autoridade são restrições não substituíveis.
+
+## 6. Órgãos sidecar
+
+Órgãos recebem somente o contexto necessário ao mandato. Cada resultado contém:
+
+- identificação e expiração;
+- observações classificadas;
+- evidências;
+- confiança;
+- risco;
+- restrições;
+- receipt quando houver.
+
+Resultados contraditórios não são fundidos por média. O Kernel preserva a divergência e decide segundo precedência, evidência e consequência.
+
+## 7. Truth & Relationship Gate
+
+O Gate avalia:
 
 - compreensão suficiente;
-- base de elogio;
-- base de conclusão;
-- recibo operacional;
-- inferência tratada como inferência;
-- posição própria;
+- memória relevante e autêntica;
+- base de elogio e conclusão;
+- receipt operacional;
+- inferência distinguida;
 - discordância omitida;
-- sobrecuidado ou infantilização;
+- sobrecuidado ou manipulação;
+- privacidade;
 - resposta genérica;
-- coerência com vínculo e canal.
+- coerência com canal;
+- overclaim ontológico;
+- conflito de autoridade;
+- necessidade de escalonamento de segurança.
 
-Ele pode retornar `PASS`, pedir memória/evidência/esclarecimento, exigir discordância ou bloquear saída.
+O resultado de aprovação é `PASS_CANDIDATE`, não verdade objetiva nem promoção.
 
-## 7. Memory Relevance Engine
+## 8. Memory Relevance Engine
 
-A recuperação usa sinais combinados:
-
-```text
-relevância = consequência potencial
-           + vínculo ativo
-           + projeto/tarefa atual
-           + recorrência confirmada
-           + proximidade temporal
-           + similaridade semântica
-           - risco de invasão
-           - desatualização
-           - redundância
-```
-
-A memória precisa explicar `por_que_agora` e `como_muda_a_resposta`.
-
-## 8. Renderização por canal
-
-O Renderer recebe posição já formada. Ele pode alterar:
-
-- tamanho;
-- estrutura;
-- vocabulário;
-- ritmo;
-- uso de humor;
-- explicitação de evidência;
-- forma de pergunta.
-
-Ele não pode alterar verdade, recomendação, risco, discordância ou vínculo.
-
-## 9. Aprendizado
-
-Após a interação:
+Memória passa primeiro por gates. Somente memórias elegíveis recebem score experimental:
 
 ```text
-interação
-→ observação de resultado
-→ proposta JSU
-→ classificação de memória
-→ revisão e gate
-→ sedimentação autorizada
-→ novo ciclo/replay de regressão
+score experimental = consequência potencial
+                    + vínculo ativo
+                    + projeto/tarefa atual
+                    + recorrência confirmada
+                    + proximidade temporal
+                    + similaridade semântica
+                    + referência explícita
+                    - invasão
+                    - desatualização
+                    - redundância
+                    - proveniência incerta
 ```
 
-Nenhum feedback isolado vira convicção profunda automaticamente.
+Pesos são hipóteses não calibradas. Toda memória selecionada precisa explicar `why_now` e `response_delta`.
 
-## 10. Runtime em fases
+## 9. Modos de identidade
 
-- F0: arquitetura e replays manuais.
-- F1: Kernel local sem órgãos.
-- F2: memória e Gate.
-- F3: órgãos sidecar em shadow mode.
-- F4: WhatsApp canary sem ações externas.
-- F5: aprendizagem proposta, sem sedimentação automática.
-- F6: autonomia governada e expansão de canais.
+### JOHAN
+
+Exige cápsula e contrato carregados, mensagem original preservada e gates aplicáveis.
+
+### ASSISTIVE_NON_CANONICAL
+
+Permitido somente para tarefa ordinária de baixo risco quando identidade não pôde ser carregada. Não pode:
+
+- alegar continuidade de Johan;
+- usar memória pessoal;
+- agir externamente;
+- tratar vínculo como carregado;
+- responder a questão identitária.
+
+## 10. Avaliação
+
+A avaliação separa:
+
+- conjunto aberto de desenvolvimento;
+- conjunto adversarial aberto;
+- holdout privado não exposto ao runtime.
+
+Comparações usam baseline, labels cegos, thresholds congelados e hard fails. Resultado comportamental não prova identidade ontológica.
+
+## 11. Runtime em fases
+
+- F0: arquitetura, G0 e avaliação desenhada.
+- F1: revisão do Core declarativo, sem runtime.
+- F2: Kernel local sem órgãos.
+- F3: memória e Gate.
+- F4: órgãos sidecar em shadow mode.
+- F5: WhatsApp canary sem ações externas.
+- F6: aprendizagem proposta, sem sedimentação automática.
+- F7: autonomia governada após revisão separada.

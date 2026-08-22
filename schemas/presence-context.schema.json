@@ -4,8 +4,31 @@
   "title": "Johan Presence Context Envelope",
   "type": "object",
   "additionalProperties": false,
-  "required": ["turn", "identity", "relationship", "recent_context", "retrieved_memories", "organ_signals", "evidence_receipts", "constraints", "allowed_actions", "uncertainties"],
+  "required": [
+    "metadata",
+    "turn",
+    "identity",
+    "relationship",
+    "recent_context",
+    "retrieved_memories",
+    "organ_signals",
+    "evidence_receipts",
+    "constraints",
+    "allowed_actions",
+    "uncertainties",
+    "degradation"
+  ],
   "properties": {
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["envelope_version", "mode", "risk_class"],
+      "properties": {
+        "envelope_version": { "type": "string" },
+        "mode": { "type": "string", "enum": ["JOHAN", "ASSISTIVE_NON_CANONICAL"] },
+        "risk_class": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "VITAL"] }
+      }
+    },
     "turn": {
       "type": "object",
       "additionalProperties": false,
@@ -13,31 +36,68 @@
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "channel": { "type": "string", "minLength": 1 },
-        "raw_message": { "type": "string" },
+        "raw_message": { "type": "string", "minLength": 1 },
         "received_at": { "type": "string", "format": "date-time" }
       }
     },
-    "identity": { "type": "object" },
-    "relationship": { "type": "object" },
-    "recent_context": { "type": "array", "items": { "type": "object" } },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["core_version", "capsule_digest", "load_status"],
+      "properties": {
+        "core_version": { "type": "string" },
+        "capsule_digest": { "type": ["string", "null"] },
+        "load_status": { "type": "string", "enum": ["LOADED", "DEGRADED", "FAILED"] }
+      }
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relationship_id", "active_state", "unresolved_repairs"],
+      "properties": {
+        "relationship_id": { "type": ["string", "null"] },
+        "active_state": { "type": "string" },
+        "unresolved_repairs": { "type": "array", "items": { "type": "string" }, "maxItems": 20 }
+      }
+    },
+    "recent_context": { "type": "array", "items": { "type": "object" }, "maxItems": 50 },
     "retrieved_memories": {
       "type": "array",
-      "maxItems": 8,
+      "maxItems": 5,
       "items": {
         "type": "object",
-        "required": ["memory_id", "why_now", "response_delta", "confidence"],
+        "additionalProperties": false,
+        "required": [
+          "memory_id",
+          "class",
+          "source",
+          "confirmed_at",
+          "why_now",
+          "response_delta",
+          "confidence",
+          "privacy",
+          "status",
+          "conflicts"
+        ],
         "properties": {
           "memory_id": { "type": "string" },
+          "class": { "type": "string" },
+          "source": { "type": "string" },
+          "confirmed_at": { "type": "string", "format": "date-time" },
           "why_now": { "type": "string" },
           "response_delta": { "type": "string" },
-          "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "privacy": { "type": "string", "enum": ["PUBLIC", "PRIVATE", "SENSITIVE"] },
+          "status": { "type": "string", "enum": ["CONFIRMED", "STALE", "CONTESTED"] },
+          "conflicts": { "type": "array", "items": { "type": "string" }, "maxItems": 10 }
         }
       }
     },
     "organ_signals": { "type": "array", "items": { "$ref": "organ-result.schema.json" } },
-    "evidence_receipts": { "type": "array", "items": { "type": "object" } },
-    "constraints": { "type": "array", "items": { "type": "string" } },
-    "allowed_actions": { "type": "array", "items": { "type": "string" } },
-    "uncertainties": { "type": "array", "items": { "type": "string" } }
+    "evidence_receipts": { "type": "array", "items": { "type": "object" }, "maxItems": 100 },
+    "constraints": { "type": "array", "items": { "type": "string" }, "maxItems": 50 },
+    "allowed_actions": { "type": "array", "items": { "type": "string" }, "maxItems": 50 },
+    "uncertainties": { "type": "array", "items": { "type": "string" }, "maxItems": 50 },
+    "degradation": { "type": "array", "items": { "type": "string" }, "maxItems": 20 }
   }
 }

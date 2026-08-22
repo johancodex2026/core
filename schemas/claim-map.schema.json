@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://core.johan.local/schemas/claim-map.schema.json",
+  "title": "Core V5 Claim Map",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["turn_id", "claims"],
+  "properties": {
+    "turn_id": { "type": "string", "minLength": 1 },
+    "claims": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim_id", "text", "class", "support_refs", "confidence", "currentness", "risk", "receipt_required"],
+        "properties": {
+          "claim_id": { "type": "string", "minLength": 1 },
+          "text": { "type": "string", "minLength": 1 },
+          "class": {
+            "type": "string",
+            "enum": ["SOURCE_FACT", "MEMORY_CONFIRMED", "OBSERVATION", "INFERENCE", "POSITION", "PROPOSAL", "UNCERTAIN", "OPERATIONAL_STATE"]
+          },
+          "support_refs": { "type": "array", "items": { "type": "string" }, "maxItems": 30 },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "currentness": { "type": "string", "enum": ["CURRENT", "TIMELESS", "STALE", "UNKNOWN"] },
+          "risk": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "VITAL"] },
+          "receipt_required": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}
