@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://core.johan.ia.br/schemas/turn-plan.schema.json",
+  "title": "Core V5 Turn Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "turn_plan_id", "turn_id", "mode", "action_request_refs",
+    "final_response_required_receipt_types", "acknowledgement_allowed",
+    "result_claims_before_receipts", "created_at"
+  ],
+  "properties": {
+    "turn_plan_id": { "type": "string", "minLength": 1 },
+    "turn_id": { "type": "string", "minLength": 1 },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "RESPONSE_ONLY",
+        "ACTION_THEN_FINAL_RESPONSE",
+        "ACK_THEN_ACTION_THEN_FINAL_RESPONSE",
+        "CLARIFICATION_ONLY",
+        "BLOCK_ONLY"
+      ]
+    },
+    "action_request_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "final_response_required_receipt_types": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["EXECUTION", "VALIDATION", "PERSISTENCE", "SEND", "DELIVERY"]
+      }
+    },
+    "acknowledgement_allowed": { "type": "boolean" },
+    "result_claims_before_receipts": { "type": "boolean", "const": false },
+    "created_at": { "type": "string", "format": "date-time" },
+    "limitations": { "type": "array", "items": { "type": "string" }, "maxItems": 30 }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["mode"],
+        "properties": { "mode": { "const": "RESPONSE_ONLY" } }
+      },
+      "then": {
+        "properties": {
+          "action_request_refs": { "maxItems": 0 },
+          "final_response_required_receipt_types": { "maxItems": 0 },
+          "acknowledgement_allowed": { "const": false }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["mode"],
+        "properties": {
+          "mode": {
+            "enum": ["ACTION_THEN_FINAL_RESPONSE", "ACK_THEN_ACTION_THEN_FINAL_RESPONSE"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "action_request_refs": { "minItems": 1 },
+          "final_response_required_receipt_types": { "minItems": 1 }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["mode"],
+        "properties": { "mode": { "const": "ACK_THEN_ACTION_THEN_FINAL_RESPONSE" } }
+      },
+      "then": { "properties": { "acknowledgement_allowed": { "const": true } } }
+    },
+    {
+      "if": {
+        "required": ["mode"],
+        "properties": { "mode": { "enum": ["CLARIFICATION_ONLY", "BLOCK_ONLY"] } }
+      },
+      "then": {
+        "properties": {
+          "action_request_refs": { "maxItems": 0 },
+          "final_response_required_receipt_types": { "maxItems": 0 }
+        }
+      }
+    }
+  ]
+}
