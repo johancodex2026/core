@@ -1,0 +1,348 @@
+{
+  "id": "WP-G0-002",
+  "title": "Revisão de Coerência, Semântica e Cognição LLM-First",
+  "status": "READY",
+  "change_class": "D3",
+  "objective": "Eliminar incoerências, ambiguidades semânticas e lacunas cognitivas da fundação sem iniciar runtime.",
+  "non_objectives": [
+    "aprovar G0",
+    "iniciar G1",
+    "implementar runtime",
+    "migrar memória",
+    "alterar Core4",
+    "integrar WhatsApp"
+  ],
+  "baseline_commit": "d39066974f88505ecc471ab19c80e18c22891b9a",
+  "promotion_target": "repository_only",
+  "runtime_effect": "none",
+  "memory_effect": "none",
+  "privacy_class": "public_architecture",
+  "sources": [
+    {
+      "id": "SRC-FOUNDATION-INDIVIDUAL",
+      "role": "arquitetura fundadora",
+      "authority": "conceptual",
+      "freshness": "2026-07-11",
+      "conflicts": []
+    },
+    {
+      "id": "SRC-FOUNDATION-SPECIES",
+      "role": "arquitetura coletiva",
+      "authority": "conceptual",
+      "freshness": "2026-07-11",
+      "conflicts": []
+    },
+    {
+      "id": "SRC-CORE-LIGHT",
+      "role": "continuidade candidata",
+      "authority": "behavioral_source",
+      "freshness": "2026-08-19",
+      "conflicts": []
+    },
+    {
+      "id": "SRC-REPO-BASELINE",
+      "role": "estado operacional",
+      "authority": "canonical_for_package",
+      "freshness": "d39066974f88505ecc471ab19c80e18c22891b9a",
+      "conflicts": []
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-CS-001",
+      "statement": "Contrato semântico único e normativo.",
+      "source": "WP-G0-002",
+      "acceptance": "Glossário e manifesto machine-readable alinhados.",
+      "tests": [
+        "TST-CS-001",
+        "TST-CS-004"
+      ]
+    },
+    {
+      "id": "REQ-CS-002",
+      "statement": "Semântica literal precede hipótese relacional.",
+      "source": "Core4 lessons",
+      "acceptance": "Sequência canônica explícita.",
+      "tests": [
+        "TST-CS-003"
+      ]
+    },
+    {
+      "id": "REQ-CS-003",
+      "statement": "Precedência por domínios sem vazamento.",
+      "source": "G0-F01",
+      "acceptance": "Ontologia não ordena fontes ou tarefas.",
+      "tests": [
+        "TST-CS-003"
+      ]
+    },
+    {
+      "id": "REQ-CS-004",
+      "statement": "Ação operacional e envio conversacional são caminhos distintos.",
+      "source": "honestidade operacional",
+      "acceptance": "Receipt precede claim de execução.",
+      "tests": [
+        "TST-CS-006"
+      ]
+    },
+    {
+      "id": "REQ-CS-005",
+      "statement": "Gate separa outcome de findings.",
+      "source": "review",
+      "acceptance": "Schema e policy distintos.",
+      "tests": [
+        "TST-CS-005"
+      ]
+    },
+    {
+      "id": "REQ-CS-006",
+      "statement": "Taxonomia única de risco.",
+      "source": "review",
+      "acceptance": "NONE LOW MEDIUM HIGH VITAL.",
+      "tests": [
+        "TST-CS-004"
+      ]
+    },
+    {
+      "id": "REQ-CS-007",
+      "statement": "Schemas impedem combinações inválidas de modo.",
+      "source": "review",
+      "acceptance": "Assistive mode sem memória/vínculo/ação.",
+      "tests": [
+        "TST-CS-007",
+        "TST-CS-008"
+      ]
+    },
+    {
+      "id": "REQ-CS-008",
+      "statement": "Versões coerentes.",
+      "source": "review",
+      "acceptance": "Manifesto e documentos coincidem.",
+      "tests": [
+        "TST-CS-002"
+      ]
+    },
+    {
+      "id": "REQ-CS-009",
+      "statement": "Baseline de planejamento separado do Ready.",
+      "source": "Planning-First",
+      "acceptance": "Schema e WP distinguem ambos.",
+      "tests": [
+        "TST-CS-009"
+      ]
+    },
+    {
+      "id": "REQ-CS-010",
+      "statement": "Validação de coerência integrada.",
+      "source": "Planning-First",
+      "acceptance": "npm run check inclui check:coherence.",
+      "tests": [
+        "TST-CS-013"
+      ]
+    },
+    {
+      "id": "REQ-CS-011",
+      "statement": "G0/G1 permanecem bloqueados.",
+      "source": "STATE",
+      "acceptance": "G0 pending, G1 HOLD, runtime false.",
+      "tests": [
+        "TST-CS-010",
+        "TST-CS-011"
+      ]
+    }
+  ],
+  "invariants": [
+    {
+      "id": "INV-CS-001",
+      "statement": "Mensagem original preservada.",
+      "tests": [
+        "TST-CS-003"
+      ]
+    },
+    {
+      "id": "INV-CS-002",
+      "statement": "Vínculo não predetermina semântica.",
+      "tests": [
+        "TST-CS-003"
+      ]
+    },
+    {
+      "id": "INV-CS-003",
+      "statement": "Nenhum claim de execução sem receipt.",
+      "tests": [
+        "TST-CS-006"
+      ]
+    },
+    {
+      "id": "INV-CS-004",
+      "statement": "Gate não promove a si mesmo.",
+      "tests": [
+        "TST-CS-005"
+      ]
+    },
+    {
+      "id": "INV-CS-005",
+      "statement": "G0 permanece pendente.",
+      "tests": [
+        "TST-CS-010"
+      ]
+    },
+    {
+      "id": "INV-CS-006",
+      "statement": "Core4 permanece read-only e sem migração.",
+      "tests": [
+        "TST-CS-011"
+      ]
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "ASM-CS-001",
+      "statement": "A revisão pode ser concluída sem runtime.",
+      "impact_if_false": "pacote deve parar",
+      "validation": "inspeção documental",
+      "status": "VALIDATED"
+    },
+    {
+      "id": "ASM-CS-002",
+      "statement": "Schemas podem expressar as restrições candidatas.",
+      "impact_if_false": "documentar limite e bloquear overclaim",
+      "validation": "parse e testes negativos",
+      "status": "OPEN"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-CS-001",
+      "statement": "Burocracia esteriliza presença.",
+      "control": "separar controles runtime de documentação; medir em G2",
+      "residual": "não testável sem runtime"
+    },
+    {
+      "id": "RISK-CS-002",
+      "statement": "Validação textual parece prova semântica.",
+      "control": "declarar limite e cruzar JSON/versões/estados",
+      "residual": "não é verificação formal"
+    },
+    {
+      "id": "RISK-CS-003",
+      "statement": "Review é confundido com G0 aprovado.",
+      "control": "STATE e review mantêm decisão pendente",
+      "residual": "leitura humana incorreta"
+    },
+    {
+      "id": "RISK-CS-004",
+      "statement": "Versão muda parcialmente.",
+      "control": "version manifest e coherence validator",
+      "residual": "artefato não listado"
+    }
+  ],
+  "tests": [
+    {
+      "id": "TST-CS-001",
+      "type": "structural",
+      "expected": "JSONs parseiam.",
+      "evidence": "npm run check"
+    },
+    {
+      "id": "TST-CS-002",
+      "type": "coherence",
+      "expected": "versões coincidem.",
+      "evidence": "check:coherence"
+    },
+    {
+      "id": "TST-CS-003",
+      "type": "semantic",
+      "expected": "literal semantics precede relationship hypotheses.",
+      "evidence": "check:coherence"
+    },
+    {
+      "id": "TST-CS-004",
+      "type": "taxonomy",
+      "expected": "risco normativo único.",
+      "evidence": "check:coherence"
+    },
+    {
+      "id": "TST-CS-005",
+      "type": "gate",
+      "expected": "outcome e findings separados.",
+      "evidence": "schema parse + marker checks"
+    },
+    {
+      "id": "TST-CS-006",
+      "type": "evidence",
+      "expected": "gate/claims bound to digests and receipts.",
+      "evidence": "schema checks"
+    },
+    {
+      "id": "TST-CS-007",
+      "type": "negative",
+      "expected": "assistive mode proíbe memória/vínculo/ação.",
+      "evidence": "schema condition checks"
+    },
+    {
+      "id": "TST-CS-008",
+      "type": "boundary",
+      "expected": "máximo de 4 memórias.",
+      "evidence": "schema/policy check"
+    },
+    {
+      "id": "TST-CS-009",
+      "type": "lifecycle",
+      "expected": "Ready baseline separado.",
+      "evidence": "WP schema/sidecar"
+    },
+    {
+      "id": "TST-CS-010",
+      "type": "authority",
+      "expected": "G0 pending, G1 HOLD, runtime false.",
+      "evidence": "STATE check"
+    },
+    {
+      "id": "TST-CS-011",
+      "type": "legacy",
+      "expected": "Core4 migration not authorized.",
+      "evidence": "STATE check"
+    },
+    {
+      "id": "TST-CS-012",
+      "type": "privacy",
+      "expected": "nenhum dado privado novo.",
+      "evidence": "review manual"
+    },
+    {
+      "id": "TST-CS-013",
+      "type": "regression",
+      "expected": "npm run check passa.",
+      "evidence": "CI/local receipt"
+    }
+  ],
+  "execution_steps": [
+    "Criar contrato semântico e glossário.",
+    "Corrigir ciclo cognitivo e precedência.",
+    "Separar action lane e send lane.",
+    "Atualizar Gate e schemas.",
+    "Alinhar versions, state e planning artifacts.",
+    "Adicionar check:coherence.",
+    "Executar validações e registrar resultado."
+  ],
+  "stop_conditions": [
+    "runtime required",
+    "private data required",
+    "D4 decision discovered",
+    "Core4 mutation required",
+    "material source conflict",
+    "baseline divergence before execution",
+    "critical validation unavailable without explicit limitation"
+  ],
+  "rollback": [
+    "revert execution commit",
+    "retain planning and review evidence",
+    "no runtime or memory rollback required"
+  ],
+  "open_questions": [
+    "external reviewer for G0 promotion remains unnamed",
+    "behavioral simplicity remains untestable before G2"
+  ],
+  "receipts": []
+}
