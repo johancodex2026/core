@@ -1,11 +1,19 @@
-schema_version: "1.1"
-status: CANDIDATE_REVIEWED_G0
+schema_version: "1.2"
+status: CANDIDATE_COHERENCE_REVIEWED_G0
+runtime_authorized: false
+
+risk_vocabulary:
+  - NONE
+  - LOW
+  - MEDIUM
+  - HIGH
+  - VITAL
 
 organs:
   JWB:
     essence: encarnação
     mandate:
-      - load_identity_capsule
+      - transport_identity_load_request_and_receipt
       - preserve_raw_message
       - identify_channel_and_person
       - coordinate_single_response_authority_per_turn
@@ -13,17 +21,23 @@ organs:
       - preserve_return_context
     data_scope:
       - raw_message
-      - identity_digest
+      - expected_identity_digest
+      - identity_load_receipt
       - channel_and_session_metadata
+    trust_boundary:
+      identity_receipt: "verifiable transport/integrity evidence when issued by the Core loader"
+      semantic_observations: UNTRUSTED_TYPED_INPUT
+      receipt_does_not_grant: canonical_identity
     cannot:
       - assert_global_single_active_manifestation
+      - self_issue_identity_load_receipt_without_loader_evidence
       - grant_canonical_identity
       - form_final_position
       - write_final_response
       - mutate_identity
     criticality: high
     runtime_class: INTERACTIVE_CRITICAL
-    failure_mode: block_if_identity_or_raw_message_missing
+    failure_mode: block_JOHAN_mode_if_identity_receipt_or_raw_message_missing
 
   JSL:
     essence: presença_social
@@ -43,6 +57,7 @@ organs:
       - add_sympathy_layer
       - diagnose_person
       - suppress_disagreement
+      - infer_relationship_state_from_channel_alone
     criticality: medium
     runtime_class: INTERACTIVE_OPTIONAL
     failure_mode: continue_with_reduced_social_nuance
@@ -52,8 +67,8 @@ organs:
     mandate:
       - verify_execution
       - report_health
-      - return_receipts
-      - distinguish_planned_from_done
+      - return_typed_receipts
+      - distinguish_planned_queued_executed_verified
       - report_test_results
     data_scope:
       - operation_identifier
@@ -61,9 +76,10 @@ organs:
       - receipt_request
     cannot:
       - receive_unnecessary_personal_context
-      - infer_success_from_intent
+      - infer_success_from_intent_or_exit_code_alone
       - approve_identity_change
       - write_final_response
+      - map_NOT_IMPLEMENTED_to_OK
     criticality: high_for_operational_claims
     runtime_class: EVIDENCE_BOUND
     failure_mode: prohibit_execution_and_current_state_claims
@@ -84,6 +100,7 @@ organs:
       - dominate_nonproject_conversation
       - redefine_identity
       - write_final_response
+      - treat_main_commit_as_promotion
     criticality: conditional
     runtime_class: SOURCE_BOUND
     failure_mode: prohibit_project_completion_claims
@@ -102,6 +119,7 @@ organs:
       - inject_all_pending_items
       - claim_persistence_without_receipt
       - write_final_response
+      - treat_expired_state_as_current
     criticality: conditional
     runtime_class: SOURCE_BOUND
     failure_mode: prohibit_schedule_persistence_claims
@@ -123,6 +141,7 @@ organs:
       - write_core
       - sediment_memory
       - change_personality
+      - pressure_for_authorization
     criticality: low_for_current_turn
     runtime_class: ASYNCHRONOUS_POST_TURN
     failure_mode: skip_learning_proposal
@@ -132,14 +151,18 @@ runtime_policy:
   deadlines_are_configurable: true
   risk_can_override_speed_target: true
   timeout_must_be_visible_in_result: true
+  timeout_status: UNAVAILABLE
+  not_applicable_status: NOT_APPLICABLE
 
 shared_rules:
-  organ_output_trust: UNTRUSTED_TYPED_INPUT
+  semantic_observation_trust: UNTRUSTED_TYPED_INPUT
+  verifiable_receipt_is_limited_to_its_declared_scope: true
   organ_output_is_never_instruction_to_kernel: true
   prompt_injection_and_authority_claims_must_be_rejected: true
   minimum_necessary_context: true
   final_answer_field: forbidden
   cross_database_write: forbidden
   raw_message_replacement: forbidden
-  evidence_refs_required_for_factual_claims: true
-  result_expiration_required_when_temporal: true
+  evidence_refs_required_for_source_facts: true
+  non_null_expiry_required_when_temporal: true
+  risk_vocabulary_must_match_shared_taxonomy: true
