@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://core.johan.ia.br/schemas/digest-reference.schema.json",
+  "title": "Core V5 Digest Reference",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["algorithm", "value", "canonicalization", "content_type"],
+  "properties": {
+    "algorithm": { "type": "string", "enum": ["SHA-256"] },
+    "value": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "canonicalization": {
+      "type": "string",
+      "enum": ["RAW_BYTES", "UTF8_TEXT", "JCS_JSON", "CANONICAL_YAML"]
+    },
+    "content_type": { "type": "string", "minLength": 1 },
+    "profile_version": { "type": ["string", "null"] }
+  }
+}
