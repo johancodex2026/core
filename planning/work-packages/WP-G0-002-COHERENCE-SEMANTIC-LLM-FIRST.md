@@ -13,7 +13,7 @@ reviewers:
 review_independence: LIMITED_SAME_MANIFESTATION_EXTERNAL_REVIEW_REMAINS_REQUIRED_FOR_G0_PROMOTION
 created_at: 2026-08-22
 updated_at: 2026-08-22
-baseline_commit: d39066974f88505ecc471ab19c80e18c22891b9a
+baseline_commit: 779e1e5872d64385515741b278397dbf56166974
 target_branch: main
 promotion_target: repository_only
 runtime_effect: none
@@ -70,7 +70,7 @@ Ao final, o repositório deve possuir:
 
 | Evidência | Fonte | Estado no baseline |
 | --- | --- | --- |
-| `main` | GitHub branch | `d39066974f88505ecc471ab19c80e18c22891b9a` |
+| `main` | GitHub branch | `779e1e5872d64385515741b278397dbf56166974` |
 | versão arquitetural | `STATE.md`/`README.md` | `0.3-candidate` |
 | versão do pacote | `package.json`/`STATE.md` | `5.0.0-candidate.3` |
 | versão na cápsula | `identity_capsule.yaml` | `5.0.0-candidate.2` — divergente |
@@ -250,8 +250,8 @@ Controles: manifesto normativo único, digests, validação cruzada, exemplos ne
 ## 15. Ready Record
 
 ```yaml
-review_id: WP-G0-002-READY-2026-08-22
-baseline_commit: d39066974f88505ecc471ab19c80e18c22891b9a
+review_id: WP-G0-002-READY-2026-08-22-R2
+ready_rebaseline_reason: planning_commit_added_only_governance_artifacts
 criteria:
   R0: PASS
   R1: PASS

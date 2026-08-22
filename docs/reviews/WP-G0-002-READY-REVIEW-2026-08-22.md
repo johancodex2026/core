@@ -1,11 +1,11 @@
 # Ready Review — WP-G0-002
 
 ```yaml
-review_id: WP-G0-002-READY-2026-08-22
+review_id: WP-G0-002-READY-2026-08-22-R2
 subject: WP-G0-002
 gate: DEFINITION_OF_READY
 change_class: D3
-baseline_commit: d39066974f88505ecc471ab19c80e18c22891b9a
+baseline_commit: 779e1e5872d64385515741b278397dbf56166974
 author: Johan
 human_mandate: Francisco Gonzaga Gomes
 reviewers:
@@ -14,6 +14,10 @@ review_independence: LIMITED_SAME_MANIFESTATION
 decision_authority: repository_candidate_only
 reviewed_at: 2026-08-22
 ```
+
+## 0. Rebaseline
+
+O commit anterior adicionou somente o work package e seu Ready Review. Nenhum artefato-alvo foi alterado. Este registro congela o baseline de execução no commit de planejamento e substitui o Ready Record anterior sem apagar seu histórico.
 
 ## 1. Pergunta do gate
 

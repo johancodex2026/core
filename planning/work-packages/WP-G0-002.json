@@ -12,7 +12,7 @@
     "alterar Core4",
     "integrar WhatsApp"
   ],
-  "baseline_commit": "d39066974f88505ecc471ab19c80e18c22891b9a",
+  "baseline_commit": "779e1e5872d64385515741b278397dbf56166974",
   "promotion_target": "repository_only",
   "runtime_effect": "none",
   "memory_effect": "none",
@@ -43,7 +43,7 @@
       "id": "SRC-REPO-BASELINE",
       "role": "estado operacional",
       "authority": "canonical_for_package",
-      "freshness": "d39066974f88505ecc471ab19c80e18c22891b9a",
+      "freshness": "779e1e5872d64385515741b278397dbf56166974",
       "conflicts": []
     }
   ],
