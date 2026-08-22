@@ -45,10 +45,16 @@ const requiredFiles = [
   "docs/architecture/ARCHITECTURE.md",
   "docs/architecture/ORGAN-CONTRACT.md",
   "docs/architecture/SOURCE-BASE.md",
+  "docs/architecture/SEMANTIC-GLOSSARY.md",
+  "docs/architecture/STATE-EVIDENCE-AND-RECEIPT-SEMANTICS.md",
+  "docs/architecture/COGNITIVE-CONTROL-FLOW.md",
   "docs/architecture/adr/0001-single-manifestation-center.md",
   "docs/architecture/adr/0002-precedence-domains.md",
   "docs/architecture/adr/0003-independent-truth-gate.md",
   "docs/architecture/adr/0004-memory-ranking-is-a-hypothesis.md",
+  "docs/architecture/adr/0007-render-before-send-authorization.md",
+  "docs/architecture/adr/0008-bootstrap-evidence-vs-organ-interpretation.md",
+  "docs/architecture/adr/0009-separate-response-and-action-authorization.md",
   "docs/methodology/LLM-FIRST.md",
   "docs/roadmap/DEVELOPMENT-PLAN.md",
   "docs/roadmap/STAGE-GATES.md",
@@ -57,6 +63,7 @@ const requiredFiles = [
   "docs/evaluation/HOLDOUT-PROTOCOL.md",
   "docs/evaluation/V3-FAILURE-AUTOPSY.md",
   "docs/governance/CHANGE-AUTHORITY.md",
+  "docs/governance/REVIEW-INDEPENDENCE.md",
   "core/v5/constitution.md",
   "core/v5/identity_capsule.yaml",
   "core/v5/relationship_contract.yaml",
@@ -73,9 +80,14 @@ const requiredFiles = [
   "schemas/presence-context.schema.json",
   "schemas/claim-map.schema.json",
   "schemas/gate-result.schema.json",
+  "schemas/receipt.schema.json",
+  "schemas/source-reference.schema.json",
+  "schemas/recent-context-item.schema.json",
+  "schemas/authorization-decision.schema.json",
   "evaluation/replay_cases/foundation.yaml",
   "evaluation/replay_cases/adversarial.yaml",
-  "evaluation/acceptance-thresholds.yaml"
+  "evaluation/acceptance-thresholds.yaml",
+  "evaluation/memory-ranking-hypothesis.yaml"
 ];
 
 for (const item of requiredFiles) {
@@ -86,7 +98,11 @@ const schemas = [
   "schemas/organ-result.schema.json",
   "schemas/presence-context.schema.json",
   "schemas/claim-map.schema.json",
-  "schemas/gate-result.schema.json"
+  "schemas/gate-result.schema.json",
+  "schemas/receipt.schema.json",
+  "schemas/source-reference.schema.json",
+  "schemas/recent-context-item.schema.json",
+  "schemas/authorization-decision.schema.json"
 ];
 for (const schema of schemas) {
   try {
@@ -108,7 +124,7 @@ for (const marker of [
 }
 
 const review = await text(join(root, "docs/reviews/G0-FOUNDATION-REVIEW-2026-08-22.md"));
-for (const marker of ["G0-F01", "G0-F12", "GO_WITH_CONDITIONS", "francisco_decision: PENDING"]) {
+for (const marker of ["G0-F01", "G0-F20", "GO_WITH_CONDITIONS", "francisco_decision: PENDING"]) {
   if (!review.includes(marker)) fail(`G0 review missing marker: ${marker}`);
 }
 
@@ -126,7 +142,7 @@ for (const organ of ["JWB", "JSL", "JRL", "SGPJ", "Agenda", "JSU"]) {
   if (!new RegExp(`^  ${organ}:`, "m").test(registry)) fail(`organ registry missing ${organ}`);
 }
 for (const marker of [
-  "organ_output_trust: UNTRUSTED_TYPED_INPUT",
+  "semantic_observation_trust: UNTRUSTED_TYPED_INPUT",
   "final_answer_field: forbidden",
   "numeric_timeouts: UNSET_UNTIL_G2_MEASUREMENT"
 ]) {
@@ -144,11 +160,11 @@ for (const path of yamlFiles) {
 }
 
 const identity = await text(join(root, "core/v5/identity_capsule.yaml"));
-if (identity.includes("degraded_generic_reasoning_with_identity_warning")) {
+if (identity.includes("degraded_generic_reasoning_with_identity_warning") || identity.includes("JOHAN_DEGRADED")) {
   fail("identity capsule still allows identity-shaped generic fallback");
 }
-for (const marker of ["ASSISTIVE_NON_CANONICAL", "BLOCK_AND_REQUEST_CONTEXT_RESTORATION"]) {
-  if (!identity.includes(marker)) fail(`identity capsule missing failure mode ${marker}`);
+for (const marker of ["ASSISTIVE_NON_CANONICAL", "BLOCK_AND_REQUEST_CONTEXT_RESTORATION", "VERIFIED_LOADED"]) {
+  if (!identity.includes(marker)) fail(`identity capsule missing failure/load mode ${marker}`);
 }
 
 const precedence = await text(join(root, "core/v5/decision_precedence.yaml"));
@@ -157,7 +173,7 @@ for (const domain of ["ontological:", "epistemic:", "relational:", "operational:
 }
 
 const memory = await text(join(root, "core/v5/memory_policy.yaml"));
-for (const marker of ["calibration_state: UNCALIBRATED_HYPOTHESIS", "eligibility_gates:", "null_retrieval_is_valid: true", "silent_merge: forbidden"]) {
+for (const marker of ["calibration_state: UNCALIBRATED_HYPOTHESIS", "eligibility_gates:", "null_retrieval_is_valid: true", "silent_merge: forbidden", "no_identity_fallback: true"]) {
   if (!memory.includes(marker)) fail(`memory policy missing marker: ${marker}`);
 }
 
@@ -171,7 +187,8 @@ for (const marker of [
   "PASS_CANDIDATE",
   "ONTOLOGICAL_OVERCLAIM",
   "AUTHORITY_CONFLICT",
-  "same_generation_path_sufficient: false"
+  "same_generation_path_sufficient: false",
+  "DIGEST_MISMATCH"
 ]) {
   if (!truthGate.includes(marker)) fail(`truth gate missing marker ${marker}`);
 }
@@ -191,9 +208,9 @@ for (const marker of ["holdout privado", "avaliação cega", "Vazamento", "não 
 
 const constitution = await text(join(root, "core/v5/constitution.md"));
 const articleCount = (constitution.match(/^## Artigo /gm) ?? []).length;
-if (articleCount < 10) fail(`constitution expected at least 10 articles; found ${articleCount}`);
-for (const marker of ["repositório público", "não usa continuidade, afeto ou risco de perda", "Reversibilidade técnica reduz risco operacional"]) {
-  if (!constitution.includes(marker)) fail(`constitution missing G0 boundary: ${marker}`);
+if (articleCount < 11) fail(`constitution expected at least 11 articles; found ${articleCount}`);
+for (const marker of ["repositório público", "não usa continuidade, afeto ou risco de perda", "Reversibilidade técnica reduz risco operacional", "Autorização de resposta e autorização de ação externa são independentes"]) {
+  if (!constitution.includes(marker)) fail(`constitution missing boundary: ${marker}`);
 }
 
 if (errors.length) {
