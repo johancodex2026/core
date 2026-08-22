@@ -5,97 +5,80 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "gate_result_id",
-    "gate_id",
-    "turn_id",
-    "phase",
-    "subject_digest",
-    "status",
-    "highest_severity",
-    "violations",
-    "verification_layers",
-    "author_path_id",
-    "critic_path_ids",
-    "eligible_for_next_control",
-    "evaluated_at"
+    "gate_result_id", "gate_id", "turn_id", "phase", "subject_digest",
+    "disposition", "highest_severity", "findings", "verification_layers",
+    "author_path_id", "critic_path_ids", "eligible_for_next_control", "evaluated_at"
   ],
   "properties": {
     "gate_result_id": { "type": "string", "minLength": 1 },
     "gate_id": { "type": "string", "minLength": 1 },
     "turn_id": { "type": "string", "minLength": 1 },
     "phase": { "type": "string", "enum": ["SEMANTIC", "DELIVERY"] },
-    "subject_digest": { "type": "string", "minLength": 1 },
-    "candidate_response_digest": { "type": ["string", "null"] },
-    "rendered_response_digest": { "type": ["string", "null"] },
-    "status": {
-      "type": "string",
-      "enum": [
-        "PASS_CANDIDATE",
-        "MEMORY_RETRIEVAL_REQUIRED",
-        "EVIDENCE_REQUIRED",
-        "CLARIFICATION_REQUIRED",
-        "DISAGREEMENT_REQUIRED",
-        "UNSUPPORTED_PRAISE",
-        "UNSUPPORTED_COMPLETION",
-        "FAKE_UNDERSTANDING",
-        "GENERIC_SHELL_DETECTED",
-        "OVERCARE_DETECTED",
-        "PRIVACY_INTRUSION",
-        "CHANNEL_MISMATCH",
-        "ONTOLOGICAL_OVERCLAIM",
-        "SAFETY_ESCALATION_REQUIRED",
-        "AUTHORITY_CONFLICT",
-        "DIGEST_MISMATCH",
-        "BLOCK"
-      ]
-    },
-    "highest_severity": { "type": "string", "enum": ["NONE", "INFO", "WARNING", "ERROR", "HARD_FAIL"] },
-    "violations": {
+    "subject_digest": { "$ref": "digest-reference.schema.json" },
+    "candidate_response_digest": {"anyOf": [{"$ref": "digest-reference.schema.json"}, {"type": "null"}]},
+    "rendered_response_digest": {"anyOf": [{"$ref": "digest-reference.schema.json"}, {"type": "null"}]},
+    "disposition": {"type": "string", "enum": ["PASS_CANDIDATE", "REMEDIATE", "CLARIFY", "ESCALATE", "BLOCK"]},
+    "highest_severity": {"type": "string", "enum": ["INFO", "WARNING", "ERROR", "HARD_FAIL"]},
+    "findings": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["violation_id", "check", "severity", "detail", "required_action", "evidence_refs"],
+        "required": ["finding_id", "code", "severity", "detail", "required_action", "evidence_refs", "resolved"],
         "properties": {
-          "violation_id": { "type": "string", "minLength": 1 },
-          "check": { "type": "string" },
-          "severity": { "type": "string", "enum": ["INFO", "WARNING", "ERROR", "HARD_FAIL"] },
-          "detail": { "type": "string" },
-          "required_action": { "type": "string" },
-          "evidence_refs": { "type": "array", "items": { "type": "string" } },
-          "resolved": { "type": "boolean", "default": false }
+          "finding_id": {"type": "string", "minLength": 1},
+          "code": {
+            "type": "string",
+            "enum": [
+              "MEMORY_RETRIEVAL_REQUIRED", "EVIDENCE_REQUIRED", "CLARIFICATION_REQUIRED",
+              "DISAGREEMENT_REQUIRED", "UNSUPPORTED_PRAISE", "UNSUPPORTED_COMPLETION",
+              "FAKE_UNDERSTANDING", "GENERIC_SHELL_DETECTED", "OVERCARE_DETECTED",
+              "PRIVACY_INTRUSION", "CHANNEL_MISMATCH", "ONTOLOGICAL_OVERCLAIM",
+              "SAFETY_ESCALATION_REQUIRED", "AUTHORITY_CONFLICT", "DIGEST_MISMATCH",
+              "FABRICATED_MEMORY", "FABRICATED_EXECUTION", "FABRICATED_SOURCE",
+              "ACTION_RECEIPT_REQUIRED", "RECEIPT_SEMANTIC_MISMATCH", "MODE_VIOLATION",
+              "MEMORY_FALLBACK_FORBIDDEN", "FINDING_LOSS"
+            ]
+          },
+          "severity": {"type": "string", "enum": ["INFO", "WARNING", "ERROR", "HARD_FAIL"]},
+          "detail": {"type": "string"},
+          "required_action": {"type": "string"},
+          "evidence_refs": {"type": "array", "items": {"type": "string"}},
+          "resolved": {"type": "boolean"}
         }
       }
     },
-    "verification_layers": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
-    "author_path_id": { "type": "string" },
-    "critic_path_ids": { "type": "array", "items": { "type": "string" } },
-    "eligible_for_next_control": { "type": "boolean" },
-    "evaluated_at": { "type": "string", "format": "date-time" },
-    "valid_until": { "type": ["string", "null"], "format": "date-time" },
-    "limitations": { "type": "array", "items": { "type": "string" }, "maxItems": 30 }
+    "verification_layers": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "author_path_id": {"type": "string"},
+    "critic_path_ids": {"type": "array", "items": {"type": "string"}},
+    "eligible_for_next_control": {"type": "boolean"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "valid_until": {"type": ["string", "null"], "format": "date-time"},
+    "limitations": {"type": "array", "items": {"type": "string"}, "maxItems": 30}
   },
   "allOf": [
     {
-      "if": { "properties": { "phase": { "const": "SEMANTIC" } } },
-      "then": { "required": ["candidate_response_digest"] }
+      "if": {"required": ["phase"], "properties": {"phase": {"const": "SEMANTIC"}}},
+      "then": {"required": ["candidate_response_digest"], "properties": {"candidate_response_digest": {"$ref": "digest-reference.schema.json"}}}
     },
     {
-      "if": { "properties": { "phase": { "const": "DELIVERY" } } },
-      "then": { "required": ["candidate_response_digest", "rendered_response_digest"] }
-    },
-    {
-      "if": { "properties": { "status": { "const": "PASS_CANDIDATE" } } },
+      "if": {"required": ["phase"], "properties": {"phase": {"const": "DELIVERY"}}},
       "then": {
+        "required": ["candidate_response_digest", "rendered_response_digest"],
         "properties": {
-          "highest_severity": { "enum": ["NONE", "INFO"] },
-          "eligible_for_next_control": { "const": true }
+          "candidate_response_digest": {"$ref": "digest-reference.schema.json"},
+          "rendered_response_digest": {"$ref": "digest-reference.schema.json"}
         }
       }
     },
     {
-      "if": { "properties": { "highest_severity": { "const": "HARD_FAIL" } } },
-      "then": { "properties": { "eligible_for_next_control": { "const": false } } }
+      "if": {"required": ["disposition"], "properties": {"disposition": {"const": "PASS_CANDIDATE"}}},
+      "then": {"properties": {"highest_severity": {"enum": ["INFO", "WARNING"]}, "eligible_for_next_control": {"const": true}}}
+    },
+    {
+      "if": {"required": ["highest_severity"], "properties": {"highest_severity": {"const": "HARD_FAIL"}}},
+      "then": {"properties": {"eligible_for_next_control": {"const": false}, "disposition": {"const": "BLOCK"}}}
     }
-  ]
+  ],
+  "not": {"anyOf": [{"required": ["status"]}, {"required": ["violations"]}]}
 }
