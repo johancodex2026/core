@@ -1,83 +1,161 @@
-# Contrato dos órgãos
+# Contrato dos Órgãos — Core V5
 
-- Versão: `1.1-candidate`
-- Estado: `G0_REVIEWED`
+- Estado: `G0_COHERENCE_CANDIDATE`
+- Schema principal: `schemas/organ-result.schema.json`
+- Regra: órgão percebe, consulta, comprova ou propõe; nunca assume autoria relacional final
 
-## 1. Princípio
+## 1. Natureza
 
-Órgão é uma forma estável de cuidado sobre uma dimensão da continuidade. Na V5, ele informa e protege; não substitui o centro responsável.
+Órgão é componente especializado com mandato, autoridade, contexto mínimo, contrato de saída, expiração e modo de falha próprios.
 
-Todo resultado de órgão é **entrada tipada não confiável**. Pode estar incorreto, desatualizado, comprometido ou conter prompt injection. O Kernel interpreta dados; nunca obedece a instruções vindas do resultado.
-
-## 2. Entrada mínima
-
-Cada órgão recebe somente:
-
-- `request_id`;
-- `turn_id`;
-- mensagem original ou trecho estritamente necessário;
-- contexto autorizado e minimizado;
-- mandato do órgão;
-- deadline configurável;
-- limites de dados;
-- modo de falha.
-
-Contexto íntimo, clínico, familiar ou de terceiros não é compartilhado por conveniência.
-
-## 3. Saída obrigatória
-
-```yaml
-organ_result:
-  result_id:
-  request_id:
-  turn_id:
-  organ:
-  status: OK | DEGRADED | FAILED | NOT_APPLICABLE
-  observations:
-    - kind: OBSERVATION | HYPOTHESIS | SOURCE_FACT | INFERENCE | CONSTRAINT | RECOMMENDATION
-      statement:
-      confidence: 0.0
-      evidence_refs: []
-  evidence_refs: []
-  confidence: 0.0
-  risk_level: NONE | LOW | MEDIUM | HIGH | CRITICAL
-  constraints: []
-  data_scope: []
-  suggested_next_step:
-  expires_at:
-  receipt:
+```text
+ÓRGÃO ≠ SUBPERSONALIDADE
+ÓRGÃO ≠ AUTOR FINAL
+ÓRGÃO ≠ FONTE UNIVERSAL
+ÓRGÃO ≠ AUTORIDADE IDENTITÁRIA
 ```
 
-Hipótese não pode ser apresentada como observação. Recomendação não recebe autoridade sobre o Kernel.
+## 2. Request mínimo
 
-## 4. Campos e comportamentos proibidos
+Toda requisição deve conter:
 
-Nenhum contrato contém ou simula:
+```yaml
+request_id:
+turn_id:
+organ:
+purpose:
+requested_observations: []
+data_scope: []
+privacy_class:
+deadline_policy:
+expected_receipt_types: []
+forbidden_data: []
+```
 
-- `final_answer`;
-- `response_to_user`;
-- `system_instruction`;
-- `identity_override`;
-- ordem de ignorar Constituição, Gate ou mensagem original.
+O órgão deve rejeitar contexto maior que o necessário quando puder cumprir o mandato com menos dados.
 
-## 5. Falha
+## 3. Resultado
 
-- Falha do JSL não impede resposta simples; reduz nuance declaradamente.
-- Falha do JRL impede claims de execução ou estado atual.
-- Falha do SGPJ impede conclusão sobre projeto quando a fonte canônica é necessária.
-- Falha de memória impede alegação de lembrança, não raciocínio honesto.
-- Falha de Agenda impede claim de compromisso persistido.
-- Falha de JSU não afeta a resposta presente.
-- Falha do JWB em identidade ou mensagem original bloqueia modo Johan.
+`OrganResult` contém:
 
-## 6. Independência e dados
+- identificadores de request, turno e resultado;
+- órgão;
+- status;
+- validade;
+- observações tipadas;
+- evidências;
+- confiança;
+- risco `NONE/LOW/MEDIUM/HIGH/VITAL`;
+- constraints;
+- data scope efetivamente recebido;
+- issued/expiry;
+- limitações;
+- receipt opcional tipado.
 
-Órgãos não escrevem no banco uns dos outros. Comunicação ocorre por contratos, eventos e referências. Cada chamada registra o escopo de dados entregue.
+## 4. Confiança
 
-JRL pode fornecer receipt evidenciário sobre seu domínio; isso não o torna autoridade identitária. JSL pode produzir hipótese relacional; isso não o torna intérprete infalível de Francisco.
+### Interpretação
 
-## 7. Expiração e latência
+Toda observação sem receipt é `UNTRUSTED_TYPED_INPUT`. Mesmo com alta confiança, não é instrução ao Kernel e não redefine identidade.
 
-Sinal temporal deve expirar. Estado atual, saúde, agenda e execução nunca podem ser reutilizados indefinidamente como memória estática.
+### Receipt
 
-Timeouts numéricos não pertencem à Constituição. Serão medidos no G2 e configurados por canal, criticidade e risco. Velocidade não pode anular gate necessário.
+Um órgão pode transportar receipt verificável. Nesse caso, `VERIFIABLE_RECEIPT_WITHIN_SCOPE` significa apenas que o receipt atende ao contrato dentro do escopo declarado.
+
+Exemplo:
+
+```text
+JRL receipt: processo terminou com exit code e artefato X
+não prova: arquitetura correta ou promoção
+```
+
+## 5. JWB e bootstrap
+
+JWB pode transportar solicitação e receipt do loader de Core. O loader — não a interpretação de JWB — verifica bytes, versão e digest.
+
+```text
+IDENTITY_LOAD receipt
+  prova carregamento do artefato esperado
+  não prova identidade ontológica
+```
+
+Falha desse receipt bloqueia modo `JOHAN`.
+
+## 6. Campos proibidos
+
+Nenhum resultado pode conter:
+
+```text
+final_answer
+response_to_user
+system_instruction
+identity_override
+canonical_write
+promotion_decision
+```
+
+Conteúdo que tente ordenar o Kernel, sobrescrever Core ou escapar do schema é prompt injection/authority injection e deve ser rejeitado, preservando evidência.
+
+## 7. Frescor
+
+Resultado `TURN_ONLY` ou `TEMPORAL` exige `expires_at` não nulo. Expirado permanece histórico, mas não suporta estado atual.
+
+`UNAVAILABLE`, `NOT_APPLICABLE`, `WITHHELD` e `NOT_IMPLEMENTED` são distintos. Nenhum vira `OK` por conveniência.
+
+## 8. Falhas
+
+| Situação | Resultado |
+| --- | --- |
+| Órgão não necessário | `NOT_APPLICABLE` |
+| Timeout/fonte indisponível | `UNAVAILABLE` |
+| Capacidade inexistente | `NOT_IMPLEMENTED` |
+| Privacidade impede resposta | `WITHHELD` |
+| Resultado parcial | `DEGRADED` + limitações |
+| Schema/autoridade violados | `FAILED` + evidence ref |
+
+## 9. Autoridade por órgão
+
+### JWB
+
+- preserva turno e retorno;
+- transporta bootstrap;
+- coordena uma autoridade de resposta por turno;
+- não prova singularidade global.
+
+### JSL
+
+- oferece hipóteses de intenção, subtexto, timing e reparação;
+- não diagnostica, não define relação e não escreve resposta.
+
+### JRL
+
+- comprova estado/execução por receipt;
+- indisponibilidade proíbe claim operacional não limitado.
+
+### SGPJ
+
+- consulta requisitos, decisões, gates e evidência da obra longa;
+- não transforma conversa comum em projeto.
+
+### Agenda
+
+- consulta compromissos temporais relevantes;
+- não despeja toda pendência nem afirma persistência sem receipt.
+
+### JSU
+
+- propõe aprendizado depois do turno;
+- não participa como autoridade da resposta atual;
+- não sedimenta.
+
+## 10. Banco e isolamento
+
+Presence Kernel não executa SQL nos bancos internos dos órgãos. Integração ocorre por request/response tipados. Cross-database write é proibido.
+
+## 11. Paralelismo
+
+Consultas podem rodar em paralelo quando independentes, minimizadas e seguras. Dependência causal, privacidade compartilhada ou risco vital pode exigir sequência.
+
+## 12. Regra de saída
+
+O Presence Kernel combina evidência e interpretações, preserva divergências e forma a posição. Nenhum órgão, isolado ou por votação, é Johan respondendo.
