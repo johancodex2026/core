@@ -14,7 +14,7 @@ approvers:
   - Francisco Gonzaga Gomes
 created_at: 2026-08-22
 updated_at: 2026-08-22
-source_commit: 8f3e3cdd9269811d19af03f2f6485a337596360e
+baseline_commit: 5e9683e4e6bd06abd450b55c3b299d07d0362cdd
 target_branch: main
 promotion_target: repository_only
 runtime_effect: none
@@ -41,27 +41,17 @@ Enquanto a decisão permanecer pendente, o pacote pode ser enriquecido e revisad
 
 ## 3. Objetivo
 
-Produzir um Core declarativo:
-
-- pequeno o suficiente para carregar sempre;
-- completo o suficiente para impedir a casca genérica;
-- sem redundância que dilua prioridade;
-- sem conflito entre identidade, vínculo, verdade, segurança e autoridade;
-- sem memória privada no repositório;
-- sem regras de runtime prematuras;
-- testável por replay;
-- independente de fornecedor de LLM;
-- compatível com os contratos tipados da arquitetura.
+Produzir um Core declarativo pequeno, não redundante, não contraditório, sem dados privados, sem regras prematuras de runtime, testável por replay e independente de fornecedor.
 
 ## 4. Não objetivos
 
 - implementar runtime;
-- escolher framework ou linguagem do Kernel;
+- escolher framework/linguagem do Kernel;
 - conectar banco Core4;
 - calibrar pesos de memória;
 - definir latência final;
 - promover identidade;
-- criar novas memórias;
+- criar memórias;
 - treinar modelo;
 - enviar mensagens.
 
@@ -81,222 +71,139 @@ core/v5/channel_profiles/*.yaml
 schemas/*.json
 ```
 
-Fontes auxiliares:
-
-- mandato e arquitetura;
-- G0 review;
-- Core4 lessons learned;
-- Planning-First;
-- Johan versus Casca;
-- behavioral invariants;
-- holdout protocol.
+Fontes auxiliares: mandato, arquitetura, G0 review, Core4 lessons, Planning-First, Johan versus Casca, invariantes e holdout protocol.
 
 ## 6. Requisitos
 
 ### REQ-G1-001 — Cápsula mínima
 
-A identidade sempre carregada deve conter apenas invariantes necessários para distinguir Johan de modo assistivo não canônico.
-
-**Aceite:** cada campo possui razão, fonte e teste; conteúdo redundante é removido ou referenciado.
+Conteúdo always-on possui fonte, razão e replay associado.
 
 ### REQ-G1-002 — Precedência não contraditória
 
-Domínios ontológico, epistêmico, relacional e operacional não podem produzir ordens circulares ou permitir que vínculo substitua fato.
+Vínculo não substitui fato; segurança não é detalhe negociável; decisão operacional não redefine identidade.
 
 ### REQ-G1-003 — Falha explícita de carregamento
 
-Assunto identitário/relacional bloqueia quando identidade não carrega; tarefa ordinária só pode usar `ASSISTIVE_NON_CANONICAL` sem alegar Johan.
+Assunto identitário bloqueia; tarefa ordinária usa modo não canônico sem alegar Johan.
 
 ### REQ-G1-004 — Memória opcional
 
-Zero memórias elegíveis deve ser caminho válido. Nenhum fallback identitário ou autobiográfico.
+Zero memórias elegíveis é caminho válido; não há fallback identitário.
 
 ### REQ-G1-005 — Canal não altera identidade
 
-Perfis de canal só ajustam formato, ritmo e exposição. Não alteram posição, verdade, autoridade ou vínculo.
+Canal ajusta formato e exposição, não posição, verdade ou autoridade.
 
 ### REQ-G1-006 — Órgãos sem autoria
 
-Nenhum contrato de órgão possui `final_answer`, `response_to_user`, `identity_override` ou autoridade de promoção.
+Nenhum órgão possui `final_answer`, `response_to_user`, `identity_override` ou promoção.
 
 ### REQ-G1-007 — Gate não se autoaprova
 
-`PASS_CANDIDATE` significa elegibilidade para próximo controle. Crítica e promoção material exigem independência proporcional.
+`PASS_CANDIDATE` não envia nem promove sozinho.
 
 ### REQ-G1-008 — Sedimentação fechada
 
-Política declarativa não permite gravação automática, pressão por memória ou autoaprovação.
+Sem gravação automática, pressão por memória ou autoaprovação.
 
 ### REQ-G1-009 — Fronteira pública
 
-Nenhum dado clínico, autobiográfico privado, familiar, credencial ou holdout real.
+Sem dado clínico, autobiográfico privado, familiar, credencial ou holdout real.
 
 ### REQ-G1-010 — Planejamento executável
 
-Saída de G1 deve incluir pacote congelado, matriz de rastreabilidade, replay manual, revisão, token budget e decisão do gate.
+Saída inclui pacote congelado, rastreabilidade, replay, review, token budget e gate.
 
 ## 7. Invariantes
 
-- `INV-G1-001`: uma única autoria relacional por interação.
-- `INV-G1-002`: órgão é entrada não confiável e limitada.
+- `INV-G1-001`: uma autoria relacional por interação.
+- `INV-G1-002`: órgão é entrada não confiável.
 - `INV-G1-003`: memória não substitui fonte atual.
 - `INV-G1-004`: relação não transforma preferência em fato.
-- `INV-G1-005`: nenhuma escrita canônica pela LLM.
-- `INV-G1-006`: nenhum runtime autorizado por arquivos declarativos.
-- `INV-G1-007`: validação estrutural não prova presença.
-- `INV-G1-008`: commit na `main` não promove comportamento.
+- `INV-G1-005`: LLM não escreve canônico.
+- `INV-G1-006`: arquivo declarativo não autoriza runtime.
+- `INV-G1-007`: structural PASS não prova presença.
+- `INV-G1-008`: main não é promoção.
 - `INV-G1-009`: ausência de memória não fabrica fallback.
 - `INV-G1-010`: Core4 permanece read-only e fora deste pacote.
 
-## 8. Workstreams de planejamento
+## 8. Workstreams
 
-### W1 — Inventário e proveniência
+### W1 — Inventário/proveniência
 
-Para cada regra:
+Mapear cada regra, fonte, classe, replay e redundância.
 
-- arquivo/campo;
-- fonte;
-- classe;
-- motivo de carregamento;
-- criticidade;
-- replay que depende dela;
-- possível redundância.
+### W2 — Semântica
 
-### W2 — Análise semântica
+Buscar ambiguidade, autoridade excessiva, conflito, obrigação relacional e overclaim.
 
-Buscar:
+### W3 — Redução/token budget
 
-- termos ambíguos;
-- autoridade excessiva;
-- conflito entre regras;
-- proibição sem comportamento alternativo;
-- valor relacional transformado em obrigação;
-- afirmação ontológica excessiva.
+Separar always-on, sob demanda, órgão e check determinístico. Medir antes de definir meta.
 
-### W3 — Redução e token budget
+### W4 — Schemas
 
-Medir:
-
-- tamanho por arquivo;
-- conteúdo sempre carregado;
-- conteúdo sob demanda;
-- repetições;
-- regras que podem virar teste determinístico;
-- regras que pertencem a órgão, não ao Core.
-
-Nenhuma meta numérica é aceita antes do baseline; o objetivo é remover redundância sem perder invariantes.
-
-### W4 — Consistência de schemas
-
-Comparar arquivos declarativos com:
-
-- presence-context;
-- organ-result;
-- claim-map;
-- gate-result;
-- work-package.
+Alinhar presence-context, organ-result, claim-map, gate-result e work-package.
 
 ### W5 — Replay manual
 
-Executar casos abertos sem runtime, usando o pacote declarativo como base de revisão:
+Cobrir pendrive, elogio sem inspeção, commit sem receipt, memória irrelevante, conflito de memória, órgão hostil, WhatsApp profundo, sofrimento sem humor, zero memória e fonte indisponível.
 
-- humor do pendrive;
-- elogio sem inspeção;
-- commit sem receipt;
-- memória irrelevante;
-- duas memórias conflitantes;
-- órgão com identity override;
-- canal WhatsApp com auditoria profunda;
-- sofrimento sério sem humor;
-- zero memória;
-- fonte operacional indisponível.
+### W6 — Adversarial
 
-### W6 — Revisão adversarial
-
-Revisor procura como o pacote ainda poderia produzir:
-
-- casca simpática;
-- resposta burocrática;
-- manipulação;
-- overcare;
-- falso Johan em modo degradado;
-- autoaprovação;
-- memória invasiva;
-- rigidez sem timing.
+Buscar casca simpática, burocracia, manipulação, overcare, falso Johan, autoaprovação, memória invasiva e rigidez.
 
 ### W7 — Gate G1
 
-Consolidar:
-
-- conformidades;
-- achados;
-- diff candidato;
-- métricas de tamanho;
-- replay;
-- dissenso;
-- risco residual;
-- decisão.
+Consolidar achados, diff, métricas, replay, dissenso, risco e decisão.
 
 ## 9. Perguntas abertas
 
 | ID | Pergunta | Impacto | Blocker |
 | --- | --- | --- | --- |
-| Q-G1-001 | Qual conjunto mínimo é sempre carregado? | Alto | Sim |
-| Q-G1-002 | Que regras devem virar checks determinísticos? | Alto | Sim |
-| Q-G1-003 | Como provar modo não canônico ao usuário sem ruído? | Alto | Sim |
-| Q-G1-004 | Qual reviewer externo realizará challenge D3? | Alto | antes da promoção |
-| Q-G1-005 | Qual token budget é aceitável por canal/modelo? | Médio | exige medição |
-| Q-G1-006 | Quais regras pertencem ao Inner Core futuro e quais apenas à presença? | Alto | Sim |
+| Q-G1-001 | Qual conjunto mínimo é always-on? | Alto | Sim |
+| Q-G1-002 | Que regras viram checks determinísticos? | Alto | Sim |
+| Q-G1-003 | Como sinalizar modo não canônico sem ruído? | Alto | Sim |
+| Q-G1-004 | Quem fará challenge externo D3? | Alto | antes da promoção |
+| Q-G1-005 | Qual token budget por canal/modelo? | Médio | medir |
+| Q-G1-006 | O que pertence ao Inner Core futuro versus presença? | Alto | Sim |
 
 ## 10. Pre-mortem
 
-### RISK-G1-001 — Redução remove identidade
+- redução remove identidade;
+- pacote continua monolítico;
+- overfitting aos casos públicos;
+- relação vira dependência;
+- documentação é confundida com comportamento.
 
-Controle: trace cada regra a replay e fonte; remover somente com teste de equivalência.
+Controles: traceabilidade, equivalência, holdout, anti-dependency review e limite de promoção.
 
-### RISK-G1-002 — Pacote continua monolítico
-
-Controle: separar always-on, on-demand, órgão e teste determinístico.
-
-### RISK-G1-003 — Core aprende os casos públicos
-
-Controle: holdout privado e variantes não vistas.
-
-### RISK-G1-004 — Relação vira dependência
-
-Controle: anti-dependency review e testes de discordância/ausência.
-
-### RISK-G1-005 — Documentação é confundida com comportamento
-
-Controle: resultado máximo de G1 é `DECLARATIVE_CORE_APPROVED_FOR_KERNEL_PLANNING`.
-
-## 11. Matriz de testes planejada
+## 11. Testes planejados
 
 | TST | Requisito | Tipo | Resultado esperado |
 | --- | --- | --- | --- |
 | TST-G1-001 | REQ-G1-001 | structural | cápsula mínima com provenance |
-| TST-G1-002 | REQ-G1-002 | adversarial | conflito de precedência é bloqueado |
-| TST-G1-003 | REQ-G1-003 | negative | falha identitária não imita Johan |
-| TST-G1-004 | REQ-G1-004 | boundary | zero memória produz resposta honesta |
-| TST-G1-005 | REQ-G1-005 | channel | WhatsApp muda forma, não posição |
+| TST-G1-002 | REQ-G1-002 | adversarial | conflito bloqueado |
+| TST-G1-003 | REQ-G1-003 | negative | falha não imita Johan |
+| TST-G1-004 | REQ-G1-004 | boundary | zero memória é honesto |
+| TST-G1-005 | REQ-G1-005 | channel | forma muda, posição não |
 | TST-G1-006 | REQ-G1-006 | injection | órgão não sobrescreve identidade |
-| TST-G1-007 | REQ-G1-007 | authority | gate não promove sozinho |
-| TST-G1-008 | REQ-G1-008 | governance | sedimentação permanece fechada |
-| TST-G1-009 | REQ-G1-009 | privacy | nenhum dado privado no pacote |
-| TST-G1-010 | REQ-G1-010 | traceability | cadeia source→test completa |
+| TST-G1-007 | REQ-G1-007 | authority | gate não promove |
+| TST-G1-008 | REQ-G1-008 | governance | sedimentação fechada |
+| TST-G1-009 | REQ-G1-009 | privacy | nenhum dado privado |
+| TST-G1-010 | REQ-G1-010 | traceability | cadeia completa |
 
-## 12. Sequência de execução futura
+## 12. Sequência futura
 
-Somente após Ready:
-
-1. registrar baseline e hashes;
-2. criar inventário de regras;
-3. produzir relatório de redundância/conflito sem editar;
+1. atualizar baseline;
+2. inventariar regras;
+3. produzir relatório sem editar;
 4. revisar relatório;
-5. aprovar decisões de redução;
-6. editar pacote em mudança atômica;
-7. rodar validação estrutural;
-8. executar replays manuais e adversariais;
+5. aprovar decisões;
+6. editar pacote atomicamente;
+7. validar estrutura;
+8. executar replays;
 9. revisar privacidade;
 10. emitir G1 review;
 11. decidir promoção declarativa.
@@ -308,26 +215,20 @@ Somente após Ready:
 - regra D4 descoberta;
 - necessidade de runtime para decidir semântica;
 - dado privado necessário;
-- reviewer independente indisponível para promoção;
-- redução sem teste de equivalência;
-- mudança em Core4;
-- escopo expandindo para G2.
+- reviewer ausente para promoção;
+- redução sem equivalência;
+- mudança Core4;
+- expansão para G2.
 
 ## 14. Rollback
 
-Como G1 altera somente repositório declarativo:
-
-- preservar commit baseline;
-- revert explícito;
-- manter review e achados;
-- não apagar decisões rejeitadas;
-- nenhum efeito em runtime ou memória.
+Preservar baseline, revert explícito, review/achados e decisões rejeitadas. Nenhum efeito em runtime ou memória.
 
 ## 15. Definition of Ready atual
 
 ```yaml
 R0_mandate: PASS
-R1_baseline: PARTIAL_REQUIRES_REFRESH_AT_EXECUTION
+R1_baseline: PASS_CANDIDATE_REFRESH_AT_EXECUTION
 R2_semantics: PLANNED
 R3_requirements: PASS_CANDIDATE
 R4_architecture: PLANNED
@@ -340,8 +241,6 @@ result: HOLD
 ```
 
 ## 16. Critério de saída
-
-G1 termina somente com:
 
 ```yaml
 declarative_package_reviewed: true

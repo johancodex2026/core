@@ -1,6 +1,7 @@
 name: Core V5 foundation and planning gates
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main

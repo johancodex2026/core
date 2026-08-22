@@ -82,7 +82,7 @@ for (const marker of [
   "C7",
   "C18",
   "null retrieval",
-  "Core4 permanece baseline"
+  "Core4 deve permanecer executável"
 ]) {
   if (!lessons.includes(marker)) fail(`Core4 lessons missing marker: ${marker}`);
 }
@@ -106,6 +106,7 @@ const wp = await text(join(root, "planning/work-packages/WP-G1-001-DECLARATIVE-C
 for (const marker of [
   "status: HOLD",
   "hold_reason: G0_HUMAN_DECISION_PENDING",
+  "baseline_commit:",
   "runtime_effect: none",
   "memory_effect: none",
   "zero memória",

@@ -1,5 +1,5 @@
 name: Work Package
-about: Planejar uma mudança antes de execução durável
+description: Planejar uma mudança antes de execução durável
 title: "[WP] "
 labels: ["planning"]
 body:
@@ -18,7 +18,12 @@ body:
     id: change_class
     attributes:
       label: Classe
-      options: [D0, D1, D2, D3, D4]
+      options:
+        - D0
+        - D1
+        - D2
+        - D3
+        - D4
     validations:
       required: true
   - type: textarea

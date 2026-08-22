@@ -11,7 +11,7 @@
     "change_class",
     "objective",
     "non_objectives",
-    "source_commit",
+    "baseline_commit",
     "requirements",
     "invariants",
     "risks",
@@ -44,7 +44,7 @@
     "change_class": { "enum": ["D0", "D1", "D2", "D3", "D4"] },
     "objective": { "type": "string", "minLength": 1 },
     "non_objectives": { "type": "array", "items": { "type": "string" } },
-    "source_commit": { "type": "string", "minLength": 7 },
+    "baseline_commit": { "type": "string", "minLength": 7 },
     "promotion_target": {
       "enum": ["repository_only", "shadow", "canary", "runtime", "memory_candidate", "canonical_memory", "identity", "other"]
     },

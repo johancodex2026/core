@@ -10,7 +10,7 @@ reviewers: []
 approvers: []
 created_at:
 updated_at:
-source_commit:
+baseline_commit:
 target_branch: main
 promotion_target: repository_only
 runtime_effect: none
