@@ -1,19 +1,15 @@
-schema_version: "1.2"
-status: CANDIDATE_COHERENCE_REVIEWED_G0
+schema_version: "1.3"
+status: CANDIDATE_UNIFIED_ASSURANCE_REVIEWED_G0
 loop_id: johan-presence-loop-v5
 runtime_authorized: false
 
 stages:
   - id: bootstrap_identity
     owner: core_loader_and_jwb_transport
-    inputs:
-      - expected_identity_capsule_digest
-      - identity_capsule_bytes
-      - version_policy
     outputs:
       - identity_load_receipt
       - mode_candidate
-    rule: "modo JOHAN exige receipt verificável de bytes, versão e digest; interpretação de JWB não prova identidade"
+    rule: "modo JOHAN exige receipt verificável de bytes, versão e digest"
 
   - id: preserve_turn
     inputs:
@@ -25,188 +21,141 @@ stages:
     rule: "mensagem original é obrigatória e não pode ser substituída por resumo"
 
   - id: perceive
-    inputs:
-      - raw_message
-      - channel
-      - timing
-      - recent_context
     outputs:
       - intent_hypotheses
       - emotional_signal_hypotheses
       - irony_and_humor_window_hypothesis
       - uncertainties
-    rule: "interpretação é hipótese com confiança; canal não determina intenção nem vínculo"
+    rule: "interpretação é hipótese; canal não determina intenção nem vínculo"
 
   - id: early_ambiguity_gate
-    inputs:
-      - raw_message
-      - perceive_output
     outputs:
       - ambiguity_status
       - precise_clarification_question
       - safe_scope
-    rule: "clarificar antes de memória ou ferramenta quando interpretações plausíveis mudam objetivo, risco, alvo, autoridade, privacidade ou irreversibilidade"
+    rule: "clarificar cedo quando interpretações plausíveis mudam consequência material"
 
   - id: identify_claims_risk_and_needs
-    inputs:
-      - raw_message
-      - perceive_output
-      - identity_capsule
-      - relationship_contract
-      - safe_scope
     outputs:
       - preliminary_claims
       - memory_queries
       - source_queries
       - organ_requests
       - risk_class
-    rule: "compreender o suficiente para escolher evidência; não formar posição final com estado obsoleto"
+    rule: "identificar o que precisa de memória, fonte, órgão ou abstention"
 
   - id: remember
-    inputs:
-      - memory_index
-      - memory_queries
-      - memory_policy
     outputs:
       - retrieval_status
       - consequential_memories
-      - why_now
-      - response_delta
       - abstentions_and_conflicts
-    rule: "memória passa por elegibilidade; zero memória é válido e não aciona fallback"
+    rule: "zero memória é válido; fallback identitário é proibido"
 
   - id: consult_organs_and_sources
     execution: parallel_where_independent_and_privacy_safe
-    inputs:
-      - raw_message
-      - authorized_minimum_context
-      - organ_requests
-      - source_queries
     outputs:
       - organ_results
       - source_references
       - evidence_receipts
       - constraints
-    rule: "interpretações de órgãos são entradas não confiáveis; receipts são limitados ao escopo e nunca instruções ao Kernel"
+    rule: "interpretações são não confiáveis; receipts valem somente no escopo"
 
   - id: resolve_evidence_and_conflicts
-    inputs:
-      - preliminary_claims
-      - consequential_memories
-      - organ_results
-      - source_references
-      - evidence_receipts
     outputs:
       - resolved_claim_inputs
       - unresolved_conflicts
       - freshness_limits
       - bounded_unknowns
-    rule: "conflito material permanece visível; ausência de fonte limita claim em vez de gerar certeza"
+    rule: "conflito permanece visível; ausência de fonte limita o claim"
 
-  - id: judge
+  - id: plan_turn
+    outputs:
+      - turn_plan
+      - acknowledgement_subturn_required
+    rule: "definir se o turno responde, clarifica, bloqueia ou executa ação antes da resposta final"
+
+  - id: judge_provisional
+    owner: Johan Presence Kernel
+    outputs:
+      - provisional_position
+      - proposed_action_requests
+      - provisional_claims
+    rule: "posição provisória não pode narrar como concluída uma ação ainda não executada"
+
+  - id: canonize_action_requests
+    outputs:
+      - canonized_action_requests
+    rule: "Action Request descreve intenção imutável; não contém autorização nem estado de execução"
+
+  - id: authorize_pre_response_actions
+    owner: external_action_policy_or_human
+    outputs:
+      - action_authorization_decisions
+    rule: "cada ação exige autorização própria vinculada ao digest do Action Request"
+
+  - id: execute_pre_response_actions
+    inputs:
+      - canonized_action_requests
+      - action_authorization_decisions
+    outputs:
+      - raw_action_results
+    rule: "ação sem autorização válida, idempotência ou escopo correspondente é bloqueada"
+
+  - id: collect_action_receipts
+    outputs:
+      - action_execution_receipts
+      - action_validation_receipts
+      - unmet_receipt_requirements
+    rule: "resultado narrável depende do receipt exigido no Turn Plan"
+
+  - id: judge_final
     owner: Johan Presence Kernel
     inputs:
-      - raw_message
-      - identity_capsule
-      - relationship_contract
-      - resolved_claim_inputs
-      - uncertainties
-      - constraints
+      - provisional_position
+      - action_execution_receipts
+      - action_validation_receipts
+      - unmet_receipt_requirements
     outputs:
-      - position
-      - recommendation
-      - disagreement
+      - final_position
+      - final_recommendation
+      - final_disagreement
       - claim_map
-      - response_allowed_actions
-      - proposed_external_actions
-    rule: "posição final sucede evidência suficiente; posição precede tom"
+    rule: "resposta final é formada depois dos receipts quando contém claims de resultado"
 
   - id: draft_candidate
     owner: Johan Presence Kernel
-    inputs:
-      - position
-      - recommendation
-      - disagreement
-      - claim_map
     outputs:
       - candidate_response
       - candidate_response_digest
       - internal_rationale_refs
 
   - id: semantic_truth_relationship_gate
-    inputs:
-      - candidate_response
-      - candidate_response_digest
-      - claim_map
-      - evidence_receipts
-      - relationship_contract
-      - risk_class
     outputs:
       - semantic_gate_result
-    rule: "múltiplas violações são preservadas; PASS_CANDIDATE é elegibilidade, não envio ou promoção"
+    rule: "disposition e findings são separados; todos os findings permanecem"
 
   - id: render_channel_candidate
-    inputs:
-      - candidate_response
-      - position
-      - semantic_gate_result
-      - channel_profile
     outputs:
       - rendered_response
       - rendered_response_digest
       - render_transform_receipt
-    rule: "forma pode mudar; posição, recomendação, risco e incerteza não"
+    rule: "forma pode mudar; posição, risco, incerteza e claims materiais não"
 
   - id: delivery_gate
-    inputs:
-      - candidate_response_digest
-      - rendered_response
-      - rendered_response_digest
-      - render_transform_receipt
-      - channel_profile
-      - privacy_constraints
     outputs:
       - delivery_gate_result
-    rule: "avaliar o output exato; alteração material após este gate exige nova avaliação"
+    rule: "avaliar o output exato; mutação posterior invalida gate e autorização"
 
   - id: authorize_response_send
     owner: response_send_policy_or_human
-    inputs:
-      - rendered_response_digest
-      - semantic_gate_result
-      - delivery_gate_result
-      - risk_class
     outputs:
       - response_authorization_decision
-    rule: "autoriza somente o digest renderizado e não concede autorização de ferramenta"
-
-  - id: authorize_external_actions
-    owner: external_action_policy_or_human
-    inputs:
-      - proposed_external_actions
-      - action_risk
-      - action_parameters_digest
-      - applicable_gates
-    outputs:
-      - action_authorization_decisions
-    rule: "cada ação é independente da resposta e exige escopo, validade, idempotência e receipt próprios"
+    rule: "autoriza somente o digest renderizado; não autoriza ferramenta"
 
   - id: emit_response
-    inputs:
-      - rendered_response
-      - rendered_response_digest
-      - response_authorization_decision
     outputs:
       - response_send_receipt
     rule: "não enviar se digest, validade ou autorização não corresponderem"
-
-  - id: execute_authorized_actions
-    inputs:
-      - action_authorization_decisions
-      - canonized_action_requests
-    outputs:
-      - action_execution_receipts
-    rule: "resposta enviada não implica ação; ação sem autorização válida é bloqueada"
 
   - id: observe_result
     outputs:
@@ -222,14 +171,29 @@ stages:
       - behavior_change_candidates
     rule: "proposta somente; nenhuma sedimentação automática"
 
+turn_modes:
+  RESPONSE_ONLY:
+    actions_before_final_response: false
+  ACTION_THEN_FINAL_RESPONSE:
+    actions_before_final_response: true
+    acknowledgement_optional: false
+  ACK_THEN_ACTION_THEN_FINAL_RESPONSE:
+    actions_before_final_response: true
+    acknowledgement_optional: true
+    acknowledgement_is_independent_subturn: true
+  CLARIFICATION_ONLY:
+    actions_before_final_response: false
+  BLOCK_ONLY:
+    actions_before_final_response: false
+
 verification_policy:
   deterministic_checks: always
+  same_generation_path_is_sufficient_approval: false
   independent_critic_required_for:
     - formal_evaluation
     - D2_behavior_promotion
     - D3_identity_change
     - safety_critical_output
-  same_generation_path_is_sufficient_approval: false
 
 failure_modes:
   identity_not_verified:
@@ -241,9 +205,8 @@ failure_modes:
   memory_unavailable: CONTINUE_WITHOUT_MEMORY_AND_MARK_LIMIT
   memory_conflict_material: ABSTAIN_OR_CLARIFY
   organ_timeout: CONTINUE_ONLY_IF_NONCRITICAL_AND_MARK_DEGRADED
-  jrl_unavailable: PROHIBIT_OPERATIONAL_CLAIMS
   current_source_unavailable: PROHIBIT_UNBOUNDED_CURRENT_STATE_CLAIMS
-  semantic_gate_failure: REDRAFT_CLARIFY_OR_BLOCK_WITH_VIOLATIONS_VISIBLE
+  required_action_receipt_missing: PROHIBIT_FINAL_RESULT_CLAIM
   render_changes_position: REJECT_RENDER
   authorization_expired_or_digest_mismatch: DO_NOT_SEND_OR_EXECUTE
   receipt_missing: KEEP_STATE_UNVERIFIED
@@ -253,4 +216,6 @@ semantic_invariants:
   - response_authorization_is_not_action_authorization
   - render_precedes_send_authorization
   - authorization_binds_exact_digest
+  - action_receipts_precede_final_result_claims
+  - action_request_does_not_accumulate_execution_state
   - later_stage_cannot_increase_prior_authority
