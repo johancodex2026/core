@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://core.johan.local/schemas/presence-context.schema.json",
+  "$id": "https://core.johan.ia.br/schemas/presence-context.schema.json",
   "title": "Johan Presence Context Envelope",
   "type": "object",
   "additionalProperties": false,
@@ -9,9 +9,11 @@
     "turn",
     "identity",
     "relationship",
+    "ambiguity",
     "recent_context",
-    "retrieved_memories",
+    "memory_retrieval",
     "organ_signals",
+    "source_references",
     "evidence_receipts",
     "constraints",
     "allowed_actions",
@@ -22,82 +24,143 @@
     "metadata": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["envelope_version", "mode", "risk_class"],
+      "required": ["envelope_version", "mode", "risk_class", "created_at"],
       "properties": {
         "envelope_version": { "type": "string" },
         "mode": { "type": "string", "enum": ["JOHAN", "ASSISTIVE_NON_CANONICAL"] },
-        "risk_class": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "VITAL"] }
+        "risk_class": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "VITAL"] },
+        "created_at": { "type": "string", "format": "date-time" }
       }
     },
     "turn": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "channel", "raw_message", "received_at"],
+      "required": ["id", "channel", "raw_message", "raw_message_digest", "received_at"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "channel": { "type": "string", "minLength": 1 },
         "raw_message": { "type": "string", "minLength": 1 },
+        "raw_message_digest": { "type": "string", "minLength": 1 },
         "received_at": { "type": "string", "format": "date-time" }
       }
     },
     "identity": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["core_version", "capsule_digest", "load_status"],
+      "required": ["core_version", "capsule_digest", "load_status", "load_receipt_ref"],
       "properties": {
         "core_version": { "type": "string" },
         "capsule_digest": { "type": ["string", "null"] },
-        "load_status": { "type": "string", "enum": ["LOADED", "DEGRADED", "FAILED"] }
+        "load_status": { "type": "string", "enum": ["VERIFIED_LOADED", "FAILED"] },
+        "load_receipt_ref": { "type": ["string", "null"] }
       }
     },
     "relationship": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["relationship_id", "active_state", "unresolved_repairs"],
+      "required": ["relationship_id", "active_state", "state_basis", "unresolved_repairs"],
       "properties": {
         "relationship_id": { "type": ["string", "null"] },
-        "active_state": { "type": "string" },
+        "active_state": { "type": "string", "enum": ["NOT_APPLICABLE", "UNKNOWN", "ACTIVE", "REPAIR_OPEN"] },
+        "state_basis": { "type": "string", "enum": ["CONTRACT", "RECENT_CONTEXT", "HYPOTHESIS", "NONE"] },
         "unresolved_repairs": { "type": "array", "items": { "type": "string" }, "maxItems": 20 }
       }
     },
-    "recent_context": { "type": "array", "items": { "type": "object" }, "maxItems": 50 },
-    "retrieved_memories": {
+    "ambiguity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "material_dimensions", "clarification_required"],
+      "properties": {
+        "status": { "type": "string", "enum": ["NONE", "NON_MATERIAL", "MATERIAL"] },
+        "material_dimensions": { "type": "array", "maxItems": 20, "items": { "type": "string" } },
+        "clarification_required": { "type": "boolean" },
+        "question": { "type": ["string", "null"] }
+      }
+    },
+    "recent_context": {
       "type": "array",
-      "maxItems": 5,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "memory_id",
-          "class",
-          "source",
-          "confirmed_at",
-          "why_now",
-          "response_delta",
-          "confidence",
-          "privacy",
-          "status",
-          "conflicts"
-        ],
-        "properties": {
-          "memory_id": { "type": "string" },
-          "class": { "type": "string" },
-          "source": { "type": "string" },
-          "confirmed_at": { "type": "string", "format": "date-time" },
-          "why_now": { "type": "string" },
-          "response_delta": { "type": "string" },
-          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
-          "privacy": { "type": "string", "enum": ["PUBLIC", "PRIVATE", "SENSITIVE"] },
-          "status": { "type": "string", "enum": ["CONFIRMED", "STALE", "CONTESTED"] },
-          "conflicts": { "type": "array", "items": { "type": "string" }, "maxItems": 10 }
+      "items": { "$ref": "recent-context-item.schema.json" },
+      "maxItems": 50
+    },
+    "memory_retrieval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason_codes", "memories"],
+      "properties": {
+        "status": { "type": "string", "enum": ["ELIGIBLE_MEMORIES", "NO_ELIGIBLE_RESULT", "NOT_APPLICABLE", "UNAVAILABLE", "WITHHELD", "CONFLICTED"] },
+        "reason_codes": { "type": "array", "maxItems": 20, "items": { "type": "string" } },
+        "memories": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "memory_id",
+              "class",
+              "source",
+              "confirmed_at",
+              "why_now",
+              "response_delta",
+              "confidence",
+              "privacy",
+              "status",
+              "conflicts"
+            ],
+            "properties": {
+              "memory_id": { "type": "string" },
+              "class": { "type": "string" },
+              "source": { "$ref": "source-reference.schema.json" },
+              "confirmed_at": { "type": "string", "format": "date-time" },
+              "why_now": { "type": "string", "minLength": 1 },
+              "response_delta": { "type": "string", "minLength": 1 },
+              "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+              "privacy": { "type": "string", "enum": ["PUBLIC", "INTERNAL", "PRIVATE", "SENSITIVE"] },
+              "status": { "type": "string", "enum": ["CONFIRMED", "STALE", "CONTESTED"] },
+              "conflicts": { "type": "array", "items": { "type": "string" }, "maxItems": 10 }
+            }
+          }
         }
       }
     },
-    "organ_signals": { "type": "array", "items": { "$ref": "organ-result.schema.json" } },
-    "evidence_receipts": { "type": "array", "items": { "type": "object" }, "maxItems": 100 },
+    "organ_signals": { "type": "array", "items": { "$ref": "organ-result.schema.json" }, "maxItems": 20 },
+    "source_references": { "type": "array", "items": { "$ref": "source-reference.schema.json" }, "maxItems": 100 },
+    "evidence_receipts": { "type": "array", "items": { "$ref": "receipt.schema.json" }, "maxItems": 100 },
     "constraints": { "type": "array", "items": { "type": "string" }, "maxItems": 50 },
     "allowed_actions": { "type": "array", "items": { "type": "string" }, "maxItems": 50 },
     "uncertainties": { "type": "array", "items": { "type": "string" }, "maxItems": 50 },
-    "degradation": { "type": "array", "items": { "type": "string" }, "maxItems": 20 }
-  }
+    "degradation": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["component", "status", "effect"],
+        "properties": {
+          "component": { "type": "string" },
+          "status": { "type": "string", "enum": ["UNAVAILABLE", "FAILED", "EXPIRED", "WITHHELD"] },
+          "effect": { "type": "string" }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "metadata": { "properties": { "mode": { "const": "JOHAN" } } } } },
+      "then": { "properties": { "identity": { "properties": { "load_status": { "const": "VERIFIED_LOADED" } } } } }
+    },
+    {
+      "if": { "properties": { "metadata": { "properties": { "mode": { "const": "ASSISTIVE_NON_CANONICAL" } } } },
+      "then": {
+        "properties": {
+          "memory_retrieval": {
+            "properties": {
+              "status": { "enum": ["NOT_APPLICABLE", "WITHHELD", "UNAVAILABLE", "NO_ELIGIBLE_RESULT"] },
+              "memories": { "maxItems": 0 }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
