@@ -7,7 +7,7 @@
   "required": ["turn_id", "candidate_response_digest", "claims"],
   "properties": {
     "turn_id": { "type": "string", "minLength": 1 },
-    "candidate_response_digest": { "type": "string", "minLength": 1 },
+    "candidate_response_digest": { "$ref": "digest-reference.schema.json" },
     "claims": {
       "type": "array",
       "maxItems": 100,
@@ -15,20 +15,10 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "claim_id",
-          "text",
-          "class",
-          "scope",
-          "materiality",
-          "support_status",
-          "source_refs",
-          "receipt_refs",
-          "confidence",
-          "currentness",
-          "temporal_sensitivity",
-          "risk",
-          "receipt_required",
-          "limitations"
+          "claim_id", "text", "class", "result_kind", "scope", "materiality",
+          "support_status", "source_refs", "receipt_refs", "action_request_refs",
+          "confidence", "currentness", "temporal_sensitivity", "risk",
+          "receipt_required", "limitations"
         ],
         "properties": {
           "claim_id": { "type": "string", "minLength": 1 },
@@ -37,35 +27,37 @@
             "type": "string",
             "enum": ["SOURCE_FACT", "MEMORY_CONFIRMED", "OBSERVATION", "INFERENCE", "POSITION", "PROPOSAL", "UNCERTAIN", "OPERATIONAL_STATE"]
           },
+          "result_kind": { "type": "string", "enum": ["NONE", "EXECUTION", "VALIDATION", "PERSISTENCE", "SEND", "DELIVERY", "PROMOTION"] },
           "scope": { "type": "string", "minLength": 1 },
           "materiality": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "VITAL"] },
           "support_status": { "type": "string", "enum": ["SUPPORTED", "PARTIALLY_SUPPORTED", "UNSUPPORTED", "CONFLICTED", "NOT_APPLICABLE"] },
           "source_refs": { "type": "array", "items": { "type": "string" }, "maxItems": 30 },
           "receipt_refs": { "type": "array", "items": { "type": "string" }, "maxItems": 30 },
+          "action_request_refs": { "type": "array", "items": { "type": "string" }, "maxItems": 20 },
           "memory_refs": { "type": "array", "items": { "type": "string" }, "maxItems": 20 },
           "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
           "currentness": { "type": "string", "enum": ["CURRENT", "TIMELESS", "STALE", "UNKNOWN"] },
           "temporal_sensitivity": { "type": "string", "enum": ["NONE", "LOW", "HIGH"] },
-          "risk": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "VITAL"] },
+          "risk": { "type": "string", "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "VITAL"] },
           "receipt_required": { "type": "boolean" },
           "limitations": { "type": "array", "items": { "type": "string" }, "maxItems": 20 }
         },
         "allOf": [
           {
-            "if": { "properties": { "class": { "enum": ["OPERATIONAL_STATE", "SOURCE_FACT"] } } },
-            "then": { "properties": { "receipt_required": { "const": true } } }
+            "if": {"required": ["class"], "properties": {"class": {"enum": ["OPERATIONAL_STATE", "SOURCE_FACT"]}}},
+            "then": {"properties": {"receipt_required": {"const": true}}}
           },
           {
-            "if": { "properties": { "receipt_required": { "const": true }, "support_status": { "const": "SUPPORTED" } } },
-            "then": { "properties": { "receipt_refs": { "minItems": 1 } } }
+            "if": {"required": ["result_kind"], "properties": {"result_kind": {"not": {"const": "NONE"}}}},
+            "then": {"properties": {"receipt_required": {"const": true}, "receipt_refs": {"minItems": 1}}}
           },
           {
-            "if": { "properties": { "class": { "const": "MEMORY_CONFIRMED" } } },
-            "then": { "properties": { "memory_refs": { "minItems": 1 } } }
+            "if": {"required": ["result_kind"], "properties": {"result_kind": {"enum": ["EXECUTION", "VALIDATION", "PERSISTENCE"]}}},
+            "then": {"properties": {"action_request_refs": {"minItems": 1}}}
           },
           {
-            "if": { "properties": { "temporal_sensitivity": { "const": "HIGH" } } },
-            "then": { "properties": { "currentness": { "enum": ["CURRENT", "UNKNOWN"] } } }
+            "if": {"required": ["class"], "properties": {"class": {"const": "MEMORY_CONFIRMED"}}},
+            "then": {"properties": {"memory_refs": {"minItems": 1}}}
           }
         ]
       }
