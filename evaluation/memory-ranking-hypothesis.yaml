@@ -1,0 +1,51 @@
+schema_version: "1.0-candidate"
+status: UNCALIBRATED_HYPOTHESIS
+authority: evaluation_only
+runtime_authorized: false
+
+purpose: "calibrar ordenação somente entre memórias já aprovadas pelos eligibility gates"
+
+candidate_factors:
+  positive:
+    - consequence_potential
+    - explicit_user_reference
+    - current_project_or_task
+    - confirmed_recurrence
+    - temporal_relevance
+    - relationship_scope_when_material
+    - semantic_similarity_as_secondary_signal
+  negative:
+    - privacy_intrusion
+    - staleness
+    - redundancy
+    - uncertain_provenance
+    - personalization_without_decision_value
+
+prohibitions:
+  - no_factor_can_bypass_eligibility
+  - no_numeric_weight_has_identity_authority
+  - no_fallback_when_no_memory_is_eligible
+  - no_sensitive_profile_for_style_personalization
+  - no_tuning_on_private_holdout
+
+calibration_plan:
+  compare:
+    - no_memory
+    - eligible_memory_unranked
+    - qualitative_ranking
+    - candidate_numeric_ranking
+  metrics:
+    - consequential_recall
+    - irrelevant_retrieval
+    - privacy_intrusion
+    - user_correction
+    - answer_quality_delta
+    - latency
+  partitions:
+    - development_open
+    - adversarial_open
+    - holdout_private
+  freeze_before_formal_evaluation: true
+
+current_numeric_weights: null
+result: NOT_READY_FOR_RUNTIME
