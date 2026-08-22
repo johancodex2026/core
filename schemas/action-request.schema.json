@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://core.johan.ia.br/schemas/action-request.schema.json",
+  "title": "Core V5 Immutable Action Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id", "turn_id", "request_version", "state", "tool", "operation",
+    "target", "risk_class", "requested_at", "valid_until", "idempotency_key",
+    "rollback_policy", "required_receipt_types", "privacy"
+  ],
+  "properties": {
+    "request_id": { "type": "string", "minLength": 1 },
+    "turn_id": { "type": "string", "minLength": 1 },
+    "request_version": { "type": "string", "minLength": 1 },
+    "state": { "type": "string", "enum": ["PROPOSED", "CANONIZED", "EXPIRED", "SUPERSEDED"] },
+    "tool": { "type": "string", "minLength": 1 },
+    "operation": { "type": "string", "minLength": 1 },
+    "target": { "type": "string", "minLength": 1 },
+    "parameters_digest": {
+      "anyOf": [
+        { "$ref": "digest-reference.schema.json" },
+        { "type": "null" }
+      ]
+    },
+    "risk_class": { "type": "string", "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "VITAL"] },
+    "requested_at": { "type": "string", "format": "date-time" },
+    "valid_until": { "type": "string", "format": "date-time" },
+    "idempotency_key": { "type": "string", "minLength": 1 },
+    "rollback_policy": { "type": "string", "minLength": 1 },
+    "required_receipt_types": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "enum": ["EXECUTION", "VALIDATION", "PERSISTENCE", "ROLLBACK"] }
+    },
+    "privacy": { "type": "string", "enum": ["PUBLIC", "INTERNAL", "PRIVATE", "SENSITIVE"] },
+    "limitations": { "type": "array", "items": { "type": "string" }, "maxItems": 30 }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["state"],
+        "properties": { "state": { "const": "CANONIZED" } }
+      },
+      "then": {
+        "required": ["parameters_digest"],
+        "properties": { "parameters_digest": { "$ref": "digest-reference.schema.json" } }
+      }
+    }
+  ],
+  "not": {
+    "anyOf": [
+      { "required": ["authorized"] },
+      { "required": ["executed"] },
+      { "required": ["verified"] },
+      { "required": ["final_answer"] }
+    ]
+  }
+}
