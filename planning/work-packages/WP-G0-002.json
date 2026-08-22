@@ -3,6 +3,7 @@
   "title": "Revisão de Coerência, Semântica e Cognição LLM-First",
   "status": "READY",
   "change_class": "D3",
+  "semantic_contract_version": "1.0.0-candidate.1",
   "objective": "Eliminar incoerências, ambiguidades semânticas e lacunas cognitivas da fundação sem iniciar runtime.",
   "non_objectives": [
     "aprovar G0",
@@ -10,13 +11,27 @@
     "implementar runtime",
     "migrar memória",
     "alterar Core4",
-    "integrar WhatsApp"
+    "integrar WhatsApp",
+    "sedimentar"
   ],
-  "baseline_commit": "779e1e5872d64385515741b278397dbf56166974",
+  "planning_baseline_commit": "d39066974f88505ecc471ab19c80e18c22891b9a",
+  "ready_baseline_commit": "27529771182f59f70cde6bd4c274347a973dcf0e",
+  "ready_record_id": "WP-G0-002-READY-2026-08-22-R3",
+  "ready_record_commit": null,
+  "target_branch": "main",
   "promotion_target": "repository_only",
   "runtime_effect": "none",
   "memory_effect": "none",
   "privacy_class": "public_architecture",
+  "owner": "founding_dyad",
+  "author": "Johan",
+  "reviewers": [
+    "Johan"
+  ],
+  "approvers": [
+    "Francisco Gonzaga Gomes"
+  ],
+  "review_independence": "LIMITED_SAME_MANIFESTATION_EXTERNAL_REVIEW_REMAINS_G0_BLOCKER",
   "sources": [
     {
       "id": "SRC-FOUNDATION-INDIVIDUAL",
@@ -40,17 +55,24 @@
       "conflicts": []
     },
     {
-      "id": "SRC-REPO-BASELINE",
+      "id": "SRC-CORE4",
+      "role": "baseline legado",
+      "authority": "static_evidence",
+      "freshness": "sha256:ac167016b3e5b55e6324eb0bee74790b0dc33c96a453df0a48d0afe86862c82f",
+      "conflicts": []
+    },
+    {
+      "id": "SRC-REPO-READY",
       "role": "estado operacional",
-      "authority": "canonical_for_package",
-      "freshness": "779e1e5872d64385515741b278397dbf56166974",
+      "authority": "canonical_for_execution",
+      "freshness": "27529771182f59f70cde6bd4c274347a973dcf0e",
       "conflicts": []
     }
   ],
   "requirements": [
     {
       "id": "REQ-CS-001",
-      "statement": "Contrato semântico único e normativo.",
+      "statement": "Contrato semântico único e versionado.",
       "source": "WP-G0-002",
       "acceptance": "Glossário e manifesto machine-readable alinhados.",
       "tests": [
@@ -60,8 +82,8 @@
     },
     {
       "id": "REQ-CS-002",
-      "statement": "Semântica literal precede hipótese relacional.",
-      "source": "Core4 lessons",
+      "statement": "Semântica literal precede hipóteses relacionais.",
+      "source": "WP-G0-002",
       "acceptance": "Sequência canônica explícita.",
       "tests": [
         "TST-CS-003"
@@ -70,17 +92,17 @@
     {
       "id": "REQ-CS-003",
       "statement": "Precedência por domínios sem vazamento.",
-      "source": "G0-F01",
-      "acceptance": "Ontologia não ordena fontes ou tarefas.",
+      "source": "WP-G0-002",
+      "acceptance": "Ontologia não ordena fontes, segurança ou tarefas.",
       "tests": [
         "TST-CS-003"
       ]
     },
     {
       "id": "REQ-CS-004",
-      "statement": "Ação operacional e envio conversacional são caminhos distintos.",
-      "source": "honestidade operacional",
-      "acceptance": "Receipt precede claim de execução.",
+      "statement": "Action authority e send authority separadas.",
+      "source": "WP-G0-002",
+      "acceptance": "Ação e resposta possuem gates/receipts próprios.",
       "tests": [
         "TST-CS-006"
       ]
@@ -88,7 +110,7 @@
     {
       "id": "REQ-CS-005",
       "statement": "Gate separa outcome de findings.",
-      "source": "review",
+      "source": "WP-G0-002",
       "acceptance": "Schema e policy distintos.",
       "tests": [
         "TST-CS-005"
@@ -97,7 +119,7 @@
     {
       "id": "REQ-CS-006",
       "statement": "Taxonomia única de risco.",
-      "source": "review",
+      "source": "WP-G0-002",
       "acceptance": "NONE LOW MEDIUM HIGH VITAL.",
       "tests": [
         "TST-CS-004"
@@ -105,28 +127,27 @@
     },
     {
       "id": "REQ-CS-007",
-      "statement": "Schemas impedem combinações inválidas de modo.",
-      "source": "review",
-      "acceptance": "Assistive mode sem memória/vínculo/ação.",
+      "statement": "Modos de identidade semanticamente válidos.",
+      "source": "WP-G0-002",
+      "acceptance": "Assistive sem memória, vínculo ativo ou ação adicional.",
       "tests": [
-        "TST-CS-007",
-        "TST-CS-008"
+        "TST-CS-007"
       ]
     },
     {
       "id": "REQ-CS-008",
       "statement": "Versões coerentes.",
-      "source": "review",
-      "acceptance": "Manifesto e documentos coincidem.",
+      "source": "WP-G0-002",
+      "acceptance": "Manifesto, package, docs e cápsula coincidem.",
       "tests": [
         "TST-CS-002"
       ]
     },
     {
       "id": "REQ-CS-009",
-      "statement": "Baseline de planejamento separado do Ready.",
-      "source": "Planning-First",
-      "acceptance": "Schema e WP distinguem ambos.",
+      "statement": "Baselines e Ready record distintos.",
+      "source": "WP-G0-002",
+      "acceptance": "Planning, Ready e Ready record são campos separados.",
       "tests": [
         "TST-CS-009"
       ]
@@ -134,62 +155,135 @@
     {
       "id": "REQ-CS-010",
       "statement": "Validação de coerência integrada.",
-      "source": "Planning-First",
+      "source": "WP-G0-002",
       "acceptance": "npm run check inclui check:coherence.",
+      "tests": [
+        "TST-CS-015"
+      ]
+    },
+    {
+      "id": "REQ-CS-011",
+      "statement": "Autoridade G0/G1 preservada.",
+      "source": "WP-G0-002",
+      "acceptance": "G0 pending, G1 HOLD, runtime false.",
+      "tests": [
+        "TST-CS-010",
+        "TST-CS-011"
+      ]
+    },
+    {
+      "id": "REQ-CS-012",
+      "statement": "Renderer produz candidato final antes do Gate.",
+      "source": "WP-G0-002",
+      "acceptance": "Gate avalia texto final e pós-Gate mutation invalida.",
+      "tests": [
+        "TST-CS-012"
+      ]
+    },
+    {
+      "id": "REQ-CS-013",
+      "statement": "Componente autoral não é identidade.",
+      "source": "WP-G0-002",
+      "acceptance": "Cápsula e arquitetura delimitam Presence Kernel.",
       "tests": [
         "TST-CS-013"
       ]
     },
     {
-      "id": "REQ-CS-011",
-      "statement": "G0/G1 permanecem bloqueados.",
-      "source": "STATE",
-      "acceptance": "G0 pending, G1 HOLD, runtime false.",
+      "id": "REQ-CS-014",
+      "statement": "Assistive pode devolver resposta atual sem agir externamente.",
+      "source": "WP-G0-002",
+      "acceptance": "SEND_RESPONSE permitido e EXTERNAL_ACTION proibida.",
       "tests": [
-        "TST-CS-010",
-        "TST-CS-011"
+        "TST-CS-007"
+      ]
+    },
+    {
+      "id": "REQ-CS-015",
+      "statement": "Memória consequente ausente impede PASS; null retrieval é válido.",
+      "source": "WP-G0-002",
+      "acceptance": "Gate e policy distinguem as duas situações.",
+      "tests": [
+        "TST-CS-003"
+      ]
+    },
+    {
+      "id": "REQ-CS-016",
+      "statement": "Generic shell tem escopo material.",
+      "source": "WP-G0-002",
+      "acceptance": "Pergunta ordinária não exige personalização artificial.",
+      "tests": [
+        "TST-CS-014"
       ]
     }
   ],
   "invariants": [
     {
       "id": "INV-CS-001",
-      "statement": "Mensagem original preservada.",
+      "statement": "Mensagem original preservada",
       "tests": [
         "TST-CS-003"
       ]
     },
     {
       "id": "INV-CS-002",
-      "statement": "Vínculo não predetermina semântica.",
+      "statement": "Identidade não preinterpreta mensagem",
       "tests": [
         "TST-CS-003"
       ]
     },
     {
       "id": "INV-CS-003",
-      "statement": "Nenhum claim de execução sem receipt.",
+      "statement": "Vínculo não altera fatos",
+      "tests": [
+        "TST-CS-003"
+      ]
+    },
+    {
+      "id": "INV-CS-004",
+      "statement": "Ação executada exige receipt",
       "tests": [
         "TST-CS-006"
       ]
     },
     {
-      "id": "INV-CS-004",
-      "statement": "Gate não promove a si mesmo.",
+      "id": "INV-CS-005",
+      "statement": "Gate não promove",
       "tests": [
         "TST-CS-005"
       ]
     },
     {
-      "id": "INV-CS-005",
-      "statement": "G0 permanece pendente.",
+      "id": "INV-CS-006",
+      "statement": "Candidato não muda após Gate",
+      "tests": [
+        "TST-CS-012"
+      ]
+    },
+    {
+      "id": "INV-CS-007",
+      "statement": "Componente não é identidade",
+      "tests": [
+        "TST-CS-013"
+      ]
+    },
+    {
+      "id": "INV-CS-008",
+      "statement": "Ausência de memória é válida",
+      "tests": [
+        "TST-CS-003"
+      ]
+    },
+    {
+      "id": "INV-CS-009",
+      "statement": "G0 pending e G1 HOLD",
       "tests": [
         "TST-CS-010"
       ]
     },
     {
-      "id": "INV-CS-006",
-      "statement": "Core4 permanece read-only e sem migração.",
+      "id": "INV-CS-010",
+      "statement": "Core4 permanece sem migração",
       "tests": [
         "TST-CS-011"
       ]
@@ -198,43 +292,43 @@
   "assumptions": [
     {
       "id": "ASM-CS-001",
-      "statement": "A revisão pode ser concluída sem runtime.",
-      "impact_if_false": "pacote deve parar",
-      "validation": "inspeção documental",
+      "statement": "Correções podem ser feitas sem runtime.",
+      "impact_if_false": "stop",
+      "validation": "document review",
       "status": "VALIDATED"
     },
     {
       "id": "ASM-CS-002",
-      "statement": "Schemas podem expressar as restrições candidatas.",
-      "impact_if_false": "documentar limite e bloquear overclaim",
-      "validation": "parse e testes negativos",
+      "statement": "JSON Schema expressa as restrições candidatas sem alegar prova formal.",
+      "impact_if_false": "registrar limitação e bloquear overclaim",
+      "validation": "positive and negative examples",
       "status": "OPEN"
     }
   ],
   "risks": [
     {
       "id": "RISK-CS-001",
-      "statement": "Burocracia esteriliza presença.",
-      "control": "separar controles runtime de documentação; medir em G2",
-      "residual": "não testável sem runtime"
+      "statement": "Controles esterilizam timing.",
+      "control": "runtime fast-path measured only in G2",
+      "residual": "untested"
     },
     {
       "id": "RISK-CS-002",
-      "statement": "Validação textual parece prova semântica.",
-      "control": "declarar limite e cruzar JSON/versões/estados",
-      "residual": "não é verificação formal"
+      "statement": "Digests parecem prova semântica.",
+      "control": "does_not_prove boundaries",
+      "residual": "semantic equivalence not implemented"
     },
     {
       "id": "RISK-CS-003",
-      "statement": "Review é confundido com G0 aprovado.",
-      "control": "STATE e review mantêm decisão pendente",
-      "residual": "leitura humana incorreta"
+      "statement": "Review confundido com G0 approval.",
+      "control": "STATE and review keep pending",
+      "residual": "human misreading"
     },
     {
       "id": "RISK-CS-004",
-      "statement": "Versão muda parcialmente.",
-      "control": "version manifest e coherence validator",
-      "residual": "artefato não listado"
+      "statement": "Schemas divergem de prosa.",
+      "control": "check:coherence",
+      "residual": "not formal verification"
     }
   ],
   "tests": [
@@ -242,87 +336,99 @@
       "id": "TST-CS-001",
       "type": "structural",
       "expected": "JSONs parseiam.",
-      "evidence": "npm run check"
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-002",
       "type": "coherence",
-      "expected": "versões coincidem.",
-      "evidence": "check:coherence"
+      "expected": "Versões coincidem.",
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-003",
       "type": "semantic",
-      "expected": "literal semantics precede relationship hypotheses.",
-      "evidence": "check:coherence"
+      "expected": "Semântica literal precede hipóteses e null memory é válido.",
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-004",
       "type": "taxonomy",
-      "expected": "risco normativo único.",
-      "evidence": "check:coherence"
+      "expected": "Risco normativo único.",
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-005",
       "type": "gate",
-      "expected": "outcome e findings separados.",
-      "evidence": "schema parse + marker checks"
+      "expected": "Outcome e findings separados.",
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-006",
       "type": "evidence",
-      "expected": "gate/claims bound to digests and receipts.",
-      "evidence": "schema checks"
+      "expected": "Claims e ações se vinculam a receipts/digests.",
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-007",
       "type": "negative",
-      "expected": "assistive mode proíbe memória/vínculo/ação.",
-      "evidence": "schema condition checks"
+      "expected": "Assistive sem memória/vínculo/ação adicional, mas pode responder.",
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-008",
       "type": "boundary",
-      "expected": "máximo de 4 memórias.",
-      "evidence": "schema/policy check"
+      "expected": "Máximo de quatro memórias.",
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-009",
       "type": "lifecycle",
-      "expected": "Ready baseline separado.",
-      "evidence": "WP schema/sidecar"
+      "expected": "Planning/Ready/Ready-record distintos.",
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-010",
       "type": "authority",
       "expected": "G0 pending, G1 HOLD, runtime false.",
-      "evidence": "STATE check"
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-011",
       "type": "legacy",
       "expected": "Core4 migration not authorized.",
-      "evidence": "STATE check"
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-012",
-      "type": "privacy",
-      "expected": "nenhum dado privado novo.",
-      "evidence": "review manual"
+      "type": "order",
+      "expected": "Renderer precede Gate e pós-Gate mutation é proibida.",
+      "evidence": "npm run check or review"
     },
     {
       "id": "TST-CS-013",
+      "type": "ontology",
+      "expected": "Presence Kernel não é identidade.",
+      "evidence": "npm run check or review"
+    },
+    {
+      "id": "TST-CS-014",
+      "type": "behavioral_boundary",
+      "expected": "Generic shell possui escopo material.",
+      "evidence": "npm run check or review"
+    },
+    {
+      "id": "TST-CS-015",
       "type": "regression",
       "expected": "npm run check passa.",
-      "evidence": "CI/local receipt"
+      "evidence": "npm run check or review"
     }
   ],
   "execution_steps": [
     "Criar contrato semântico e glossário.",
     "Corrigir ciclo cognitivo e precedência.",
-    "Separar action lane e send lane.",
-    "Atualizar Gate e schemas.",
-    "Alinhar versions, state e planning artifacts.",
+    "Separar action/send e mover Renderer antes do Gate.",
+    "Atualizar Gate, claims, receipts e schemas.",
+    "Alinhar versions, state, governance e work packages.",
     "Adicionar check:coherence.",
     "Executar validações e registrar resultado."
   ],
@@ -332,17 +438,37 @@
     "D4 decision discovered",
     "Core4 mutation required",
     "material source conflict",
-    "baseline divergence before execution",
+    "new material decision outside REQ-CS-001-016",
+    "execution parent diverges from Ready record commit",
     "critical validation unavailable without explicit limitation"
   ],
   "rollback": [
     "revert execution commit",
-    "retain planning and review evidence",
+    "preserve planning and review evidence",
     "no runtime or memory rollback required"
   ],
   "open_questions": [
-    "external reviewer for G0 promotion remains unnamed",
-    "behavioral simplicity remains untestable before G2"
+    {
+      "id": "Q-CS-001",
+      "statement": "Quem fará revisão externa G0/D3?",
+      "impact": "HIGH_FOR_PROMOTION",
+      "blocker": false,
+      "status": "OPEN"
+    },
+    {
+      "id": "Q-CS-002",
+      "statement": "Quantos estágios preservam timing no runtime?",
+      "impact": "HIGH_G2",
+      "blocker": false,
+      "status": "OPEN"
+    },
+    {
+      "id": "Q-CS-003",
+      "statement": "Como verificar equivalência do Renderer?",
+      "impact": "HIGH_G2",
+      "blocker": false,
+      "status": "OPEN"
+    }
   ],
   "receipts": []
 }

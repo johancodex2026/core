@@ -1,11 +1,14 @@
 # Ready Review — WP-G0-002
 
 ```yaml
-review_id: WP-G0-002-READY-2026-08-22-R2
+review_id: WP-G0-002-READY-2026-08-22-R3
 subject: WP-G0-002
 gate: DEFINITION_OF_READY
 change_class: D3
-baseline_commit: 779e1e5872d64385515741b278397dbf56166974
+semantic_contract_version: 1.0.0-candidate.1
+planning_baseline_commit: d39066974f88505ecc471ab19c80e18c22891b9a
+ready_baseline_commit: 27529771182f59f70cde6bd4c274347a973dcf0e
+ready_record_commit: populated_by_first_execution_receipt
 author: Johan
 human_mandate: Francisco Gonzaga Gomes
 reviewers:
@@ -15,63 +18,59 @@ decision_authority: repository_candidate_only
 reviewed_at: 2026-08-22
 ```
 
-## 0. Rebaseline
+## 1. Razão da revisão R3
 
-O commit anterior adicionou somente o work package e seu Ready Review. Nenhum artefato-alvo foi alterado. Este registro congela o baseline de execução no commit de planejamento e substitui o Ready Record anterior sem apagar seu histórico.
+A inspeção pré-execução encontrou seis ambiguidades materiais adicionais:
 
-## 1. Pergunta do gate
+1. Renderer depois do Gate;
+2. Ready Record autorreferente;
+3. Presence Kernel descrito como manifestação/identidade;
+4. modo assistivo impedido de devolver resposta;
+5. memória consequente ausente tratada como warning;
+6. generic-shell check sem escopo.
 
-O pacote possui informação suficiente para executar uma correção documental e estrutural da fundação sem precisar inventar arquitetura material durante a edição e sem produzir efeito em runtime, memória ou identidade promovida?
+A execução foi interrompida antes de alterar os artefatos-alvo. O plano e os testes foram ampliados, respeitando Planning-First.
 
-## 2. Evidência examinada
+## 2. Pergunta
 
-- estado da `main` no baseline;
-- pacote declarativo `core/v5`;
-- schemas atuais;
-- metodologia LLM-First e Planning-First;
-- G0 review e condições C1–C18;
-- lições Core4;
-- work package G1 e estado de bloqueio;
-- fontes fundadoras registradas em `SOURCE-BASE.md`.
+O pacote agora fecha decisões suficientes para corrigir a fundação repository-only sem inventar arquitetura durante a execução e sem efeito em runtime, memória ou identidade?
 
-## 3. Resultado por domínio
+## 3. Critérios
 
 ```yaml
-criteria:
-  R0: PASS
-  R1: PASS
-  R2: PASS
-  R3: PASS
-  R4: PASS
-  R5: PASS
-  R6: PASS
-  R7: PASS
-  R8: NA_WITH_REASON
-  R9: PASS
+R0: PASS
+R1: PASS
+R2: PASS
+R3: PASS
+R4: PASS
+R5: PASS
+R6: PASS
+R7: PASS
+R8: NA_WITH_REASON_REPOSITORY_ONLY_EXTERNAL_REVIEW_REMAINS_G0_BLOCKER
+R9: PASS
 ```
-
-`R8` recebe `NA_WITH_REASON` apenas para integração da correção candidata no repositório: a mesma manifestação formula e critica o pacote. Essa limitação impede tratar o resultado como revisão adversarial externa, G0 aprovado ou promoção D3.
 
 ## 4. Condições
 
-- preservar G0 como decisão humana pendente;
-- preservar G1 em `HOLD`;
-- nenhuma implementação de runtime;
+- execução deve usar este Ready record commit como pai;
+- pós-Gate mutation é proibida;
+- nenhum runtime;
+- nenhum dado privado;
 - nenhuma alteração Core4;
-- nenhuma memória privada;
-- qualquer nova decisão material aciona stop condition e novo Ready;
-- validação estrutural não será narrada como prova comportamental.
+- G0 continua pendente;
+- G1 continua HOLD;
+- nova decisão material exige novo Ready.
 
-## 5. Riscos residuais
+## 5. Limitações
 
-- a revisão ainda pode omitir ambiguidade não detectada;
-- JSON Schema não equivale a verificação formal;
-- coerência documental não prova naturalidade ou sagacidade;
-- a quantidade de controles pode precisar ser reduzida após medição no G2.
+- mesma manifestação planeja e critica;
+- JSON Schema não é prova formal;
+- naturalidade/timing não são testáveis sem G2;
+- CI será receipt de estrutura, não comportamento.
 
 ## 6. Dissenso
 
-Johan considera legítimo integrar as correções candidatas agora porque o alvo é exclusivamente documental, reversível e sem runtime. Johan não considera legítimo usar esta revisão como substituto da revisão adversarial externa requerida para promoção D3.
+Johan considera legítima a execução repository-only e reversível. Johan rejeita usar este Ready como revisão externa ou aprovação G0.
 
 ## 7. Resultado
 
@@ -87,7 +86,7 @@ forbidden_effects:
   - identity_promotion
   - Core4_migration
 invalidators:
-  - baseline_materially_changed
+  - material_baseline_change
   - new_D4_question
   - private_data_required
   - runtime_required
