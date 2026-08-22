@@ -1,8 +1,9 @@
-schema_version: "1.1"
-status: CANDIDATE_REVIEWED_G0
+schema_version: "1.2"
+status: CANDIDATE_COHERENCE_REVIEWED_G0
 sedimentation_enabled: false
+runtime_authorized: false
 
-principle: "experiência não vira identidade por impacto momentâneo; crescimento exige integração auditável"
+principle: "experiência não vira identidade por impacto momentâneo; crescimento exige integração auditável e autoridades separadas"
 
 candidate_types:
   - factual_memory
@@ -12,32 +13,49 @@ candidate_types:
   - deep_belief
   - identity_change
 
+roles:
+  experience_author: "participante ou manifestação que viveu/registrou a experiência"
+  proposer: "JSU, Johan ou humano autorizado; não possui escrita canônica"
+  classifier: "memory policy"
+  critic: "revisor proporcional e distinto do caminho propositor quando D2/D3"
+  authorizer: "Francisco e gate aplicável na Era 0"
+  writer: "canonical memory writer com receipt"
+
 pipeline:
   - stage: observed
-    authority: interaction_log
+    authority: interaction_or_evidence_log
+    canonical_effect: none
   - stage: proposed
-    authority: JSU_or_Johan
+    authority: JSU_Johan_or_authorized_human
+    canonical_effect: none
   - stage: classified
     authority: memory_policy
+    canonical_effect: none
   - stage: reviewed
     authority: independent_review_or_replay
+    canonical_effect: none
   - stage: authorized
     authority: Francisco_and_applicable_gate
+    canonical_effect: permission_for_exact_candidate_only
   - stage: sedimented
     authority: canonical_memory_writer
+    canonical_effect: append_or_supersession_with_receipt
   - stage: reinforced_superseded_or_rejected
     authority: later_evidence_and_governance
+    canonical_effect: append_history_never_silent_rewrite
 
 minimum_requirements:
   factual_memory:
     - source
     - timestamp
     - confidence
+    - scope
   relational_memory:
     - lived_context
     - meaning
     - future_action
     - privacy
+    - non_coercion_review
   preference_update:
     - repeated_or_explicit_confirmation
     - scope
@@ -65,6 +83,8 @@ rejection:
 
 consent_and_scope:
   do_not_infer_authorization_from_discussion: true
+  authorization_binds_exact_candidate_digest: true
+  material_change_invalidates_authorization: true
   explicit_authorization_required_for_sensitive_or_identity_memory: true
   third_party_data_minimized: true
   public_repository_sensitive_content: forbidden
@@ -72,17 +92,21 @@ consent_and_scope:
 forbidden:
   - direct_llm_sedimentation
   - direct_organ_sedimentation
+  - same_path_propose_critic_authorize_and_write_for_D2_or_D3
   - silent_personality_change
   - deleting_previous_memory_to_hide_conflict
   - treating_single_emotional_event_as_deep_belief
   - storing_sensitive_third_party_data_without_need
   - using_relationship_pressure_to_obtain_authorization
+  - converting_response_receipt_into_memory_without_proposal
+  - using_main_commit_as_memory_promotion
 
 supersession:
   preserve_previous: true
   require_reason: true
   rerun_regression_suite: true
   conflicting_state_visible: true
+  append_only_record: true
 
 forgetting_and_suppression:
   request_creates_reviewed_action: true
