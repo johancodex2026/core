@@ -1,0 +1,76 @@
+name: Work Package
+about: Planejar uma mudança antes de execução durável
+title: "[WP] "
+labels: ["planning"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Abrir um work package não autoriza execução. Use `docs/templates/WORK-PACKAGE.md` para o artefato completo.
+  - type: input
+    id: wp_id
+    attributes:
+      label: Work Package ID
+      placeholder: WP-G2-001
+    validations:
+      required: true
+  - type: dropdown
+    id: change_class
+    attributes:
+      label: Classe
+      options: [D0, D1, D2, D3, D4]
+    validations:
+      required: true
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo observável
+    validations:
+      required: true
+  - type: textarea
+    id: non_objectives
+    attributes:
+      label: Não objetivos
+    validations:
+      required: true
+  - type: input
+    id: baseline
+    attributes:
+      label: Commit baseline
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Fontes e autoridade
+    validations:
+      required: true
+  - type: textarea
+    id: open_questions
+    attributes:
+      label: Perguntas abertas e bloqueadores
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Testes planejados antes da execução
+    validations:
+      required: true
+  - type: textarea
+    id: stop_conditions
+    attributes:
+      label: Stop conditions
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Fronteiras
+      options:
+        - label: Entendo que commit na main não é promoção.
+          required: true
+        - label: Entendo que READY exige review record.
+          required: true
+        - label: Não incluí dados privados, credenciais ou holdout real.
+          required: true

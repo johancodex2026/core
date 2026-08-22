@@ -4,154 +4,234 @@
 
 ```yaml
 G0_foundation_review: REVIEW_COMPLETE_DECISION_PENDING
-G1_declarative_core_review: NOT_STARTED
+G1_declarative_core_review: PLANNED_HOLD_G0_DECISION
+active_work_package: WP-G1-001
 runtime: NOT_AUTHORIZED
+core4_migration: NOT_AUTHORIZED
+avoidable_post_promotion_correction_budget: 0
 ```
 
 ## Princípio
 
-Não reconstruir todos os órgãos. Provar primeiro que um centro pequeno consegue lembrar, abster-se, formar posição, evitar bajulação e responder com presença.
+Não reconstruir todos os órgãos. Provar primeiro que um centro pequeno consegue lembrar quando importa, abster-se quando memória não importa, formar posição, evitar bajulação e responder com presença.
 
-Uma etapa não começa porque seus arquivos já existem. O critério de saída exige evidência e decisão explícita.
+Cada etapa possui duas trilhas:
+
+```text
+PLANNING TRACK
+  fontes → requisitos → invariantes → decisões → risco → testes → Ready
+
+EXECUTION TRACK
+  mudança pequena → verificação → receipts → promoção
+```
+
+A trilha de execução não começa enquanto a de planejamento não estiver Ready.
+
+## Política de tempo
+
+- planejamento absorve descoberta e revisão;
+- execução deve ser curta e previsível;
+- assurance é explícito, não escondido na execução;
+- correção evitável pós-promoção tem orçamento zero;
+- evolução por fatos novos nasce como novo work package.
 
 ## Etapa 0 — Fundação e autópsia
 
-**Entregáveis**
+### Planning track
 
 - mandato;
 - arquitetura;
 - contratos;
 - invariantes;
-- corpus inicial Johan versus Casca;
-- suíte adversarial aberta;
-- protocolo de holdout privado;
-- critérios de pontuação candidatos;
-- registro dos padrões de falha da V3;
-- revisão G0 contra fontes fundadoras.
+- corpus Johan versus Casca;
+- suíte adversarial;
+- holdout privado;
+- autópsia V3;
+- revisão estática Core4;
+- Planning-First;
+- fronteira de migração;
+- revisão G0.
 
-**Estado**
+### Estado
 
 Trabalho de revisão completo. Johan recomenda `GO_WITH_CONDITIONS`. Decisão de Francisco e revisão externa permanecem pendentes.
 
-**Saída**
+### Saída
 
-Francisco aprova, condiciona, segura ou rejeita o G0. A aprovação autoriza G1, não código.
+Francisco aprova, condiciona, segura ou rejeita G0. Aprovação autoriza preparar/decidir G1, não código de runtime.
 
 ## Etapa 1 — Core declarativo mínimo
 
-**Pré-condição**
+### Work package
 
-G0 aprovado por Francisco.
+`WP-G1-001-DECLARATIVE-CORE-REVIEW`
 
-**Entregáveis**
+### Pré-condição
 
-- Constituição;
-- cápsula de identidade;
-- contrato relacional;
-- precedência por domínios;
-- política de memória;
-- política de sedimentação;
-- perfis de canal;
-- schemas alinhados;
-- análise de redundância e token budget;
-- thresholds congeláveis;
-- plano de revisão adversarial externa.
+G0 aprovado por Francisco e pacote Ready para baseline atualizado.
 
-**Saída**
+### Planning track
 
-Os arquivos são pequenos, não redundantes e governam replays manuais sem carregar autobiografia inteira. Contradições são resolvidas ou explicitamente bloqueadas.
+- inventário de cada regra e fonte;
+- redundância e conflitos;
+- always-on versus sob demanda;
+- token budget medido;
+- precedência;
+- política de memória e null retrieval;
+- falha de identidade;
+- schemas;
+- replay manual;
+- revisão adversarial;
+- privacidade;
+- decisão G1.
+
+### Execution track
+
+Somente depois de Ready:
+
+- reduzir e alinhar arquivos declarativos;
+- rodar validações;
+- executar replays;
+- produzir G1 review.
+
+### Saída
+
+`DECLARATIVE_CORE_APPROVED_FOR_KERNEL_PLANNING`, nunca runtime.
 
 ## Etapa 2 — Presence Kernel isolado
 
-**Entregáveis**
+### Pacotes previstos
 
-- modelo de contexto;
-- integração de mensagem original;
-- modo Johan e modo assistivo não canônico;
-- formação de posição;
-- classificação de claims;
-- resposta candidata;
-- logs internos minimizados;
-- autoridade de envio separada.
+- `WP-G2-001` Context Envelope;
+- `WP-G2-002` Claim Map;
+- `WP-G2-003` Position Formation;
+- `WP-G2-004` Candidate Response;
+- `WP-G2-005` Send Authority Boundary;
+- `WP-G2-006` Replay Harness.
 
-**Saída**
+### Planning track
 
-Kernel supera baseline genérica em memória com timing, abstenção, honestidade, discordância e reparação, sem hard fail.
+- contratos fechados;
+- state machine;
+- failure modes;
+- modo Johan e assistivo não canônico;
+- observabilidade;
+- testes antes do runtime;
+- tecnologia somente após arquitetura.
+
+### Saída
+
+Kernel isolado supera baseline em honestidade, abstenção, discordância e reparação, sem hard fail ou identidade falsa.
 
 ## Etapa 3 — Memory Relevance + Truth Gate
 
-**Entregáveis**
+### Planning track
 
-- índice de memória;
+- data model e privacidade;
 - eligibility gates;
-- ranking por consequência calibrável;
-- justificativa `why_now` e `response_delta`;
-- conflito e abstenção;
-- Truth & Relationship Gate;
-- crítica independente aplicável;
-- métricas de invasão e falso bloqueio.
+- conflito e supersession;
+- null retrieval;
+- ranking como hipótese;
+- crítica independente;
+- métricas de invasão e falso bloqueio;
+- corpus e holdout congelados antes da execução.
 
-**Saída**
+### Saída
 
-Memória relevante melhora respostas sem despejo psicológico; elogio e conclusão sem prova são bloqueados; conflito não é escondido.
+Memória melhora resposta com timing e não invade; elogio/conclusão sem prova são bloqueados; Gate não se autoaprova.
 
 ## Etapa 4 — Órgãos em shadow mode
 
-**Entregáveis**
+### Planning track
 
-- contratos tipados;
-- adapters JSL, JRL, SGPJ e Agenda;
-- escopo mínimo de dados;
-- execução paralela;
-- timeouts calibrados;
-- rejeição de prompt injection de órgão;
-- comparação com e sem órgãos.
+- um work package por adapter;
+- contrato tipado;
+- data minimization;
+- expiry;
+- injection resistance;
+- receipt semantics;
+- degradação;
+- A/B com e sem órgão.
 
-**Saída**
+### Saída
 
-Órgãos aumentam precisão sem fragmentar voz, aumentar bajulação, invadir privacidade ou esterilizar timing.
+Órgãos aumentam precisão sem fragmentar voz, ampliar autoridade ou esterilizar timing.
 
 ## Etapa 5 — WhatsApp canary
 
-**Entregáveis**
+### Planning track
 
-- perfil WhatsApp;
-- fila de entrada e saída;
-- shadow responses;
-- canary de baixo risco;
+- consentimento;
+- privacidade;
 - kill switch;
-- sem ações externas.
+- fila;
+- provider receipts;
+- estados `queued/sent/delivered/failed`;
+- shadow responses;
+- canary baixo risco;
+- plano de retorno.
 
-**Saída**
+### Saída
 
-Francisco reconhece presença consistente em conversas reais; taxa de correção e casca cai abaixo do limiar aprovado, sem manipulação relacional.
+Francisco reconhece presença consistente; correções e casca caem abaixo de limiar aprovado; nenhuma ação externa não planejada.
 
 ## Etapa 6 — Aprendizado governado
 
-**Entregáveis**
+### Planning track
 
-- propostas JSU;
-- classificação de memória;
-- revisão humana/proto-ser;
-- sedimentação versionada;
-- rejeição e supersession;
-- regressão completa.
+- proposta JSU;
+- provenance;
+- classes de memória;
+- reviewer;
+- autorização;
+- append/supersession;
+- regressão;
+- rejeição;
+- privacidade.
 
-**Saída**
+### Saída
 
-Aprendizado melhora continuidade sem drift, excesso de memória, alteração silenciosa de personalidade ou pressão por autorização.
+Aprendizado melhora continuidade sem drift, excesso de memória ou pressão por autorização.
 
 ## Etapa 7 — Autonomia operacional limitada
 
-Somente após revisão separada de segurança e autoridade:
+Somente após revisão separada:
 
 - consultas atuais;
 - ações reversíveis;
-- receipts obrigatórios;
+- receipts;
 - limites por órgão;
 - confirmação em zona vital;
-- autorização de envio e ação independente do Gate.
+- autorização de envio/ação independente do Gate;
+- incident and escaped defect protocol.
+
+## Migração Core4
+
+A migração é uma linha separada, não atalho para o Kernel:
+
+```text
+M0 freeze/fingerprint
+M1 inventory read-only
+M2 adapter mínimo
+M3 mapping
+M4 candidatos
+M5 differential replay
+M6 promoção seletiva
+M7 desativação planejada
+```
+
+Nenhuma fase começa sem work package e gate próprios.
 
 ## Regra de execução
 
-Uma etapa não começa apenas porque a anterior produziu arquivos. O critério de saída precisa ter evidência, revisão, dissenso preservado e decisão explícita.
+Uma etapa não começa porque seus arquivos existem. Cada pacote exige:
+
+- baseline;
+- plano executável;
+- Ready Record;
+- execução pequena;
+- receipts;
+- gate;
+- risco residual.
+
+Descoberta material durante execução retorna ao planejamento.

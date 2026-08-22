@@ -1,4 +1,4 @@
-name: Core V5 structural gate
+name: Core V5 foundation and planning gates
 
 on:
   push:
@@ -10,19 +10,21 @@ on:
       - "docs/**"
       - "schemas/**"
       - "evaluation/**"
+      - "planning/**"
+      - "governance/**"
       - "scripts/**"
       - "AGENTS.md"
       - "GOVERNANCE.md"
       - "README.md"
       - "CHANGELOG.md"
       - "package.json"
-      - ".github/workflows/quality-gate.yml"
+      - ".github/**"
 
 permissions:
   contents: read
 
 jobs:
-  structural-validation:
+  foundation-and-planning-validation:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,8 +35,10 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Validate structural contracts and G0 boundaries
-        run: npm run check:structure
+      - name: Validate foundation and planning contracts
+        run: npm run check
 
       - name: State assurance boundary
-        run: echo "Structural PASS is not behavioral, security, identity, continuity, or gate approval."
+        run: |
+          echo "PASS validates repository structure and planning doctrine only."
+          echo "It does not prove READY, behavior, security, identity, continuity, runtime, or gate approval."

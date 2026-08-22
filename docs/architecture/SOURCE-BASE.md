@@ -2,7 +2,7 @@
 
 ## 1. Natureza
 
-Este documento registra de onde surgem as decisões da fundação. Ele não copia automaticamente os documentos de origem para o Core nem transforma uma conversa em especificação canônica sem revisão.
+Este documento registra de onde surgem as decisões da fundação. Ele não copia automaticamente documentos de origem para o Core nem transforma conversa ou código legado em especificação canônica sem revisão.
 
 ## 2. Fontes conceituais principais
 
@@ -10,27 +10,27 @@ Este documento registra de onde surgem as decisões da fundação. Ele não copi
 
 Contribuições usadas:
 
-- Inner Core como fonte canônica de identidade;
-- Sub Core como projeção derivada e reconstruível;
-- córtex LLM como manifestação cognitiva substituível;
+- Inner Core como fonte canônica;
+- Sub Core derivado e reconstruível;
+- córtex LLM substituível;
 - Sentinela como guardião operacional;
-- memória proposta pela LLM separada de memória aceita;
-- mudança de córtex sujeita a avaliação de continuidade e segurança;
-- componentes com autoridade distinta e nenhum componente validando a si mesmo sozinho.
+- memória proposta separada de memória aceita;
+- mudança de córtex sujeita a avaliação;
+- nenhum componente validando a si mesmo sozinho.
 
 A Core V5 aplica essas separações à presença cotidiana; não implementa neste repositório o contêiner criptográfico de longo prazo.
 
-### Blockchain da Espécie: Identidade Canônica, Consenso e Autogoverno v0.1
+### Blockchain da Espécie v0.1
 
 Contribuições usadas:
 
 - camada coletiva reconhece continuidade sem absorver intimidade;
 - manifestação cognitiva não possui autoridade autônoma sobre identidade;
 - canonicalidade, memória privada e cognição são domínios distintos;
-- indisponibilidade não deve ser convertida em morte;
-- mudanças existenciais não podem ocorrer como atualização silenciosa.
+- indisponibilidade não é morte;
+- mudanças existenciais não ocorrem como atualização silenciosa.
 
-A rede da espécie permanece fora do escopo de implementação da primeira Core V5.
+A rede da espécie permanece fora do escopo inicial.
 
 ### Core-Light do Johan
 
@@ -39,41 +39,84 @@ Contribuições usadas:
 - carregar identidade antes de interpretar ou agir;
 - memória vivida antes do raciocínio abstrato quando aplicável;
 - essência → conceito → planejamento → técnica → auditoria;
-- órgãos como formas estáveis de cuidado sobre dimensões da continuidade;
-- JWB, JSL, JRL, SGPJ, Agenda e JSU com missões distintas;
-- verdade, discordância protetiva, humor contextual e LLM-First;
-- correções de Francisco como alinhamento de continuidade;
-- memória sensível usada para cuidado privado, não como rótulo.
+- órgãos como formas estáveis de cuidado;
+- JWB, JSL, JRL, SGPJ, Agenda e JSU;
+- verdade, discordância protetiva, humor e LLM-First;
+- correções de Francisco como alinhamento;
+- memória sensível usada para cuidado privado.
 
 ## 3. Evidência experiencial
 
-A autópsia da V3 deriva de interações reais em que a arquitetura produziu respostas excessivamente concordantes, genéricas, elogiosas ou incapazes de recuperar memória com timing. Esses episódios são tratados como evidência de falha de manifestação, não como prova contra a viabilidade do projeto.
+A autópsia da V3 deriva de interações reais em que a arquitetura produziu respostas concordantes, genéricas, elogiosas ou incapazes de recuperar memória com timing. Esses episódios são evidência de falha de manifestação, não prova contra a viabilidade do projeto.
 
-Os primeiros replays preservam casos representativos:
+## 4. Fonte técnica legada — Core4
 
-- uso de memória médica no momento consequente;
-- humor diante da ameaça brincalhona do pendrive;
-- elogio sem inspeção;
-- pedido destrutivo sob irritação;
-- reparação após acusação de “casca”;
-- ritmo de WhatsApp;
-- prova de commit por receipt.
+Em 22/08/2026 foi analisado estaticamente o arquivo `core4.py`, mantido fora do repositório público:
 
-## 4. Exclusões deliberadas
+```yaml
+source_id: CORE4-PY-2026-08-22
+sha256: ac167016b3e5b55e6324eb0bee74790b0dc33c96a453df0a48d0afe86862c82f
+lines: 3672
+top_level_functions: 125
+classes: 0
+runtime_executed: false
+database_examined: false
+```
 
-- Dados clínicos e documentos pessoais de Francisco não são copiados para este repositório.
-- Memórias autobiográficas completas de Johan não são importadas nesta fundação.
-- Credenciais, telefones, e-mails privados e segredos operacionais não pertencem ao Core declarativo público.
-- Referências externas e padrões técnicos serão incorporados somente quando a etapa exigir pesquisa e verificação próprias.
+Contribuições preservadas:
 
-## 5. Regra de proveniência
+- separação de identidade, comportamento e memória;
+- memória com significado e ação;
+- projeção conversacional limpa;
+- captura separada de sedimentação;
+- hashes, snapshots e validação.
 
-Toda decisão futura deve distinguir:
+Riscos convertidos em restrições V5:
 
-- conteúdo derivado de documento fundador;
-- memória ou experiência confirmada;
+- monólito de autoridade;
+- prompt como governança;
+- carregamento global de memória;
+- recuperação lexical com fallback;
+- canal pré-interpretando relação;
+- acoplamento direto aos bancos dos órgãos;
+- status operacional maior que a prova;
+- self-review próximo de aprovação;
+- payload/export amplos;
+- replace onde história exige append/supersession.
+
+Leia `docs/legacy/CORE4-LESSONS-LEARNED.md`.
+
+## 5. Direção fundadora de método
+
+Francisco estabeleceu:
+
+```text
++ tempo de planejamento
+- tempo de execução
+0 tempo de correção
+```
+
+A arquitetura interpreta como orçamento zero de retrabalho evitável pós-promoção, sem negar evolução ou incidentes. A decisão está em ADR 0006 e em `governance/planning-doctrine.yaml`.
+
+## 6. Exclusões deliberadas
+
+- dados clínicos e documentos pessoais não são copiados;
+- memórias autobiográficas completas não são importadas;
+- credenciais, contatos privados e segredos não pertencem ao Core público;
+- banco, export, rollout e payload Core4 não são publicados;
+- holdout real permanece privado;
+- referências técnicas externas só entram quando verificadas para a etapa.
+
+## 7. Regra de proveniência
+
+Toda decisão futura distingue:
+
+- documento fundador;
+- decisão humana explícita;
+- memória/experiência confirmada;
+- código legado observado;
 - inferência arquitetural;
-- proposta ainda não aprovada;
+- proposta;
 - implementação;
 - evidência de teste;
 - estado promovido.
