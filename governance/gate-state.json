@@ -1,0 +1,72 @@
+{
+  "$schema": "../schemas/gate-state.schema.json",
+  "state_version": "1.0.0-candidate.1",
+  "project": "Core V5",
+  "updated_at": "2026-08-22",
+  "gates": {
+    "G0": {
+      "status": "APPROVED_WITH_ADDITIONAL_CONDITIONS",
+      "recommendation": "GO_WITH_ADDITIONAL_CONDITIONS",
+      "decision_authority": "Francisco Gonzaga Gomes",
+      "decision_record": "docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md",
+      "decision_record_commit": "c363ff46a9694ce2558405b4949dee1d4b522b0a",
+      "satisfied_conditions": ["C1"],
+      "binding_conditions": [
+        "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10",
+        "C11", "C12", "C13", "C14", "C15", "C16", "C17", "C18",
+        "C19", "C20", "C21", "C22", "C23", "C24", "C25", "C26", "C27",
+        "C28", "C29", "C30", "C31", "C32", "C33", "C34", "C35", "C36", "C37"
+      ],
+      "authorized_effects": [
+        "RECORD_G0_CLOSURE",
+        "OPEN_G1_DECLARATIVE_PLANNING",
+        "PERFORM_G1_INVENTORY",
+        "PREPARE_G1_READY_REVIEW"
+      ],
+      "forbidden_effects": [
+        "G1_AUTO_READY",
+        "G1_AUTO_PROMOTION",
+        "PRESENCE_KERNEL_RUNTIME",
+        "MEMORY_MIGRATION",
+        "SEDIMENTATION",
+        "CORE4_WRITE",
+        "ORGAN_CONNECTION",
+        "WHATSAPP_INTEGRATION",
+        "IDENTITY_PROMOTION",
+        "ONTOLOGICAL_PROOF_CLAIM"
+      ],
+      "external_blockers": [
+        "INDEPENDENT_D3_REVIEW_BEFORE_BEHAVIOR_OR_RUNTIME_PROMOTION",
+        "BRANCH_PROTECTION_BEFORE_RUNTIME_PROMOTION",
+        "BEHAVIORAL_REPLAY_HOLDOUT_SHADOW_CANARY_BEFORE_RUNTIME_PROMOTION"
+      ]
+    },
+    "G1": {
+      "status": "OPEN_PLANNING",
+      "work_package": "planning/work-packages/WP-G1-001-DECLARATIVE-CORE-REVIEW.md",
+      "ready_review": null,
+      "promotion_authorized": false,
+      "runtime_effect": "none",
+      "memory_effect": "none",
+      "blocked_next_stages": [
+        "G2_PRESENCE_KERNEL",
+        "G3_MEMORY_AND_GATE_RUNTIME",
+        "G4_ORGAN_SHADOW",
+        "G5_WHATSAPP_CANARY",
+        "G6_SEDIMENTATION",
+        "G7_AUTONOMY"
+      ]
+    }
+  },
+  "global_boundaries": {
+    "runtime_authorized": false,
+    "memory_migration": "NOT_AUTHORIZED",
+    "core4_migration": "NOT_AUTHORIZED",
+    "sedimentation": "DISABLED",
+    "whatsapp_integration": "NOT_STARTED",
+    "organs_connected": false,
+    "main_is_promotion": false,
+    "external_review_required_before_runtime": true,
+    "branch_protection_proven": false
+  }
+}
