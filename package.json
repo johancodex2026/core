@@ -3,15 +3,12 @@
   "version": "5.0.0-candidate.5",
   "private": true,
   "type": "module",
-  "description": "Governed Core V5 architecture with a unified assurance suite for semantic drift and known hallucination classes.",
+  "description": "Governed Core V5 architecture with one fail-closed assurance entry point for semantic drift and known hallucination classes.",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "test": "node scripts/test-suite.mjs",
-    "check": "npm test",
-    "check:structure": "node scripts/validate-foundation.mjs",
-    "check:planning": "node scripts/validate-planning.mjs",
-    "check:coherence": "node scripts/validate-coherence.mjs"
+    "test": "node scripts/run-assurance.mjs",
+    "check": "npm test"
   }
 }
