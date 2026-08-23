@@ -2,7 +2,8 @@
 
 - Versão: `0.5-candidate`
 - Core package: `5.0.0-candidate.5`
-- Estado: `G0_REVIEWED_AWAITING_FOUNDING_DECISION`
+- Estado: `G0_APPROVED_G1_OPEN_PLANNING`
+- G1 Ready: não
 - Runtime: não autorizado
 
 ## 1. Tese
@@ -137,7 +138,27 @@ Todo digest material declara SHA-256, valor hexadecimal, canonicalização, cont
 
 Hash prova igualdade dos bytes canonizados, não verdade ou identidade.
 
-## 10. Assurance
+## 10. Estado e transições
+
+O estado humano e o machine-readable precisam coincidir:
+
+```text
+docs/repository/STATE.md
+governance/gate-state.json
+```
+
+Estado vigente:
+
+```yaml
+G0: APPROVED_WITH_ADDITIONAL_CONDITIONS
+G1: OPEN_PLANNING
+G1_READY: false
+G2_PLUS: BLOCKED
+```
+
+G0 aprovado autoriza inventário e preparação de Ready do G1. Não autoriza editar o pacote declarativo, implementar Kernel ou iniciar runtime.
+
+## 11. Assurance
 
 A entrada canônica é:
 
@@ -145,18 +166,18 @@ A entrada canônica é:
 npm test
 ```
 
-A suíte unifica estrutura, planejamento, semântica, schemas, taxonomia, fluxo cognitivo, authority, fixtures e mutation tests.
+A suíte unifica estrutura, planejamento, semântica, schemas, taxonomia, fluxo cognitivo, authority, gate transitions, fixtures e mutation tests.
 
 Ela não prova ausência universal de alucinação. Comportamento real exige replay, adversarial, holdout, shadow e canary.
 
-## 11. Legado
+## 12. Legado
 
 Core4 permanece baseline histórico, read-only, fora do runtime V5 e sem migração automática.
 
-## 12. Fases
+## 13. Fases
 
-- G0: fundação e decisão;
-- G1: redução do Core declarativo;
+- G0: aprovado com condições adicionais;
+- G1: planejamento aberto; revisão/redução ainda depende de Ready;
 - G2: Kernel local;
 - G3: memória e Gate;
 - G4: órgãos em shadow;
