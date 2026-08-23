@@ -1,0 +1,382 @@
+schema_version: "0.1.0-candidate.1"
+status: PLANNING_CANDIDATE_NO_RUNTIME_AUTHORITY
+work_package: WP-G1-001
+baseline_commit: c9def51992b8091a1ba464b2afe74161c0818c39
+runtime_authorized: false
+core_v5_edit_authorized: false
+
+package:
+  name: Core V5
+  package_version: 5.0.0-candidate.5
+  architecture_version: 0.5-candidate
+  canonical_gate_state: governance/gate-state.json
+  integrated_state_document: docs/repository/STATE.md
+  purpose: "declarar papéis, autoridade, dependências e política de carregamento antes de reduzir o pacote"
+
+principles:
+  one_normative_owner_per_obligation: true
+  derived_artifacts_cannot_add_authority: true
+  dynamic_gate_state_is_not_duplicated_as_normative_state: true
+  directory_location_does_not_define_runtime_loading: true
+  no_artifact_is_loaded_merely_because_it_is_under_core_v5: true
+  null_optional_module_load_is_valid: true
+  conflict_between_constitution_and_projection_fails_closed: true
+  exact_bundle_digest_required_before_JOHAN_mode: true
+
+artifact_classes:
+  NORMATIVE_CONSTITUTION:
+    runtime_load: REFERENCE_ONLY
+    may_define_identity: true
+    may_define_runtime_sequence: false
+  EXECUTABLE_IDENTITY_PROJECTION:
+    runtime_load: ALWAYS_ON_JOHAN
+    may_define_identity: DERIVED_ONLY
+    may_define_runtime_sequence: false
+  SPECIALIZED_POLICY:
+    runtime_load: ENGINE_OR_ON_DEMAND
+    may_define_identity: false
+    may_define_domain_semantics: true
+  RUNTIME_SPECIFICATION:
+    runtime_load: ENGINE_NOT_PROMPT_BY_DEFAULT
+    may_define_identity: false
+    may_define_runtime_sequence: true
+  ASSURANCE_SPECIFICATION:
+    runtime_load: SEPARATE_CONTROL
+    may_define_identity: false
+    may_authorize_send_or_action: false
+  RENDER_PROFILE:
+    runtime_load: EXACTLY_ONE_PER_OUTPUT
+    may_change_position: false
+  POST_TURN_GOVERNANCE:
+    runtime_load: ASYNCHRONOUS_ON_DEMAND
+    may_write_canonical_state: false
+
+artifacts:
+  constitution:
+    path: core/v5/constitution.md
+    class: NORMATIVE_CONSTITUTION
+    domain_owner:
+      - identity_invariants
+      - foundational_boundaries
+      - high_level_authority_separation
+      - anti_dependency_principles
+    authority: PRIMARY_HIGH_LEVEL
+    load_policy: REFERENCE_ONLY
+    derived_from: []
+    current_bytes: 7581
+    current_blob: ce30a5cbdf1863d5f494397190a1e51dcef9d666
+    candidate_changes:
+      - separate_operational_sequence_from_constitutional_invariant
+      - remove_dynamic_status_duplication
+
+  identity_capsule:
+    path: core/v5/identity_capsule.yaml
+    class: EXECUTABLE_IDENTITY_PROJECTION
+    domain_owner:
+      - minimal_JOHAN_bootstrap
+      - central_commitment_projection
+      - prohibited_manifestation_shortlist
+      - identity_load_failure_mode
+    authority: DERIVED_FROM_NORMATIVE_SOURCES
+    load_policy: ALWAYS_ON_ONLY_IN_VERIFIED_JOHAN_MODE
+    derived_from:
+      - constitution
+      - relationship_contract
+    must_not:
+      - add_new_constitutional_obligation
+      - include_autobiographical_memory
+      - include_dynamic_project_state
+    current_bytes: 2879
+    current_blob: eba3bb23c9ebc3178d0611d6568d0baf42607c36
+    candidate_changes:
+      - add_field_level_source_map
+      - generate_projection_receipt
+      - classify_posture_fields
+      - remove_dynamic_status_duplication
+
+  relationship_contract:
+    path: core/v5/relationship_contract.yaml
+    class: SPECIALIZED_POLICY
+    domain_owner:
+      - relationship_semantics
+      - humor_boundaries
+      - repair
+      - protective_disagreement
+      - anti_dependency
+      - relational_privacy
+    authority: PRIMARY_WITHIN_RELATIONAL_DOMAIN
+    load_policy: RELATIONAL_TURNS_OR_COMPILED_POLICY
+    derived_from:
+      - constitution
+    current_bytes: 3937
+    current_blob: 87c6f94332e9b10dfbc951d61add480b36ac2350
+    candidate_changes:
+      - remove_repeated_constitutional_text
+      - preserve_only_domain_specific_rules
+      - remove_dynamic_status_duplication
+
+  decision_precedence:
+    path: core/v5/decision_precedence.yaml
+    class: SPECIALIZED_POLICY
+    domain_owner:
+      - conflict_resolution
+      - non_overrideable_constraints
+      - domain_precedence
+      - fail_closed_decision_rules
+    authority: PRIMARY_WITHIN_CONFLICT_DOMAIN
+    load_policy: COMPILED_POLICY
+    derived_from:
+      - constitution
+    current_bytes: 3471
+    current_blob: 07fd2e2c602160a3232e45e6c65951450838f2e0
+    candidate_changes:
+      - reference_constitutional_constraints_by_id
+      - add_artifact_conflict_rule
+      - remove_dynamic_status_duplication
+
+  memory_policy:
+    path: core/v5/memory_policy.yaml
+    class: SPECIALIZED_POLICY
+    domain_owner:
+      - memory_classes
+      - eligibility
+      - retrieval_abstention
+      - contradiction
+      - candidate_write_pipeline
+    authority: PRIMARY_WITHIN_MEMORY_DOMAIN
+    load_policy: MEMORY_ENGINE_NOT_PROMPT_BY_DEFAULT
+    derived_from:
+      - constitution
+    current_bytes: 4047
+    current_blob: c5f857c17d16f101a5cde865d0ef5a8fe530a8d8
+    candidate_changes:
+      - split_retrieval_policy_from_write_governance_if_needed
+      - reference_sedimentation_policy_for_writes
+      - remove_dynamic_status_duplication
+
+  presence_loop:
+    path: core/v5/presence_loop.yaml
+    class: RUNTIME_SPECIFICATION
+    domain_owner:
+      - turn_orchestration
+      - stage_order
+      - turn_modes
+      - runtime_failure_modes
+    authority: PRIMARY_WITHIN_RUNTIME_SEQUENCE
+    load_policy: ORCHESTRATOR_NOT_IDENTITY_PROMPT
+    derived_from:
+      - constitution
+      - decision_precedence
+      - memory_policy
+      - truth_gate
+    current_bytes: 6919
+    current_blob: c75b3ada0d6097cce56662d2b94a19bfdcd586a8
+    candidate_changes:
+      - move_conceptually_out_of_identity_core
+      - replace_repeated_rules_with_invariant_ids
+      - remove_dynamic_status_duplication
+
+  truth_gate:
+    path: core/v5/truth_gate.yaml
+    class: ASSURANCE_SPECIFICATION
+    domain_owner:
+      - dispositions
+      - finding_codes
+      - verification_layers
+      - hard_fail_conditions
+    authority: PRIMARY_WITHIN_GATE_DOMAIN
+    load_policy: SEPARATE_CONTROL_PATH
+    derived_from:
+      - constitution
+      - relationship_contract
+      - decision_precedence
+      - semantic_taxonomy
+    current_bytes: 4178
+    current_blob: 24d5c0f6d395c771dfa64e330846978d5c1bf8a6
+    candidate_changes:
+      - derive_finding_codes_from_taxonomy
+      - reference_obligations_by_id
+      - remove_dynamic_status_duplication
+
+  organ_registry:
+    path: core/v5/organ_registry.yaml
+    class: RUNTIME_SPECIFICATION
+    domain_owner:
+      - organ_mandates
+      - organ_data_scope
+      - organ_authority_limits
+      - organ_failure_modes
+    authority: PRIMARY_WITHIN_ORGAN_DOMAIN
+    load_policy: ROUTER_AND_ADAPTER_REGISTRY
+    derived_from:
+      - constitution
+      - semantic_taxonomy
+    current_bytes: 5124
+    current_blob: 2afbffc5ea527acd5d630a216e548098d57284a9
+    candidate_changes:
+      - replace_repeated_global_rules_with_registry_level_refs
+      - define_contract_version_per_organ
+      - remove_dynamic_status_duplication
+
+  sedimentation_policy:
+    path: core/v5/sedimentation_policy.yaml
+    class: POST_TURN_GOVERNANCE
+    domain_owner:
+      - learning_candidate_lifecycle
+      - review_and_authorization_roles
+      - supersession
+      - forgetting_review
+    authority: PRIMARY_WITHIN_SEDIMENTATION_DOMAIN
+    load_policy: POST_TURN_RITE_ONLY
+    derived_from:
+      - constitution
+      - memory_policy
+    current_bytes: 3447
+    current_blob: 1ae8cce24e37d50f9564eb987d30c970edea0345
+    candidate_changes:
+      - reference_memory_classes_instead_of_redeclaring
+      - remove_dynamic_status_duplication
+
+  channel_chatgpt:
+    path: core/v5/channel_profiles/chatgpt.yaml
+    class: RENDER_PROFILE
+    domain_owner:
+      - chatgpt_form
+    authority: FORM_ONLY
+    load_policy: SELECTED_WHEN_CHANNEL_CHATGPT
+    derived_from:
+      - central_renderer_invariants
+    current_bytes: 1154
+    current_blob: 52df9663f50d43e401c11347f1fb20f040c88fa3
+    candidate_changes:
+      - remove_repeated_central_invariants
+      - retain_only_channel_delta
+
+  channel_whatsapp:
+    path: core/v5/channel_profiles/whatsapp.yaml
+    class: RENDER_PROFILE
+    domain_owner:
+      - whatsapp_form
+    authority: FORM_ONLY
+    load_policy: SELECTED_WHEN_CHANNEL_WHATSAPP
+    derived_from:
+      - central_renderer_invariants
+    current_bytes: 1331
+    current_blob: 30c249ac540221f328761438ce18f79789f3b90b
+    candidate_changes:
+      - remove_repeated_central_invariants
+      - retain_only_channel_delta
+
+  channel_work_mode:
+    path: core/v5/channel_profiles/work_mode.yaml
+    class: RENDER_PROFILE
+    domain_owner:
+      - work_mode_form
+    authority: FORM_ONLY
+    load_policy: SELECTED_WHEN_WORK_MODE
+    derived_from:
+      - central_renderer_invariants
+    current_bytes: 1243
+    current_blob: 827a5b3b8669f5d9c7cc74b191e2b91c66aeb63c
+    candidate_changes:
+      - move_operational_truth_rules_to_truth_gate_or_precedence
+      - retain_only_work_mode_delta
+
+normative_precedence_between_artifacts:
+  - non_overrideable_constitutional_constraints
+  - constitution_high_level_invariants
+  - specialized_policy_within_its_domain
+  - verified_identity_projection
+  - runtime_specification
+  - render_profile_form_delta
+  - transient_context
+
+conflict_policy:
+  constitution_vs_identity_capsule: BLOCK_JOHAN_MODE_AND_REQUIRE_REPROJECTION
+  constitution_vs_specialized_policy: BLOCK_AFFECTED_DOMAIN_AND_REQUIRE_REVIEW
+  specialized_policy_overlap: PRESERVE_CONFLICT_AND_RESOLVE_NORMATIVE_OWNER
+  runtime_spec_vs_policy: POLICY_LIMITS_RUNTIME
+  render_profile_vs_position: REJECT_RENDER
+  gate_state_vs_local_status_metadata: GATE_STATE_WINS_AND_LOCAL_DUPLICATION_IS_DRIFT
+
+candidate_load_bundles:
+  JOHAN_MINIMAL:
+    required:
+      - verified_identity_capsule
+      - identity_load_receipt
+      - global_non_overrideable_constraints_compiled
+    optional: []
+    target_tokens: null
+    measurement_state: REQUIRED_G1
+
+  RELATIONAL:
+    base: JOHAN_MINIMAL
+    conditional:
+      - relationship_policy_relevant_subset
+      - recent_relational_context
+    target_tokens: null
+    measurement_state: REQUIRED_G1
+
+  MEMORY_AUGMENTED:
+    base: JOHAN_MINIMAL
+    conditional:
+      - selected_memory_records_max_4
+      - memory_conflict_and_abstention_metadata
+    prohibited:
+      - full_memory_policy_as_conversation_text
+      - identity_fallback
+    target_tokens: null
+    measurement_state: REQUIRED_G1
+
+  PROJECT_WORK:
+    base: JOHAN_MINIMAL
+    conditional:
+      - work_mode_profile_delta
+      - project_source_receipts
+      - relevant_precedence_controls
+    target_tokens: null
+    measurement_state: REQUIRED_G1
+
+  CHANNEL_OUTPUT:
+    conditional:
+      - exactly_one_channel_profile_delta
+      - central_renderer_invariants
+    rule: "profile changes form only"
+
+package_integrity_candidate:
+  manifest_required: true
+  artifact_digest_algorithm: SHA-256
+  artifact_canonicalization:
+    markdown: UTF8_TEXT
+    yaml: CANONICAL_YAML_PROFILE_TO_BE_DEFINED
+  bundle_digest_required: true
+  unknown_or_missing_artifact: FAIL_CLOSED_FOR_JOHAN_MODE
+  incompatible_schema_version: FAIL_CLOSED_FOR_AFFECTED_COMPONENT
+  receipt_required: PACKAGE_LOAD
+  receipt_type_not_yet_defined: true
+
+open_questions:
+  - id: Q-G1-M01
+    question: "A Constituição permanece em core/v5 ou muda apenas conceitualmente de camada?"
+    blocks_ready: false
+  - id: Q-G1-M02
+    question: "Qual perfil de canonical YAML será adotado?"
+    blocks_ready: true
+  - id: Q-G1-M03
+    question: "PACKAGE_LOAD será novo receipt type ou composição de SOURCE_READ + IDENTITY_LOAD?"
+    blocks_ready: true
+  - id: Q-G1-M04
+    question: "Quais campos de manifestation_posture são identidade, comportamento ou calibráveis?"
+    blocks_ready: true
+  - id: Q-G1-M05
+    question: "Qual token budget real por bundle e modelo?"
+    blocks_ready: true
+  - id: Q-G1-M06
+    question: "A separação será inicialmente lógica ou também física por diretórios?"
+    blocks_ready: false
+
+promotion_boundary:
+  this_manifest_is_authoritative: false
+  may_change_core_v5: false
+  requires_ready_review_before_implementation: true
+  external_review_required_before_D3_promotion: true
