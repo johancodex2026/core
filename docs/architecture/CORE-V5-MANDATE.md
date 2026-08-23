@@ -1,9 +1,10 @@
 # Mandato do Core V5
 
-- Estado: `FOUNDATION_CANDIDATE`
-- Versão arquitetural: `0.4-candidate`
-- Core package: `5.0.0-candidate.4`
+- Estado: `FOUNDATION_APPROVED_G1_OPEN_PLANNING`
+- Versão arquitetural: `0.5-candidate`
+- Core package: `5.0.0-candidate.5`
 - Classe: `D3 — identitária candidata`
+- G1 Ready: não
 - Runtime: não autorizado
 - Memória/sedimentação: desativadas
 
@@ -32,6 +33,7 @@ O Presence Kernel recebe a experiência inteira, forma uma posição por turno e
 - consultar fonte atual quando o claim exigir;
 - formar posição real antes do tom;
 - bloquear bajulação, falsa compreensão e conclusão sem receipt;
+- executar ação necessária antes da resposta final que alega seu resultado;
 - renderizar para canal sem mudar posição;
 - autorizar output exato por digest;
 - separar resposta de ação externa;
@@ -61,7 +63,7 @@ O Presence Kernel recebe a experiência inteira, forma uma posição por turno e
 7. Resultado interpretativo de órgão é não confiável.
 8. Receipt é confiável somente dentro do escopo declarado.
 9. Estado atual exige fonte/receipt com frescor adequado.
-10. Posição final sucede evidência quando temporal/operacional.
+10. Posição final sucede evidência e receipts necessários.
 11. Gate semântico não autoriza envio.
 12. Renderização precede delivery gate e send authorization.
 13. Send authorization vincula digest do output exato.
@@ -72,6 +74,9 @@ O Presence Kernel recebe a experiência inteira, forma uma posição por turno e
 18. Main, build, replay e structural PASS não promovem.
 19. Confirmação resolve ambiguidade de intenção, não autoriza ruptura vital sozinha.
 20. Nenhum estágio posterior aumenta silenciosamente autoridade anterior.
+21. Action Request descreve intenção; autorização, execução e verificação vivem em registros distintos.
+22. Claim final de execução, validação ou persistência exige receipt anterior aplicável.
+23. G0 aprovado não torna G1 Ready nem autoriza runtime.
 
 ## 6. Fronteiras de autoridade
 
@@ -102,7 +107,7 @@ Adapta forma sem alterar posição.
 - memory writer grava somente candidato autorizado;
 - Francisco registra decisão humana D3/D4 na Era 0;
 - Johan registra posição fundadora digital em D3/D4;
-- revisão externa é proporcional ao risco.
+- revisão externa é proporcional ao risco e obrigatória antes de promoção comportamental D3 ou runtime.
 
 ## 7. Ordem cognitiva
 
@@ -118,16 +123,24 @@ identity load
 → needs
 → memory/source/organ
 → evidence resolution
-→ position
-→ candidate response
+→ Turn Plan
+→ provisional position
+→ [when required] canonical action request
+→ action authorization
+→ action execution
+→ action receipts
+→ final position
+→ candidate response + Claim Map
 → semantic gate
 → render
 → delivery gate
-→ separate authorizations
-→ send/action
-→ receipts
+→ exact response authorization
+→ send
+→ interaction receipt
 → learning proposal
 ```
+
+Ação externa e envio de resposta possuem autoridades distintas. Uma resposta final que alega resultado de ação só nasce depois do receipt correspondente.
 
 ## 8. Semântica
 
@@ -169,4 +182,17 @@ A V5 só supera a casca se evidência mostrar, em casos não decorados e uso con
 
 ## 12. Estado atual
 
-A fundação e a revisão de coerência estão integradas como candidatas. G0 continua sem decisão humana. G1 permanece em `HOLD`. Nenhum runtime, memória, órgão ou canal está autorizado.
+```yaml
+G0: APPROVED_WITH_ADDITIONAL_CONDITIONS
+C1: SATISFIED
+C2-C37: BINDING
+G1: OPEN_PLANNING
+G1_READY: false
+runtime: BLOCKED
+memory: BLOCKED
+organs: BLOCKED
+whatsapp: BLOCKED
+sedimentation: BLOCKED
+```
+
+O G1 pode inventariar, medir, mapear proveniência e preparar seu Ready. Nenhuma edição do pacote `core/v5/` está autorizada antes desse Ready.
