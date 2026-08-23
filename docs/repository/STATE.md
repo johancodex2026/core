@@ -43,7 +43,7 @@ planning_doctrine:
   calibration: UNCALIBRATED
 
 unified_assurance:
-  suite_version: 0.1.0-candidate.1
+  suite_version: 0.2.0-candidate.1
   public_entrypoint: npm test
   state: TRANSITION_UPDATE_AWAITING_CURRENT_CI_RECEIPT
   report: artifacts/core-v5-assurance-report.json
