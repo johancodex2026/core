@@ -12,6 +12,8 @@ async function json(path) { return JSON.parse(await text(path)); }
 
 const required = [
   "governance/semantic-taxonomy.json",
+  "governance/gate-state.json",
+  "schemas/gate-state.schema.json",
   "schemas/digest-reference.schema.json",
   "schemas/action-request.schema.json",
   "schemas/turn-plan.schema.json",
@@ -19,15 +21,27 @@ const required = [
   "assurance/suite-manifest.json",
   "assurance/fixtures/scenarios.json",
   "docs/quality/UNIFIED-ASSURANCE-SUITE.md",
+  "docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md",
   "core/v5/presence_loop.yaml",
   "core/v5/truth_gate.yaml"
 ];
 for (const path of required) if (!(await exists(path))) fail(`missing coherence artifact: ${path}`);
 
 const taxonomy = await json("governance/semantic-taxonomy.json");
+const gateState = await json("governance/gate-state.json");
 const manifest = await json("assurance/suite-manifest.json");
 const schemas = {};
-for (const path of ["schemas/action-request.schema.json", "schemas/authorization-decision.schema.json", "schemas/claim-map.schema.json", "schemas/gate-result.schema.json", "schemas/presence-context.schema.json", "schemas/receipt.schema.json", "schemas/source-reference.schema.json", "schemas/turn-plan.schema.json"]) {
+for (const path of [
+  "schemas/action-request.schema.json",
+  "schemas/authorization-decision.schema.json",
+  "schemas/claim-map.schema.json",
+  "schemas/gate-result.schema.json",
+  "schemas/gate-state.schema.json",
+  "schemas/presence-context.schema.json",
+  "schemas/receipt.schema.json",
+  "schemas/source-reference.schema.json",
+  "schemas/turn-plan.schema.json"
+]) {
   try { schemas[path] = await json(path); }
   catch (error) { fail(`${path}: invalid JSON (${error.message})`); }
 }
@@ -41,7 +55,12 @@ for (const stage of manifest.critical_stage_order ?? []) {
   previous = Math.max(previous, index);
 }
 for (const legacy of ["authorize_external_actions", "execute_authorized_actions"]) if (loop.includes(`- id: ${legacy}`)) fail(`legacy post-response action stage remains: ${legacy}`);
-for (const marker of ["action_receipts_precede_final_result_claims", "action_request_does_not_accumulate_execution_state", "response_authorization_is_not_action_authorization", "render_precedes_send_authorization"]) if (!loop.includes(marker)) fail(`presence loop missing invariant: ${marker}`);
+for (const marker of [
+  "action_receipts_precede_final_result_claims",
+  "action_request_does_not_accumulate_execution_state",
+  "response_authorization_is_not_action_authorization",
+  "render_precedes_send_authorization"
+]) if (!loop.includes(marker)) fail(`presence loop missing invariant: ${marker}`);
 
 const gate = schemas["schemas/gate-result.schema.json"];
 if (!gate?.properties?.disposition) fail("gate-result lacks disposition");
@@ -56,20 +75,53 @@ for (const marker of ["turn-plan.schema.json", "action-request.schema.json", "di
 if (!presenceText.includes('"canonized_action_requests":{"maxItems":0}')) fail("assistive mode does not forbid canonized action requests");
 if (!presenceText.includes('"active_state":{"enum":["NOT_APPLICABLE","UNKNOWN"]}')) fail("assistive mode does not constrain relationship state");
 
-for (const path of ["schemas/source-reference.schema.json", "schemas/receipt.schema.json", "schemas/authorization-decision.schema.json", "schemas/claim-map.schema.json", "schemas/gate-result.schema.json", "schemas/presence-context.schema.json"]) if (!JSON.stringify(schemas[path]).includes("digest-reference.schema.json")) fail(`${path} contains untyped material digest`);
+for (const path of [
+  "schemas/source-reference.schema.json",
+  "schemas/receipt.schema.json",
+  "schemas/authorization-decision.schema.json",
+  "schemas/claim-map.schema.json",
+  "schemas/gate-result.schema.json",
+  "schemas/presence-context.schema.json"
+]) if (!JSON.stringify(schemas[path]).includes("digest-reference.schema.json")) fail(`${path} contains untyped material digest`);
 
 const receiptText = JSON.stringify(schemas["schemas/receipt.schema.json"]);
 for (const type of taxonomy.receipt_types ?? []) if (!receiptText.includes(`"const":"${type}"`)) fail(`receipt schema lacks status restriction for ${type}`);
 
 const truthGate = await text("core/v5/truth_gate.yaml");
-for (const marker of ["dispositions:", "finding_codes:", "preserve_all_detected_findings: true", "same_generation_path_sufficient: false", "ACTION_RECEIPT_REQUIRED", "FINDING_LOSS"]) if (!truthGate.includes(marker)) fail(`truth gate missing marker ${marker}`);
+for (const marker of [
+  "dispositions:", "finding_codes:", "preserve_all_detected_findings: true",
+  "same_generation_path_sufficient: false", "ACTION_RECEIPT_REQUIRED", "FINDING_LOSS"
+]) if (!truthGate.includes(marker)) fail(`truth gate missing marker ${marker}`);
 
 const identity = await text("core/v5/identity_capsule.yaml");
 const pkg = await json("package.json");
 if (!identity.includes(`core_version: "${pkg.version}"`)) fail(`identity capsule version does not match ${pkg.version}`);
 
 const state = await text("docs/repository/STATE.md");
-for (const marker of ["g0_human_decision: PENDING", "runtime_authorized: false", "memory_migration: NOT_AUTHORIZED", "sedimentation: DISABLED"]) if (!state.includes(marker)) fail(`repository state missing ${marker}`);
+for (const marker of [
+  "g0_human_decision: APPROVE_WITH_ADDITIONAL_CONDITIONS",
+  "g1_declarative_core_review: OPEN_PLANNING",
+  "g1_ready: false",
+  "runtime_authorized: false",
+  "memory_migration: NOT_AUTHORIZED",
+  "sedimentation: DISABLED"
+]) if (!state.includes(marker)) fail(`repository state missing ${marker}`);
+
+if (gateState.gates?.G0?.status !== manifest.gate_transition_expectation?.G0) fail("G0 state diverges from suite transition expectation");
+if (gateState.gates?.G1?.status !== manifest.gate_transition_expectation?.G1) fail("G1 state diverges from suite transition expectation");
+if (gateState.global_boundaries?.runtime_authorized !== manifest.gate_transition_expectation?.runtime_authorized) fail("runtime boundary diverges from suite expectation");
+if (gateState.global_boundaries?.memory_migration !== manifest.gate_transition_expectation?.memory_migration) fail("memory boundary diverges from suite expectation");
+if (gateState.global_boundaries?.sedimentation !== manifest.gate_transition_expectation?.sedimentation) fail("sedimentation boundary diverges from suite expectation");
+
+const decision = await text("docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md");
+if (!decision.includes(`decision: ${gateState.gates.G0.status}`)) fail("decision record and gate-state disagree");
+if (!decision.includes("effect: OPEN_G1_DECLARATIVE_PLANNING_ONLY")) fail("decision record lacks bounded G1 effect");
+if (!decision.includes("runtime_authorized: false")) fail("decision record does not preserve runtime block");
+
+const g1 = await text("planning/work-packages/WP-G1-001-DECLARATIVE-CORE-REVIEW.md");
+if (!g1.includes("stage_state: OPEN_PLANNING")) fail("G1 work package does not match gate-state OPEN_PLANNING");
+if (!g1.includes("required_before_editing_core_v5: WP_G1_001_READY_REVIEW")) fail("G1 lacks explicit Ready boundary before core/v5 edits");
+if (g1.includes("hold_reason: G0_HUMAN_DECISION_PENDING")) fail("G1 retains obsolete G0 pending hold");
 
 if (errors.length) {
   console.error(`\nCore V5 coherence validation failed with ${errors.length} error(s):`);
@@ -82,4 +134,5 @@ console.log(`- ${manifest.critical_stage_order.length} cognitive stages ordered`
 console.log("- Gate disposition and findings are separated");
 console.log("- action receipts precede final result claims");
 console.log("- response authorization remains separate from action authorization");
-console.log("- assistive mode excludes personal memory, active relationship and action requests");
+console.log("- G0 approval and G1 OPEN_PLANNING state are machine-readable and cross-checked");
+console.log("- runtime, memory, organs and WhatsApp remain blocked");
