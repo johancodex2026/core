@@ -5,18 +5,25 @@
 ## Estado
 
 ```yaml
-state: FOUNDATION_CANDIDATE
+state: FOUNDATION_APPROVED_G1_OPEN_PLANNING
 architecture_version: 0.5-candidate
 core_package_version: 5.0.0-candidate.5
-g0_human_decision: PENDING
-g1_status: HOLD
+g0_human_decision: APPROVE_WITH_ADDITIONAL_CONDITIONS
+g1_status: OPEN_PLANNING
+g1_ready: false
 runtime_authorized: false
 memory_migration: NOT_AUTHORIZED
 sedimentation: DISABLED
-unified_assurance_suite: 0.1.0-candidate.1
+unified_assurance_suite: 0.2.0-candidate.1
 ```
 
-A fundação está integrada como candidata de repositório. Nenhum arquivo ainda governa uma manifestação real.
+O G0 foi aprovado por Francisco com condições adicionais. A decisão abre somente o planejamento e a revisão do G1 declarativo. Nenhum arquivo governa uma manifestação real e nenhum runtime foi iniciado.
+
+A fonte de estado machine-readable é:
+
+```text
+governance/gate-state.json
+```
 
 ## Tese
 
@@ -38,7 +45,8 @@ O Presence Kernel forma posição e resposta. Órgãos informam, comprovam, rest
 - digest tipado com algoritmo e canonicalização;
 - modo assistivo sem memória, relação ativa ou ação externa;
 - receipt tipo/status com semântica restrita;
-- Core4 read-only e sem migração automática.
+- Core4 read-only e sem migração automática;
+- gate-state machine-readable para impedir transições implícitas.
 
 ## Planning-First
 
@@ -58,13 +66,13 @@ A entrada pública canônica é:
 npm test
 ```
 
-Ela executa A0–A11 e grava:
+Ela grava:
 
 ```text
 artifacts/core-v5-assurance-report.json
 ```
 
-A suíte valida estrutura, planejamento, JSON/YAML, schemas, taxonomias, ciclo cognitivo, claims, receipts, autoridade, privacidade, fixtures anti-alucinação, mutation tests e gates.
+A suíte valida estrutura, planejamento, JSON/YAML, schemas, taxonomias, ciclo cognitivo, claims, receipts, autoridade, privacidade, transições de gate, fixtures anti-alucinação e mutation tests.
 
 Leia [`Suíte Unificada de Assurance`](docs/quality/UNIFIED-ASSURANCE-SUITE.md).
 
@@ -85,31 +93,34 @@ replay
 
 ## Ordem de trabalho
 
-1. concluir a decisão humana do G0;
-2. manter G1 em `HOLD` até essa decisão;
-3. revisar e reduzir o Core declarativo;
-4. planejar o Kernel;
-5. implementar somente pacote `READY`;
-6. validar comportamento antes de WhatsApp;
-7. manter sedimentação bloqueada até gate próprio.
+1. G0: aprovado com C2–C37 vinculantes;
+2. G1: inventariar sem editar `core/v5/`;
+3. resolver fonte normativa, redundância, fronteira e token budget;
+4. emitir Ready Review próprio do G1;
+5. somente então revisar e reduzir o Core declarativo;
+6. validar replays antes de qualquer Kernel;
+7. manter runtime, memória, órgãos, WhatsApp e sedimentação bloqueados até seus gates.
 
 ## Documentos de entrada
 
 1. `AGENTS.md`
 2. `docs/repository/STATE.md`
-3. `docs/architecture/ARCHITECTURE.md`
-4. `docs/architecture/CORE-V5-MANDATE.md`
-5. `docs/methodology/LLM-FIRST.md`
-6. `docs/methodology/PLANNING-FIRST-ZERO-REWORK.md`
-7. `docs/quality/UNIFIED-ASSURANCE-SUITE.md`
-8. `planning/work-packages/WP-G0-003-UNIFIED-ASSURANCE-SUITE.md`
-9. `planning/work-packages/WP-G1-001-DECLARATIVE-CORE-REVIEW.md`
+3. `governance/gate-state.json`
+4. `docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md`
+5. `planning/work-packages/WP-G1-001-DECLARATIVE-CORE-REVIEW.md`
+6. `docs/architecture/ARCHITECTURE.md`
+7. `docs/architecture/CORE-V5-MANDATE.md`
+8. `docs/methodology/LLM-FIRST.md`
+9. `docs/methodology/PLANNING-FIRST-ZERO-REWORK.md`
+10. `docs/quality/UNIFIED-ASSURANCE-SUITE.md`
 
 ## Fronteiras
 
 - `main` é integração, não promoção;
+- G0 aprovado não torna G1 Ready;
 - Core4 é baseline, não runtime V5;
 - memória privada não entra no repositório;
 - a LLM não escreve canônico;
 - a suíte não valida a si mesma como autoridade independente;
-- proteção obrigatória da `main` ainda é controle externo pendente.
+- proteção obrigatória da `main` ainda é controle externo pendente;
+- revisão externa continua obrigatória antes de promoção comportamental D3 ou runtime.
