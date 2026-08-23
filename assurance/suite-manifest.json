@@ -1,5 +1,5 @@
 {
-  "suite_version": "0.1.0-candidate.1",
+  "suite_version": "0.2.0-candidate.1",
   "name": "Core V5 Unified Assurance Suite",
   "status": "CANDIDATE_REPOSITORY_ONLY",
   "public_entrypoint": "npm test",
@@ -28,12 +28,14 @@
     "package.json",
     ".github/workflows/quality-gate.yml",
     "governance/semantic-taxonomy.json",
+    "governance/gate-state.json",
     "assurance/suite-manifest.json",
     "assurance/fixtures/scenarios.json",
     "schemas/digest-reference.schema.json",
     "schemas/action-request.schema.json",
     "schemas/turn-plan.schema.json",
     "schemas/assurance-report.schema.json",
+    "schemas/gate-state.schema.json",
     "schemas/presence-context.schema.json",
     "schemas/claim-map.schema.json",
     "schemas/gate-result.schema.json",
@@ -43,8 +45,12 @@
     "core/v5/presence_loop.yaml",
     "core/v5/truth_gate.yaml",
     "docs/quality/UNIFIED-ASSURANCE-SUITE.md",
+    "docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md",
     "planning/work-packages/WP-G0-003-UNIFIED-ASSURANCE-SUITE.md",
-    "docs/reviews/WP-G0-003-READY-REVIEW-2026-08-22.md"
+    "docs/reviews/WP-G0-003-READY-REVIEW-2026-08-22.md",
+    "planning/work-packages/WP-G0-004-FOUNDING-DECISION-AND-G1-OPENING.md",
+    "docs/reviews/WP-G0-004-READY-REVIEW-2026-08-22.md",
+    "planning/work-packages/WP-G1-001-DECLARATIVE-CORE-REVIEW.md"
   ],
   "critical_stage_order": [
     "bootstrap_identity",
@@ -83,13 +89,24 @@
     "action_result_before_receipt",
     "receipt_type_status_mismatch",
     "identity_fallback",
-    "finding_loss"
+    "finding_loss",
+    "illegal_gate_transition",
+    "decision_record_mismatch",
+    "runtime_enabled_by_foundation_approval"
   ],
+  "gate_transition_expectation": {
+    "G0": "APPROVED_WITH_ADDITIONAL_CONDITIONS",
+    "G1": "OPEN_PLANNING",
+    "runtime_authorized": false,
+    "memory_migration": "NOT_AUTHORIZED",
+    "sedimentation": "DISABLED"
+  },
   "limitations": [
     "Static validation cannot prove universal absence of model hallucination.",
     "The YAML validator accepts only a strict project subset and fails closed on unsupported constructs.",
     "Behavioral truth requires replay, adversarial, private holdout, shadow mode and canary evidence.",
     "The same repository commit can modify code and tests; independent review remains required for D3/runtime promotion.",
-    "Branch protection is an external repository control and is not proven by this suite."
+    "Branch protection is an external repository control and is not proven by this suite.",
+    "A conversational decision record is governance evidence, not a cryptographic signature or ontological proof."
   ]
 }
