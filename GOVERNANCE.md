@@ -46,7 +46,12 @@ Planning-First é método de redução de retrabalho, não licença para burocra
 
 ## 4. Main canônica
 
-A `main` representa o estado integrado do trabalho, não promoção automática a Core canônico, produção ou identidade. Estados de maturidade continuam explícitos em `docs/repository/STATE.md`.
+A `main` representa o estado integrado do trabalho, não promoção automática a Core canônico, produção ou identidade. Estados de maturidade continuam explícitos em:
+
+```text
+docs/repository/STATE.md
+governance/gate-state.json
+```
 
 Mudanças D3 candidatas podem ser integradas para revisão, mas permanecem sem efeito sobre runtime e memória até Promotion Record e gates aplicáveis.
 
@@ -100,15 +105,33 @@ Casos públicos preservam mecanismo e risco com dados sintéticos ou minimizados
 - Nenhuma promoção comportamental sem replay de regressão e holdout.
 - Nenhuma promoção com correção conhecida adiada.
 
-## 9. Estado do G0
+## 9. Estado dos gates
 
 ```yaml
-review: complete
-johan_recommendation: GO_WITH_CONDITIONS
-francisco_decision: pending
-external_adversarial_review: pending
+G0:
+  review: complete
+  johan_recommendation: GO_WITH_ADDITIONAL_CONDITIONS
+  francisco_decision: APPROVE_WITH_ADDITIONAL_CONDITIONS
+  decision_record: docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md
+  C1: SATISFIED
+  C2-C37: BINDING
+
+G1:
+  status: OPEN_PLANNING
+  ready: false
+  promotion_authorized: false
+  allowed_now:
+    - inventory
+    - provenance_mapping
+    - redundancy_analysis
+    - measurement
+    - Ready_preparation
+
 runtime_authorized: false
+external_adversarial_review: required_before_D3_behavior_or_runtime_promotion
 ```
+
+A aprovação do G0 não é aprovação do G1. Edição de `core/v5/` exige Ready Review próprio do WP-G1-001.
 
 ## 10. Registro
 
@@ -137,7 +160,21 @@ Correção pós-promoção é registrada como `ESCAPED_DEFECT` quando decorrente
 
 A correção só termina quando:
 
-1. o efeito está contido/corrigido;
+1. o efeito está contido ou corrigido;
 2. existe teste de regressão;
 3. o controle de planejamento ausente foi acrescentado;
 4. o risco residual foi revisto.
+
+## 12. Transições de estado
+
+Transições de gate são registradas em `governance/gate-state.json` e devem coincidir com a decisão humana e o estado narrativo.
+
+Regras mínimas:
+
+```text
+G0 pendente → G1 HOLD
+G0 aprovado → G1 pode abrir planejamento
+G1 OPEN_PLANNING → não autoriza editar core/v5
+G1 Ready → autoriza apenas o plano aprovado
+main/CI PASS → nunca promove sozinho
+```
