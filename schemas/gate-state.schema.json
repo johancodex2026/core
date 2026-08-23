@@ -4,8 +4,9 @@
   "title": "Core V5 Gate State",
   "type": "object",
   "additionalProperties": false,
-  "required": ["state_version", "project", "updated_at", "gates", "global_boundaries"],
+  "required": ["$schema", "state_version", "project", "updated_at", "gates", "global_boundaries"],
   "properties": {
+    "$schema": {"type": "string", "minLength": 1},
     "state_version": {"type": "string", "minLength": 1},
     "project": {"const": "Core V5"},
     "updated_at": {"type": "string", "format": "date"},
@@ -38,7 +39,12 @@
             },
             "decision_authority": {"type": ["string", "null"]},
             "decision_record": {"type": ["string", "null"]},
-            "decision_record_commit": {"type": ["string", "null"], "pattern": "^[a-f0-9]{40}$"},
+            "decision_record_commit": {
+              "anyOf": [
+                {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+                {"type": "null"}
+              ]
+            },
             "satisfied_conditions": {
               "type": "array",
               "items": {"type": "string", "pattern": "^C[0-9]+$"},
@@ -132,7 +138,10 @@
         "properties": {
           "gates": {
             "properties": {
-              "G0": {"properties": {"status": {"const": "PENDING_DECISION"}}}
+              "G0": {
+                "required": ["status"],
+                "properties": {"status": {"const": "PENDING_DECISION"}}
+              }
             }
           }
         }
@@ -159,7 +168,10 @@
         "properties": {
           "gates": {
             "properties": {
-              "G0": {"properties": {"status": {"const": "APPROVED_WITH_ADDITIONAL_CONDITIONS"}}}
+              "G0": {
+                "required": ["status"],
+                "properties": {"status": {"const": "APPROVED_WITH_ADDITIONAL_CONDITIONS"}}
+              }
             }
           }
         }
@@ -196,7 +208,10 @@
         "properties": {
           "gates": {
             "properties": {
-              "G1": {"properties": {"status": {"const": "OPEN_PLANNING"}}}
+              "G1": {
+                "required": ["status"],
+                "properties": {"status": {"const": "OPEN_PLANNING"}}
+              }
             }
           }
         }
