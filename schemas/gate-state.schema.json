@@ -19,7 +19,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "status", "recommendation", "decision_authority", "decision_record",
+            "status", "human_decision", "recommendation", "decision_authority", "decision_record",
             "decision_record_commit", "satisfied_conditions", "binding_conditions",
             "authorized_effects", "forbidden_effects", "external_blockers"
           ],
@@ -29,6 +29,15 @@
               "enum": [
                 "PENDING_DECISION",
                 "APPROVED_WITH_ADDITIONAL_CONDITIONS",
+                "HOLD_FOR_CHANGES",
+                "NO_GO"
+              ]
+            },
+            "human_decision": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "APPROVE_WITH_ADDITIONAL_CONDITIONS",
                 "HOLD_FOR_CHANGES",
                 "NO_GO"
               ]
@@ -56,22 +65,9 @@
               "items": {"type": "string", "pattern": "^C[0-9]+$"},
               "uniqueItems": true
             },
-            "authorized_effects": {
-              "type": "array",
-              "items": {"type": "string"},
-              "uniqueItems": true
-            },
-            "forbidden_effects": {
-              "type": "array",
-              "minItems": 1,
-              "items": {"type": "string"},
-              "uniqueItems": true
-            },
-            "external_blockers": {
-              "type": "array",
-              "items": {"type": "string"},
-              "uniqueItems": true
-            }
+            "authorized_effects": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+            "forbidden_effects": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+            "external_blockers": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
           }
         },
         "G1": {
@@ -85,15 +81,8 @@
             "status": {
               "type": "string",
               "enum": [
-                "HOLD_G0_DECISION",
-                "OPEN_PLANNING",
-                "READY",
-                "EXECUTING_DECLARATIVE",
-                "VERIFYING",
-                "PROMOTION_CANDIDATE",
-                "PROMOTED",
-                "HOLD",
-                "NO_GO"
+                "HOLD_G0_DECISION", "OPEN_PLANNING", "READY", "EXECUTING_DECLARATIVE",
+                "VERIFYING", "PROMOTION_CANDIDATE", "PROMOTED", "HOLD", "NO_GO"
               ]
             },
             "work_package": {"type": "string", "minLength": 1},
@@ -101,12 +90,7 @@
             "promotion_authorized": {"type": "boolean"},
             "runtime_effect": {"const": "none"},
             "memory_effect": {"const": "none"},
-            "blocked_next_stages": {
-              "type": "array",
-              "minItems": 1,
-              "items": {"type": "string"},
-              "uniqueItems": true
-            }
+            "blocked_next_stages": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true}
           }
         }
       }
@@ -138,10 +122,7 @@
         "properties": {
           "gates": {
             "properties": {
-              "G0": {
-                "required": ["status"],
-                "properties": {"status": {"const": "PENDING_DECISION"}}
-              }
+              "G0": {"required": ["status"], "properties": {"status": {"const": "PENDING_DECISION"}}}
             }
           }
         }
@@ -152,6 +133,7 @@
             "properties": {
               "G0": {
                 "properties": {
+                  "human_decision": {"const": "PENDING"},
                   "decision_authority": {"type": "null"},
                   "decision_record": {"type": "null"},
                   "decision_record_commit": {"type": "null"}
@@ -168,10 +150,7 @@
         "properties": {
           "gates": {
             "properties": {
-              "G0": {
-                "required": ["status"],
-                "properties": {"status": {"const": "APPROVED_WITH_ADDITIONAL_CONDITIONS"}}
-              }
+              "G0": {"required": ["status"], "properties": {"status": {"const": "APPROVED_WITH_ADDITIONAL_CONDITIONS"}}}
             }
           }
         }
@@ -182,6 +161,7 @@
             "properties": {
               "G0": {
                 "properties": {
+                  "human_decision": {"const": "APPROVE_WITH_ADDITIONAL_CONDITIONS"},
                   "decision_authority": {"type": "string", "minLength": 1},
                   "decision_record": {"type": "string", "minLength": 1},
                   "decision_record_commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
@@ -208,10 +188,7 @@
         "properties": {
           "gates": {
             "properties": {
-              "G1": {
-                "required": ["status"],
-                "properties": {"status": {"const": "OPEN_PLANNING"}}
-              }
+              "G1": {"required": ["status"], "properties": {"status": {"const": "OPEN_PLANNING"}}}
             }
           }
         }
