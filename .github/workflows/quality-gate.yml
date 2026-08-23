@@ -24,6 +24,7 @@ on:
 
 permissions:
   contents: read
+  statuses: write
 
 jobs:
   unified-assurance:
@@ -38,6 +39,8 @@ jobs:
           node-version: "22"
 
       - name: Run the single canonical suite
+        id: suite
+        continue-on-error: true
         run: npm test
 
       - name: Upload unified assurance report
@@ -49,8 +52,47 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Publish queryable commit status
+        if: always() && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUITE_OUTCOME: ${{ steps.suite.outcome }}
+          STATUS_CONTEXT: core-v5/unified-assurance
+        run: |
+          node --input-type=module <<'NODE'
+          const state = process.env.SUITE_OUTCOME === "success" ? "success" : "failure";
+          const api = `${process.env.GITHUB_API_URL}/repos/${process.env.GITHUB_REPOSITORY}/statuses/${process.env.GITHUB_SHA}`;
+          const targetUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+          const response = await fetch(api, {
+            method: "POST",
+            headers: {
+              "Accept": "application/vnd.github+json",
+              "Authorization": `Bearer ${process.env.GH_TOKEN}`,
+              "X-GitHub-Api-Version": "2022-11-28",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              state,
+              context: process.env.STATUS_CONTEXT,
+              description: state === "success"
+                ? "Unified assurance passed for this exact commit"
+                : "Unified assurance failed for this exact commit",
+              target_url: targetUrl
+            })
+          });
+          if (!response.ok) {
+            const body = await response.text();
+            throw new Error(`Commit status publication failed: ${response.status} ${body}`);
+          }
+          console.log(`Published ${state} status for ${process.env.GITHUB_SHA}`);
+          NODE
+
       - name: State assurance boundary
         if: always()
         run: |
           echo "PASS proves conformance to declared repository controls and known deterministic failure classes."
           echo "It does not prove universal absence of hallucination, consciousness, identity, continuity, runtime safety or promotion."
+
+      - name: Enforce suite result
+        if: steps.suite.outcome != 'success'
+        run: exit 1
