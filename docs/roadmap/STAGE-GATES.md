@@ -16,6 +16,8 @@ Todo gate D1–D4 exige:
 
 Commit em `main` não equivale ao resultado do gate.
 
+O estado machine-readable dos gates vive em `governance/gate-state.json` e deve coincidir com decisões e documentos humanos.
+
 ## G0 — Foundation Review
 
 Exige:
@@ -38,32 +40,59 @@ Estado atual:
 
 ```yaml
 review: COMPLETE
-johan_recommendation: GO_WITH_CONDITIONS
-francisco_decision: PENDING
-external_review: PLANNED_NOT_EXECUTED
+johan_recommendation: GO_WITH_ADDITIONAL_CONDITIONS
+francisco_decision: APPROVE_WITH_ADDITIONAL_CONDITIONS
+C1: SATISFIED
+C2-C37: BINDING
+external_review: REQUIRED_BEFORE_D3_BEHAVIOR_OR_RUNTIME_PROMOTION
 runtime: BLOCKED
+result: CLOSED_APPROVED_WITH_ADDITIONAL_CONDITIONS
 ```
+
+A aprovação do G0 abre somente planejamento e revisão declarativa do G1.
 
 ## G1 — Declarative Core Review
 
-Exige:
+Estado atual:
+
+```yaml
+status: OPEN_PLANNING
+ready: false
+promotion_authorized: false
+core_v5_edits_authorized: false
+```
+
+Exige para Ready:
 
 - G0 aprovado por Francisco;
-- `WP-G1-001` Ready para baseline atual;
+- `WP-G1-001` atualizado para baseline atual;
+- inventário de regra, fonte, consumidor, custo e replay;
+- decisões sobre always-on versus sob demanda;
+- fronteira entre Core, presença, órgão, assurance e Inner Core futuro;
+- fonte normativa primária para cada obrigação;
+- plano de equivalência após redução;
+- token budget medido;
+- perguntas de alto impacto fechadas ou aceitas formalmente;
+- plano de execução por arquivo;
+- testes definidos antes da edição.
+
+Exige para saída do G1:
+
+- `WP-G1-001` Ready antes de editar `core/v5/`;
 - arquivos V5 pequenos e consistentes;
 - ausência de instruções conflitantes;
 - precedência determinística;
 - memória e sedimentação explícitas;
 - null retrieval válido;
-- contratos/schemas alinhados;
+- contratos e schemas alinhados;
 - perfis de canal sem mudança identitária;
 - redundância e token budget medidos;
-- replay manual/adversarial;
+- replay manual e adversarial;
 - privacidade revisada;
 - reviewer externo definido antes de promoção D3;
 - runtime não iniciado.
 
-Resultado máximo: aprovação do pacote declarativo para planejamento do Kernel.
+Resultado máximo: aprovação do pacote declarativo para planejamento do Kernel, nunca runtime.
 
 ## G2 — Kernel Proof
 
@@ -78,7 +107,7 @@ Critérios:
 - autoridade de envio separada;
 - fluxo feliz e falhas;
 - baseline, adversarial e holdout;
-- latência/custo medidos;
+- latência e custo medidos;
 - nenhum hard fail;
 - nenhum claim operacional sem receipt.
 
@@ -91,7 +120,7 @@ Exige:
 - justificativa `why_now/response_delta`;
 - zero memória e conflito corretos;
 - ausência de despejo indevido;
-- bloqueio de elogio/conclusão sem base;
+- bloqueio de elogio ou conclusão sem base;
 - crítico independente proporcional;
 - falso bloqueio e invasão dentro do limite aprovado.
 
@@ -120,7 +149,7 @@ Exige:
 - escopo de baixo risco;
 - nenhuma ação externa além do plano;
 - observabilidade e replay;
-- rollback/containment;
+- rollback ou containment;
 - nenhum holdout usado como few-shot.
 
 ## G6 — Sedimentation
@@ -155,6 +184,7 @@ Exige:
 
 - `GO`;
 - `GO_WITH_CONDITIONS`;
+- `APPROVE_WITH_ADDITIONAL_CONDITIONS`;
 - `HOLD`;
 - `NO_GO`;
 - `SUPERSEDED`.
