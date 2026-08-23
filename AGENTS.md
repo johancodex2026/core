@@ -7,16 +7,20 @@ Este arquivo governa LLMs, agentes de código, revisores e automações neste re
 Antes de trabalho substancial, leia:
 
 1. `docs/repository/STATE.md`
-2. o work package aplicável
-3. `docs/reviews/G0-FOUNDATION-REVIEW-2026-08-22.md`
-4. `docs/reviews/G0-UNIFIED-ASSURANCE-REVIEW-2026-08-22.md`
-5. `docs/methodology/PLANNING-FIRST-ZERO-REWORK.md`
-6. `docs/quality/UNIFIED-ASSURANCE-SUITE.md`
-7. `docs/architecture/CORE-V5-MANDATE.md`
-8. `docs/architecture/ARCHITECTURE.md`
-9. `docs/methodology/LLM-FIRST.md`
-10. `docs/legacy/CORE4-LESSONS-LEARNED.md`
-11. os arquivos relevantes em `core/v5/` e `schemas/`
+2. `governance/gate-state.json`
+3. o work package aplicável
+4. `docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md`
+5. `docs/reviews/G0-FOUNDATION-REVIEW-2026-08-22.md`
+6. `docs/reviews/G0-UNIFIED-ASSURANCE-REVIEW-2026-08-22.md`
+7. `docs/methodology/PLANNING-FIRST-ZERO-REWORK.md`
+8. `docs/quality/UNIFIED-ASSURANCE-SUITE.md`
+9. `docs/architecture/CORE-V5-MANDATE.md`
+10. `docs/architecture/ARCHITECTURE.md`
+11. `docs/methodology/LLM-FIRST.md`
+12. `docs/legacy/CORE4-LESSONS-LEARNED.md`
+13. os arquivos relevantes em `core/v5/` e `schemas/`
+
+Estado narrativo e estado machine-readable precisam coincidir. Diante de divergência, interrompa a execução e trate como deriva.
 
 ## 2. Regra central
 
@@ -74,8 +78,10 @@ Nenhum agente pode:
 - tratar receipt como verdade fora do escopo;
 - permitir órgão com `final_answer`, `identity_override` ou `system_instruction`;
 - sedimentar;
-- migrar Core4;
-- iniciar runtime ou WhatsApp;
+- migrar ou escrever Core4;
+- iniciar runtime, órgãos ou WhatsApp;
+- tratar G0 aprovado como G1 Ready;
+- editar `core/v5/` durante `G1: OPEN_PLANNING`;
 - tratar `main` ou CI verde como promoção;
 - mudar suíte e sistema para esconder regressão;
 - declarar ausência universal de alucinação.
@@ -120,15 +126,21 @@ Durante execução:
 - não use exit code como único receipt;
 - diferencie `IMPLEMENTED`, `VERIFIED` e `PROMOTED`.
 
+No G1 atual, somente inventário, medição, análise e preparação de Ready estão autorizados. Edição do pacote declarativo depende do Ready Review do WP-G1-001.
+
 ## 9. Estado atual
 
-- G0: decisão humana pendente;
-- G1: HOLD;
+- G0: `APPROVED_WITH_ADDITIONAL_CONDITIONS`;
+- C1: satisfeita;
+- C2–C37: vinculantes;
+- G1: `OPEN_PLANNING`, ainda não Ready;
 - runtime: bloqueado;
-- Core4: read-only;
+- órgãos: não conectados;
+- Core4: baseline read-only; migração não autorizada;
 - memória: não migrada;
 - sedimentação: desativada;
-- WhatsApp: não iniciado.
+- WhatsApp: não iniciado;
+- branch protection: não comprovada.
 
 ## 10. Definição de pronto
 
