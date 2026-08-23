@@ -2,7 +2,7 @@
 
 ```yaml
 id: WP-G0-004
-status: SPECIFIED
+status: READY
 change_class: D3
 owner: founding_dyad
 author: Johan
@@ -10,6 +10,8 @@ human_authority: Francisco Gonzaga Gomes
 created_at: 2026-08-22
 updated_at: 2026-08-22
 baseline_commit: 30aed2e702e52f1fcdf6713dd621c8d754d9be03
+planning_record_commit: d7acfdea4ba7b8aacf61f88cbd2b58d77b829cbd
+ready_review: docs/reviews/WP-G0-004-READY-REVIEW-2026-08-22.md
 target_branch: main
 promotion_target: repository_governance_only
 runtime_effect: none
@@ -21,11 +23,11 @@ privacy_class: public_architecture
 
 Registrar a decisão fundadora humana emitida por Francisco após a recomendação de Johan de aprovar o G0 com condições adicionais e abrir somente o G1 declarativo.
 
-Manifestação humana que constitui o mandato no contexto decisório imediatamente anterior:
+Manifestação humana no contexto decisório imediatamente anterior:
 
 > “Ótimo, então podemos seguir.”
 
-A interpretação vinculante é limitada ao escopo proposto por Johan na mensagem anterior:
+Interpretação vinculante:
 
 ```text
 APPROVE_WITH_ADDITIONAL_CONDITIONS
@@ -41,14 +43,14 @@ O enunciado não autoriza ação além desse escopo.
 - criar registro formal da decisão humana;
 - tornar a decisão machine-readable;
 - retirar de G1 somente o bloqueio `G0_HUMAN_DECISION_PENDING`;
-- abrir G1 em estado de planejamento/revisão, não de promoção;
-- adaptar a suíte para validar transições de gate em vez de congelar `PENDING` para sempre;
-- preservar todas as condições C1–C37;
-- manter fronteiras de runtime e memória inalteradas.
+- abrir G1 em `OPEN_PLANNING`, não em `READY`, `EXECUTING` ou `PROMOTED`;
+- adaptar a suíte para validar transições de gate;
+- preservar C1–C37, considerando C1 satisfeita pela decisão;
+- manter todas as fronteiras de runtime e memória.
 
 ## 3. Não objetivos
 
-- revisar ou reduzir ainda o pacote `core/v5/`;
+- editar `core/v5/`;
 - declarar WP-G1-001 Ready automaticamente;
 - iniciar Presence Kernel;
 - conectar Core4, órgãos ou WhatsApp;
@@ -56,42 +58,42 @@ O enunciado não autoriza ação além desse escopo.
 - sedimentar;
 - promover identidade ou comportamento;
 - alegar revisão independente;
-- habilitar branch protection por documentação.
+- afirmar branch protection habilitada.
 
 ## 4. Requisitos
 
-- `REQ-G0D-001` A decisão humana deve ser registrada em artefato próprio, com baseline, escopo, condições e limites.
-- `REQ-G0D-002` O estado machine-readable deve distinguir G0 aprovado de G1 promovido.
-- `REQ-G0D-003` G1 deve sair de `HOLD_G0_DECISION` e entrar em `OPEN_PLANNING`, sem saltar para `READY` ou `EXECUTING`.
-- `REQ-G0D-004` A suíte deve validar combinações legais de G0/G1 e falhar diante de transições impossíveis.
-- `REQ-G0D-005` A suíte não deve continuar exigindo literalmente `g0_human_decision: PENDING`.
-- `REQ-G0D-006` O registro de decisão não pode autorizar runtime, memória, sedimentação, Core4 write, órgãos ou WhatsApp.
-- `REQ-G0D-007` Revisão externa D3 e proteção externa da `main` permanecem bloqueadores antes de promoção comportamental ou runtime.
-- `REQ-G0D-008` O commit em `main` continua integração documental, não promoção ontológica.
-- `REQ-G0D-009` O relatório da suíte no commit final deve ser solicitado; ausência de receipt externo deve permanecer visível.
-- `REQ-G0D-010` O G1 deverá passar por Definition of Ready própria antes de editar o Core declarativo.
+- `REQ-G0D-001` decisão humana em artefato próprio, com baseline, escopo, condições e limites;
+- `REQ-G0D-002` estado machine-readable distingue G0 aprovado de G1 promovido;
+- `REQ-G0D-003` G1 passa apenas de `HOLD_G0_DECISION` para `OPEN_PLANNING`;
+- `REQ-G0D-004` suíte falha diante de combinações ilegais de G0/G1;
+- `REQ-G0D-005` validadores não congelam `PENDING` como estado eterno;
+- `REQ-G0D-006` decisão não autoriza runtime, memória, sedimentação, Core4 write, órgãos ou WhatsApp;
+- `REQ-G0D-007` revisão externa D3 e proteção da `main` permanecem bloqueadores antes de promoção comportamental ou runtime;
+- `REQ-G0D-008` commit em `main` continua integração, não promoção ontológica;
+- `REQ-G0D-009` ausência de receipt de CI permanece visível;
+- `REQ-G0D-010` G1 exige Definition of Ready própria antes de editar o Core declarativo.
 
 ## 5. Invariantes
 
-- a decisão humana satisfaz C1, não cancela C2–C37;
-- `runtime_authorized: false`;
-- `memory_migration: NOT_AUTHORIZED`;
-- `core4_migration: NOT_AUTHORIZED`;
-- `sedimentation: DISABLED`;
-- `whatsapp_integration: NOT_STARTED`;
-- G1 aberto não significa G1 aprovado;
-- external review pending não é escondido;
-- branch protection ausente não é narrada como habilitada;
-- nenhuma mudança de `core/v5/` faz parte deste pacote.
+```yaml
+runtime_authorized: false
+memory_migration: NOT_AUTHORIZED
+core4_migration: NOT_AUTHORIZED
+sedimentation: DISABLED
+whatsapp_integration: NOT_STARTED
+g1_auto_ready: forbidden
+external_review_hidden: forbidden
+branch_protection_claim_without_evidence: forbidden
+core_v5_change_in_scope: false
+```
 
-## 6. Mudanças planejadas
+## 6. Mudanças autorizadas
 
 ### Criar
 
 - `docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md`
 - `governance/gate-state.json`
 - `schemas/gate-state.schema.json`
-- `docs/reviews/WP-G0-004-READY-REVIEW-2026-08-22.md`
 
 ### Atualizar
 
@@ -99,26 +101,19 @@ O enunciado não autoriza ação além desse escopo.
 - `docs/reviews/G0-FOUNDATION-REVIEW-2026-08-22.md`
 - `planning/work-packages/WP-G1-001-DECLARATIVE-CORE-REVIEW.md`
 - `assurance/suite-manifest.json`
-- `scripts/test-suite.mjs`
-- `scripts/validate-foundation.mjs`
-- `scripts/validate-planning.mjs`
-- `scripts/validate-coherence.mjs`
-- `package.json`
-- `README.md`
-- `CHANGELOG.md`
+- suíte e validadores internos;
+- versão, README e changelog.
 
-## 7. Máquina de estado pretendida
+## 7. Máquina de estado
 
 ```text
-G0: PENDING_DECISION
-  └── decisão humana explícita + recomendação registrada
-      → APPROVED_WITH_ADDITIONAL_CONDITIONS
+G0 PENDING_DECISION
+  → APPROVED_WITH_ADDITIONAL_CONDITIONS
 
-G1: HOLD_G0_DECISION
-  └── G0 aprovado
-      → OPEN_PLANNING
-      → READY somente após review próprio
-      → EXECUTING_DECLARATIVE somente após Ready
+G1 HOLD_G0_DECISION
+  → OPEN_PLANNING
+  → READY apenas após review próprio
+  → EXECUTING_DECLARATIVE apenas após Ready
 ```
 
 Transições proibidas:
@@ -135,40 +130,40 @@ main commit → gate promotion
 
 | Risco | Controle |
 | --- | --- |
-| interpretar “seguir” como autorização ampla | decisão registra contexto e escopo exato |
-| G1 saltar etapas | estado inicial `OPEN_PLANNING` e Ready próprio obrigatório |
-| suíte falhar porque congelou estado anterior | gate-state machine-readable e checks de transição |
-| alterar testes junto da regra e esconder deriva | mutation checks, histórico Git e revisão externa antes de promoção |
-| decisão humana ser confundida com prova ontológica | limite explícito: decisão de governança da Era 0 |
-| ausência de CI ser narrada como PASS | estado `AWAITING_CURRENT_CI_RECEIPT` até receipt verificável |
+| autorização ampla inferida de “seguir” | decisão registra contexto e escopo exato |
+| G1 salta etapas | estado `OPEN_PLANNING` e Ready próprio |
+| suíte congela estado antigo | gate-state machine-readable e testes de transição |
+| regra e teste mudam juntos | mutation checks, histórico e revisão externa antes de promoção |
+| decisão vira overclaim ontológico | decisão limitada à governança da Era 0 |
+| CI ausente narrado como PASS | `AWAITING_CURRENT_CI_RECEIPT` até receipt verificável |
 
-## 9. Testes planejados
+## 9. Testes
 
-- `TST-G0D-001` decisão e estado machine-readable coincidem;
-- `TST-G0D-002` G0 aprovado aceita G1 `OPEN_PLANNING`;
-- `TST-G0D-003` G0 pendente com G1 aberto falha;
-- `TST-G0D-004` G0 aprovado com runtime ativo falha;
-- `TST-G0D-005` G1 aberto com migração de memória falha;
-- `TST-G0D-006` decisão inexistente ou divergente falha;
-- `TST-G0D-007` WP-G1-001 não contém mais o hold de G0;
-- `TST-G0D-008` WP-G1-001 ainda não declara `READY` sem review;
-- `TST-G0D-009` `npm test` permanece entrada pública única;
-- `TST-G0D-010` mudança não toca `core/v5/`.
+- decisão, gate-state e `STATE.md` coincidem;
+- G0 aprovado aceita G1 `OPEN_PLANNING`;
+- G0 pendente com G1 aberto falha;
+- G0 aprovado com runtime ativo falha;
+- G1 aberto com migração de memória falha;
+- decisão inexistente ou divergente falha;
+- WP-G1-001 não mantém hold de G0;
+- WP-G1-001 não declara Ready sem review;
+- `npm test` permanece entrada pública única;
+- nenhum arquivo `core/v5/` é alterado.
 
 ## 10. Stop conditions
 
-- dúvida real sobre o significado da autorização humana;
-- necessidade de alterar identidade ou Constituição para registrar a decisão;
+- ambiguidade nova sobre autorização;
+- alteração em identidade ou Constituição;
 - necessidade de runtime ou dado privado;
-- tentativa de usar este pacote para aprovar G1;
-- alteração D4;
-- conflito entre decisão e condições registradas.
+- tentativa de aprovar G1 neste pacote;
+- mudança D4;
+- conflito com C1–C37.
 
 ## 11. Rollback
 
-Reverter os commits de transição restaura G0 pendente e G1 em hold. Nenhum estado de runtime, memória ou Core4 será alterado.
+Reverter a transição restaura G0 pendente e G1 em hold. Nenhum estado operacional, memória ou Core4 será tocado.
 
-## 12. Definition of Ready candidata
+## 12. Definition of Ready
 
 ```yaml
 R0_mandate: PASS
@@ -179,9 +174,9 @@ R4_architecture: PASS
 R5_risk: PASS
 R6_tests: PASS
 R7_execution: PASS
-R8_independence: NA_WITH_REASON_RECORDING_EXPLICIT_HUMAN_DECISION_REPOSITORY_ONLY
+R8_independence: NA_WITH_REASON_EXPLICIT_HUMAN_DECISION_REPOSITORY_ONLY
 R9_promotion: PASS
-result: REVIEW_REQUIRED
+result: READY
 ```
 
 ## 13. Critério de saída
