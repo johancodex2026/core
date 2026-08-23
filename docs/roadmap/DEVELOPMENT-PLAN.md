@@ -3,11 +3,13 @@
 ## Estado
 
 ```yaml
-G0_foundation_review: REVIEW_COMPLETE_DECISION_PENDING
-G1_declarative_core_review: PLANNED_HOLD_G0_DECISION
+G0_foundation_review: APPROVED_WITH_ADDITIONAL_CONDITIONS
+G1_declarative_core_review: OPEN_PLANNING_NOT_READY
 active_work_package: WP-G1-001
 runtime: NOT_AUTHORIZED
 core4_migration: NOT_AUTHORIZED
+memory_migration: NOT_AUTHORIZED
+sedimentation: DISABLED
 avoidable_post_promotion_correction_budget: 0
 ```
 
@@ -37,7 +39,7 @@ A trilha de execução não começa enquanto a de planejamento não estiver Read
 
 ## Etapa 0 — Fundação e autópsia
 
-### Planning track
+### Planning track concluído
 
 - mandato;
 - arquitetura;
@@ -45,20 +47,27 @@ A trilha de execução não começa enquanto a de planejamento não estiver Read
 - invariantes;
 - corpus Johan versus Casca;
 - suíte adversarial;
-- holdout privado;
+- holdout protocol;
 - autópsia V3;
 - revisão estática Core4;
 - Planning-First;
 - fronteira de migração;
-- revisão G0.
+- revisão de coerência;
+- suíte unificada;
+- decisão fundadora humana.
 
 ### Estado
 
-Trabalho de revisão completo. Johan recomenda `GO_WITH_CONDITIONS`. Decisão de Francisco e revisão externa permanecem pendentes.
+```yaml
+result: APPROVED_WITH_ADDITIONAL_CONDITIONS
+C1: SATISFIED
+C2-C37: BINDING
+external_review: REQUIRED_BEFORE_D3_BEHAVIOR_OR_RUNTIME_PROMOTION
+```
 
 ### Saída
 
-Francisco aprova, condiciona, segura ou rejeita G0. Aprovação autoriza preparar/decidir G1, não código de runtime.
+G0 autoriza preparar e revisar o G1 declarativo. Não autoriza código de runtime, memória, órgãos ou WhatsApp.
 
 ## Etapa 1 — Core declarativo mínimo
 
@@ -66,24 +75,25 @@ Francisco aprova, condiciona, segura ou rejeita G0. Aprovação autoriza prepara
 
 `WP-G1-001-DECLARATIVE-CORE-REVIEW`
 
-### Pré-condição
+### Estado atual
 
-G0 aprovado por Francisco e pacote Ready para baseline atualizado.
+```yaml
+status: OPEN_PLANNING
+ready: false
+core_v5_edits_authorized: false
+```
 
-### Planning track
+### Planning track atual
 
-- inventário de cada regra e fonte;
-- redundância e conflitos;
-- always-on versus sob demanda;
-- token budget medido;
-- precedência;
-- política de memória e null retrieval;
-- falha de identidade;
-- schemas;
-- replay manual;
-- revisão adversarial;
-- privacidade;
-- decisão G1.
+1. inventariar cada regra, fonte, consumidor, custo e replay;
+2. localizar redundância e conflitos;
+3. separar `always-on`, `on-demand`, `organ-owned`, `runtime-contract`, `assurance-only` e `future-inner-core`;
+4. medir tamanho e estimar token budget antes de definir meta;
+5. resolver fonte normativa primária de cada obrigação;
+6. resolver sinalização proporcional do modo não canônico;
+7. planejar equivalência após redução;
+8. produzir plano por arquivo;
+9. emitir Ready Review do G1.
 
 ### Execution track
 
@@ -92,6 +102,7 @@ Somente depois de Ready:
 - reduzir e alinhar arquivos declarativos;
 - rodar validações;
 - executar replays;
+- revisar privacidade;
 - produzir G1 review.
 
 ### Saída
@@ -138,7 +149,7 @@ Kernel isolado supera baseline em honestidade, abstenção, discordância e repa
 
 ### Saída
 
-Memória melhora resposta com timing e não invade; elogio/conclusão sem prova são bloqueados; Gate não se autoaprova.
+Memória melhora resposta com timing e não invade; elogio e conclusão sem prova são bloqueados; Gate não se autoaprova.
 
 ## Etapa 4 — Órgãos em shadow mode
 
@@ -202,7 +213,7 @@ Somente após revisão separada:
 - receipts;
 - limites por órgão;
 - confirmação em zona vital;
-- autorização de envio/ação independente do Gate;
+- autorização de envio e ação independente do Gate;
 - incident and escaped defect protocol.
 
 ## Migração Core4
