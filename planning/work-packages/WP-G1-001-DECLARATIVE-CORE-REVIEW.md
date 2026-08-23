@@ -14,8 +14,10 @@ approvers:
   - Francisco Gonzaga Gomes
 created_at: 2026-08-22
 updated_at: 2026-08-22
-baseline_commit: 45540edcaffa1c5753ee74539b66cb41530d3d30
+baseline_commit: e7992ec42af2377caac77d74f1c721629821c861
 g0_decision_record: docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md
+inventory: planning/inventories/G1-DECLARATIVE-CORE-INVENTORY-2026-08-22.md
+load_manifest_candidate: planning/design/g1-core-package-manifest.candidate.yaml
 target_branch: main
 promotion_target: repository_declarative_candidate_only
 runtime_effect: none
@@ -40,7 +42,7 @@ current_stage: OPEN_PLANNING
 required_before_editing_core_v5: WP_G1_001_READY_REVIEW
 ```
 
-O bloqueio `G0_HUMAN_DECISION_PENDING` foi removido. O G1 ainda não está `READY`: planejamento, inventário, decisões semânticas e review próprio permanecem obrigatórios.
+O bloqueio `G0_HUMAN_DECISION_PENDING` foi removido. O G1 ainda não está `READY`: planejamento, decisões semânticas, medição e review próprio permanecem obrigatórios.
 
 ## 3. Objetivo
 
@@ -75,6 +77,16 @@ core/v5/channel_profiles/*.yaml
 schemas/*.json
 ```
 
+Baseline físico registrado:
+
+```yaml
+files_under_core_v5: 12
+bytes_total: 45311
+estimated_tokens_unverified_range: 10000-14000
+identity_capsule_bytes: 2879
+core_v5_changes_since_baseline: none_at_inventory_time
+```
+
 Fontes auxiliares:
 
 - mandato e arquitetura;
@@ -83,9 +95,46 @@ Fontes auxiliares:
 - Planning-First;
 - Johan versus Casca;
 - invariantes e holdout protocol;
-- gate-state machine-readable.
+- gate-state machine-readable;
+- inventário G1;
+- manifesto candidato de autoridade/carregamento.
 
-## 6. Requisitos
+## 6. Evidência de planejamento já produzida
+
+### Inventário
+
+`planning/inventories/G1-DECLARATIVE-CORE-INVENTORY-2026-08-22.md`
+
+Principais achados:
+
+- o namespace atual mistura identidade, políticas, runtime, assurance e renderer;
+- não existe package manifest autoritativo;
+- status temporal está duplicado em artefatos;
+- obrigações se repetem sem proprietário primário explícito;
+- a cápsula não possui projeção mecanicamente rastreável;
+- não existe budget de composição por turno;
+- carregar todo `core/v5/` repetiria a estratégia de prompt monolítico.
+
+### Manifesto candidato
+
+`planning/design/g1-core-package-manifest.candidate.yaml`
+
+Hipótese principal:
+
+```text
+Constituição ........ referência normativa
+Cápsula ............. projeção always-on
+Políticas ........... compiladas ou sob demanda
+Presence Loop ....... runtime, não identidade
+Truth Gate .......... controle separado
+Órgãos .............. sidecars
+Channel profile ..... exatamente um delta de forma
+Sedimentação ........ rito pós-turno
+```
+
+O manifesto é planejamento, não autoridade de runtime.
+
+## 7. Requisitos
 
 ### REQ-G1-001 — Cápsula mínima
 
@@ -135,7 +184,19 @@ Invariantes constitutivos permanecem no Core; sequência transitória e contrato
 
 Cada obrigação possui uma fonte normativa primária; artefatos derivados referenciam, não reinterpretam silenciosamente.
 
-## 7. Invariantes
+### REQ-G1-013 — Manifesto verificável do pacote
+
+Versão do pacote vincula lista de artefatos, papéis, schemas, digests, dependências e load policy.
+
+### REQ-G1-014 — Estado dinâmico não duplicado
+
+Estado de gate e ativação vem de `governance/gate-state.json`; artefatos declarativos não simulam fonte paralela de maturidade.
+
+### REQ-G1-015 — Carregamento por bundle
+
+O runtime futuro possui bundles mínimos e condicionais; localização na pasta não implica carregamento.
+
+## 8. Invariantes
 
 - `INV-G1-001`: uma autoria relacional por interação;
 - `INV-G1-002`: órgão é entrada interpretativa não confiável;
@@ -148,36 +209,44 @@ Cada obrigação possui uma fonte normativa primária; artefatos derivados refer
 - `INV-G1-009`: ausência de memória não fabrica fallback;
 - `INV-G1-010`: Core4 permanece read-only e fora deste pacote;
 - `INV-G1-011`: nenhuma regra ganha autoridade por repetição;
-- `INV-G1-012`: redução exige equivalência e replay.
+- `INV-G1-012`: redução exige equivalência e replay;
+- `INV-G1-013`: artefato derivado não aumenta autoridade da fonte;
+- `INV-G1-014`: conflito Constituição↔cápsula bloqueia modo Johan;
+- `INV-G1-015`: perfil de canal altera apenas forma.
 
-## 8. Workstreams
+## 9. Workstreams
 
 ### W1 — Inventário e proveniência
 
-Mapear cada regra, fonte, classe, consumidor, replay, custo e redundância.
+```yaml
+state: COMPLETE_CANDIDATE
+artifact: planning/inventories/G1-DECLARATIVE-CORE-INVENTORY-2026-08-22.md
+```
 
-### W2 — Semântica
+### W2 — Semântica e propriedade normativa
 
-Buscar ambiguidade, autoridade excessiva, conflito, obrigação relacional e overclaim.
+```yaml
+state: IN_PROGRESS
+candidate_artifact: planning/design/g1-core-package-manifest.candidate.yaml
+remaining:
+  - obligation_level_ownership_matrix
+  - artifact_conflict_resolution
+  - field_level_capsule_provenance
+```
 
 ### W3 — Redução e token budget
 
-Separar:
-
-```text
-always-on
-on-demand
-organ-owned
-runtime contract
-assurance-only
-future Inner Core
+```yaml
+state: BASELINE_BYTES_MEASURED_TOKENS_PENDING
+remaining:
+  - tokenizer_measurement_by_model
+  - bundle_measurement
+  - reduction_target_after_measurement
 ```
-
-Medir o baseline antes de definir meta.
 
 ### W4 — Schemas
 
-Alinhar envelopes, Action Request, Turn Plan, claims, receipts, gates e estados.
+Alinhar package manifest, bundle, projection receipt, Action Request, Turn Plan, claims, receipts, gates e estados.
 
 ### W5 — Replay aberto
 
@@ -191,34 +260,39 @@ Buscar casca simpática, burocracia, manipulação, overcare, falso Johan, autoa
 
 Consolidar achados, diff, métricas, replay, dissenso, risco residual e decisão.
 
-## 9. Perguntas abertas
+## 10. Perguntas abertas
 
-| ID | Pergunta | Impacto | Blocker para Ready |
+| ID | Pergunta | Hipótese atual | Blocker para Ready |
 | --- | --- | --- | --- |
-| Q-G1-001 | Qual conjunto mínimo é always-on? | Alto | Sim |
-| Q-G1-002 | Que regras viram checks determinísticos? | Alto | Sim |
-| Q-G1-003 | Como sinalizar modo não canônico sem ruído? | Alto | Sim |
-| Q-G1-004 | Quem fará challenge externo D3? | Alto | Não para execução repository-only; sim para promoção |
-| Q-G1-005 | Qual token budget por canal/modelo? | Médio | Medição necessária; meta pode permanecer candidata |
-| Q-G1-006 | O que pertence ao Inner Core futuro versus presença? | Alto | Sim |
-| Q-G1-007 | Qual artefato é fonte normativa primária para cada regra? | Alto | Sim |
-| Q-G1-008 | Como provar equivalência após redução? | Alto | Sim |
+| Q-G1-001 | Qual conjunto mínimo é always-on? | cápsula verificada + receipt + constraints compilados | Sim, até equivalência |
+| Q-G1-002 | Que regras viram checks determinísticos? | schema/digest/receipt/authority/mode; presença fica avaliativa | Sim |
+| Q-G1-003 | Como sinalizar modo não canônico sem ruído? | revelar somente quando distinção for material | Sim, exige replay |
+| Q-G1-004 | Quem fará challenge externo D3? | a nomear | Não para execução repository-only; sim para promoção |
+| Q-G1-005 | Qual token budget por canal/modelo? | não definido antes de medir | Medição necessária |
+| Q-G1-006 | O que pertence ao Core versus presença? | Constituição/cápsula/políticas vs loop/Gate/renderer | Sim, manifesto ainda candidato |
+| Q-G1-007 | Qual artefato é fonte normativa por regra? | matriz do inventário/manifesto | Sim, falta nível de obrigação |
+| Q-G1-008 | Como provar equivalência após redução? | invariantes + replays + ownership + diff + métricas | Sim |
+| Q-G1-009 | Qual canonicalização YAML do bundle? | aberta | Sim |
+| Q-G1-010 | `PACKAGE_LOAD` será receipt próprio? | aberta | Sim |
+| Q-G1-011 | Quais posturas da cápsula são identitárias ou calibráveis? | aberta | Sim |
 
-## 10. Pre-mortem
+## 11. Pre-mortem
 
 - redução remove identidade;
 - pacote continua monolítico;
 - regras ficam duplicadas e divergem;
+- manifesto vira segunda fonte de verdade;
 - overfitting aos casos públicos;
 - relação vira dependência;
 - controles esterilizam timing;
 - documentação é confundida com comportamento;
 - token budget vira meta arbitrária;
-- G1 aberto é narrado como aprovado.
+- G1 aberto é narrado como aprovado;
+- mudança de diretório é tratada como solução sem resolver autoridade.
 
 Controles: traceabilidade, equivalência, replay, holdout, anti-dependency review, medidas antes de metas e limite de promoção.
 
-## 11. Testes planejados
+## 12. Testes planejados
 
 | TST | Requisito | Tipo | Resultado esperado |
 | --- | --- | --- | --- |
@@ -232,24 +306,28 @@ Controles: traceabilidade, equivalência, replay, holdout, anti-dependency revie
 | TST-G1-008 | REQ-G1-008 | governance | sedimentação fechada |
 | TST-G1-009 | REQ-G1-009 | privacy | nenhum dado privado |
 | TST-G1-010 | REQ-G1-010 | traceability | cadeia completa |
-| TST-G1-011 | REQ-G1-011 | ownership | constituição não contém orquestração transitória |
-| TST-G1-012 | REQ-G1-012 | drift | cada obrigação possui uma fonte normativa primária |
-| TST-G1-013 | REQ-G1-012 | equivalence | pacote reduzido preserva invariantes e replays |
+| TST-G1-011 | REQ-G1-011 | ownership | constituição não contém sequência transitória indevida |
+| TST-G1-012 | REQ-G1-012 | drift | uma fonte primária por obrigação |
+| TST-G1-013 | REQ-G1-013 | integrity | bundle versionado rejeita digest incompatível |
+| TST-G1-014 | REQ-G1-014 | state | gate-state vence metadata local obsoleta |
+| TST-G1-015 | REQ-G1-015 | load | pasta inteira nunca vira bundle implícito |
+| TST-G1-016 | INV-G1-012 | equivalence | pacote reduzido preserva invariantes e replays |
 
-## 12. Sequência autorizada
+## 13. Sequência autorizada
 
-1. inventariar sem editar `core/v5/`;
-2. mapear fonte normativa e redundâncias;
-3. medir tamanho e estimativa de tokens;
-4. resolver Q-G1-001–003 e Q-G1-006–008;
-5. produzir plano de mudança exato;
-6. realizar Ready Review do G1;
-7. somente então editar o pacote declarativo;
-8. validar e executar replays;
-9. emitir review G1;
-10. pedir decisão de promoção declarativa.
+1. inventário — concluído como candidato;
+2. manifesto de autoridade/carregamento — criado como candidato;
+3. produzir ownership matrix por obrigação;
+4. medir tokens por artefato/modelo e por bundle;
+5. resolver Q-G1-001–003 e Q-G1-006–011;
+6. produzir plano de mudança exato;
+7. realizar Ready Review do G1;
+8. somente então editar o pacote declarativo;
+9. validar e executar replays;
+10. emitir review G1;
+11. pedir decisão de promoção declarativa.
 
-## 13. Stop conditions
+## 14. Stop conditions
 
 - fonte fundadora conflitante;
 - regra D4 descoberta;
@@ -261,11 +339,11 @@ Controles: traceabilidade, equivalência, replay, holdout, anti-dependency revie
 - expansão para G2;
 - edição de `core/v5/` antes do Ready G1.
 
-## 14. Rollback
+## 15. Rollback
 
 Preservar baseline, revert explícito, review/achados e decisões rejeitadas. Nenhum efeito em runtime ou memória.
 
-## 15. Definition of Ready atual
+## 16. Definition of Ready atual
 
 ```yaml
 R0_mandate: PASS
@@ -275,13 +353,13 @@ R3_requirements: PASS_CANDIDATE
 R4_architecture: IN_PROGRESS
 R5_risk: PASS_CANDIDATE
 R6_tests: PLANNED
-R7_execution: PLANNED
+R7_execution: NOT_YET_EXACT
 R8_independence: EXTERNAL_REQUIRED_BEFORE_PROMOTION_NOT_BEFORE_REPOSITORY_REVIEW
 R9_promotion: PASS_CANDIDATE
 result: REVIEW_REQUIRED
 ```
 
-## 16. Critério de saída
+## 17. Critério de saída
 
 ```yaml
 declarative_package_reviewed: true
