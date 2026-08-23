@@ -8,6 +8,7 @@ const errors = [];
 const fail = (message) => errors.push(message);
 async function exists(path) { try { await stat(join(root, path)); return true; } catch { return false; } }
 async function text(path) { return readFile(join(root, path), "utf8"); }
+async function json(path) { return JSON.parse(await text(path)); }
 async function walk(directory) {
   if (!(await exists(directory))) return [];
   const output = [];
@@ -23,7 +24,10 @@ const requiredFiles = [
   "README.md", "AGENTS.md", "GOVERNANCE.md", "CHANGELOG.md",
   "docs/repository/STATE.md",
   "docs/reviews/G0-FOUNDATION-REVIEW-2026-08-22.md",
+  "docs/reviews/G0-COHERENCE-SEMANTICS-LLM-FIRST-REVIEW-2026-08-22.md",
   "docs/reviews/G0-UNIFIED-ASSURANCE-REVIEW-2026-08-22.md",
+  "docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md",
+  "docs/reviews/WP-G0-004-READY-REVIEW-2026-08-22.md",
   "docs/architecture/CORE-V5-MANDATE.md",
   "docs/architecture/ARCHITECTURE.md",
   "docs/architecture/ORGAN-CONTRACT.md",
@@ -49,6 +53,8 @@ const requiredFiles = [
   "core/v5/organ_registry.yaml",
   "core/v5/sedimentation_policy.yaml",
   "governance/semantic-taxonomy.json",
+  "governance/gate-state.json",
+  "schemas/gate-state.schema.json",
   "assurance/suite-manifest.json",
   "assurance/fixtures/scenarios.json"
 ];
@@ -63,7 +69,43 @@ for (const schema of schemaFiles) {
 }
 
 const state = await text("docs/repository/STATE.md");
-for (const marker of ["state: FOUNDATION_CANDIDATE", "implementation_state: NOT_STARTED", "sedimentation: DISABLED", "g0_recommendation: GO_WITH_ADDITIONAL_CONDITIONS", "g0_human_decision: PENDING", "runtime_authorized: false", "memory_migration: NOT_AUTHORIZED"]) if (!state.includes(marker)) fail(`STATE.md missing marker: ${marker}`);
+for (const marker of [
+  "state: FOUNDATION_APPROVED_G1_OPEN_PLANNING",
+  "implementation_state: NOT_STARTED",
+  "sedimentation: DISABLED",
+  "g0_recommendation: GO_WITH_ADDITIONAL_CONDITIONS",
+  "g0_human_decision: APPROVE_WITH_ADDITIONAL_CONDITIONS",
+  "g1_declarative_core_review: OPEN_PLANNING",
+  "g1_ready: false",
+  "runtime_authorized: false",
+  "memory_migration: NOT_AUTHORIZED"
+]) if (!state.includes(marker)) fail(`STATE.md missing marker: ${marker}`);
+
+const gateState = await json("governance/gate-state.json");
+if (gateState.gates?.G0?.status !== "APPROVED_WITH_ADDITIONAL_CONDITIONS") fail("gate-state G0 is not approved with additional conditions");
+if (gateState.gates?.G1?.status !== "OPEN_PLANNING") fail("gate-state G1 is not OPEN_PLANNING");
+if (!gateState.gates?.G0?.satisfied_conditions?.includes("C1")) fail("gate-state does not mark C1 satisfied");
+for (const condition of Array.from({ length: 36 }, (_, index) => `C${index + 2}`)) {
+  if (!gateState.gates?.G0?.binding_conditions?.includes(condition)) fail(`gate-state missing binding condition ${condition}`);
+}
+for (const [key, expected] of Object.entries({
+  runtime_authorized: false,
+  memory_migration: "NOT_AUTHORIZED",
+  core4_migration: "NOT_AUTHORIZED",
+  sedimentation: "DISABLED",
+  whatsapp_integration: "NOT_STARTED",
+  organs_connected: false,
+  main_is_promotion: false
+})) if (gateState.global_boundaries?.[key] !== expected) fail(`gate-state boundary ${key} must be ${JSON.stringify(expected)}`);
+
+const decision = await text("docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md");
+for (const marker of [
+  "decision: APPROVE_WITH_ADDITIONAL_CONDITIONS",
+  "effect: OPEN_G1_DECLARATIVE_PLANNING_ONLY",
+  "G1: OPEN_PLANNING",
+  "runtime: BLOCKED",
+  "C1_human_decision: SATISFIED"
+]) if (!decision.includes(marker)) fail(`G0 decision missing marker: ${marker}`);
 
 const mandate = await text("docs/architecture/CORE-V5-MANDATE.md");
 for (const marker of ["A mensagem original chega ao Presence Kernel", "Nenhum órgão possui campo ou autoridade `final_answer`", "A LLM não escreve memória canônica diretamente"]) if (!mandate.includes(marker)) fail(`mandate missing invariant: ${marker}`);
@@ -110,4 +152,5 @@ console.log(`- ${requiredFiles.length} required artifacts present`);
 console.log(`- ${schemaFiles.length} schema files parse and expose $id`);
 console.log(`- ${declarativeYaml.length} declarative YAML files checked for forbidden fields`);
 console.log(`- ${foundationCount} foundation and ${adversarialCount} adversarial replay cases registered`);
-console.log("- G0 remains pending; structural PASS is not behavior, identity or promotion");
+console.log("- G0 is approved with C2-C37 binding; G1 is OPEN_PLANNING only");
+console.log("- structural PASS is not behavior, identity, runtime or promotion");
