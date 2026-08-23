@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://core.johan.ia.br/schemas/gate-state.schema.json",
+  "title": "Core V5 Gate State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["state_version", "project", "updated_at", "gates", "global_boundaries"],
+  "properties": {
+    "state_version": {"type": "string", "minLength": 1},
+    "project": {"const": "Core V5"},
+    "updated_at": {"type": "string", "format": "date"},
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["G0", "G1"],
+      "properties": {
+        "G0": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status", "recommendation", "decision_authority", "decision_record",
+            "decision_record_commit", "satisfied_conditions", "binding_conditions",
+            "authorized_effects", "forbidden_effects", "external_blockers"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "PENDING_DECISION",
+                "APPROVED_WITH_ADDITIONAL_CONDITIONS",
+                "HOLD_FOR_CHANGES",
+                "NO_GO"
+              ]
+            },
+            "recommendation": {
+              "type": "string",
+              "enum": ["GO_WITH_CONDITIONS", "GO_WITH_ADDITIONAL_CONDITIONS", "HOLD", "NO_GO"]
+            },
+            "decision_authority": {"type": ["string", "null"]},
+            "decision_record": {"type": ["string", "null"]},
+            "decision_record_commit": {"type": ["string", "null"], "pattern": "^[a-f0-9]{40}$"},
+            "satisfied_conditions": {
+              "type": "array",
+              "items": {"type": "string", "pattern": "^C[0-9]+$"},
+              "uniqueItems": true
+            },
+            "binding_conditions": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"type": "string", "pattern": "^C[0-9]+$"},
+              "uniqueItems": true
+            },
+            "authorized_effects": {
+              "type": "array",
+              "items": {"type": "string"},
+              "uniqueItems": true
+            },
+            "forbidden_effects": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"type": "string"},
+              "uniqueItems": true
+            },
+            "external_blockers": {
+              "type": "array",
+              "items": {"type": "string"},
+              "uniqueItems": true
+            }
+          }
+        },
+        "G1": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status", "work_package", "ready_review", "promotion_authorized",
+            "runtime_effect", "memory_effect", "blocked_next_stages"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "HOLD_G0_DECISION",
+                "OPEN_PLANNING",
+                "READY",
+                "EXECUTING_DECLARATIVE",
+                "VERIFYING",
+                "PROMOTION_CANDIDATE",
+                "PROMOTED",
+                "HOLD",
+                "NO_GO"
+              ]
+            },
+            "work_package": {"type": "string", "minLength": 1},
+            "ready_review": {"type": ["string", "null"]},
+            "promotion_authorized": {"type": "boolean"},
+            "runtime_effect": {"const": "none"},
+            "memory_effect": {"const": "none"},
+            "blocked_next_stages": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"type": "string"},
+              "uniqueItems": true
+            }
+          }
+        }
+      }
+    },
+    "global_boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_authorized", "memory_migration", "core4_migration", "sedimentation",
+        "whatsapp_integration", "organs_connected", "main_is_promotion",
+        "external_review_required_before_runtime", "branch_protection_proven"
+      ],
+      "properties": {
+        "runtime_authorized": {"const": false},
+        "memory_migration": {"const": "NOT_AUTHORIZED"},
+        "core4_migration": {"const": "NOT_AUTHORIZED"},
+        "sedimentation": {"const": "DISABLED"},
+        "whatsapp_integration": {"const": "NOT_STARTED"},
+        "organs_connected": {"const": false},
+        "main_is_promotion": {"const": false},
+        "external_review_required_before_runtime": {"const": true},
+        "branch_protection_proven": {"type": "boolean"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "gates": {
+            "properties": {
+              "G0": {"properties": {"status": {"const": "PENDING_DECISION"}}}
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "gates": {
+            "properties": {
+              "G0": {
+                "properties": {
+                  "decision_authority": {"type": "null"},
+                  "decision_record": {"type": "null"},
+                  "decision_record_commit": {"type": "null"}
+                }
+              },
+              "G1": {"properties": {"status": {"const": "HOLD_G0_DECISION"}}}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gates": {
+            "properties": {
+              "G0": {"properties": {"status": {"const": "APPROVED_WITH_ADDITIONAL_CONDITIONS"}}}
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "gates": {
+            "properties": {
+              "G0": {
+                "properties": {
+                  "decision_authority": {"type": "string", "minLength": 1},
+                  "decision_record": {"type": "string", "minLength": 1},
+                  "decision_record_commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+                  "satisfied_conditions": {"contains": {"const": "C1"}}
+                }
+              },
+              "G1": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "OPEN_PLANNING", "READY", "EXECUTING_DECLARATIVE", "VERIFYING",
+                      "PROMOTION_CANDIDATE", "PROMOTED", "HOLD", "NO_GO"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gates": {
+            "properties": {
+              "G1": {"properties": {"status": {"const": "OPEN_PLANNING"}}}
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "gates": {
+            "properties": {
+              "G1": {
+                "properties": {
+                  "ready_review": {"type": "null"},
+                  "promotion_authorized": {"const": false}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
