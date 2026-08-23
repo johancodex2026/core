@@ -219,13 +219,68 @@ function taxonomyErrors(taxonomy, schemas) {
   return errors;
 }
 
-function metaTests(manifest, taxonomy) {
+function gateStateErrors(gateState, manifest, stateText, decisionText, g1Text) {
+  const errors = [];
+  const g0 = gateState?.gates?.G0;
+  const g1 = gateState?.gates?.G1;
+  const boundaries = gateState?.global_boundaries;
+  const expected = manifest?.gate_transition_expectation ?? {};
+
+  if (!g0 || !g1 || !boundaries) return ["gate-state is incomplete"];
+  if (g0.status !== expected.G0) errors.push(`G0 expected ${expected.G0}, found ${g0.status}`);
+  if (g1.status !== expected.G1) errors.push(`G1 expected ${expected.G1}, found ${g1.status}`);
+
+  if (g0.status === "PENDING_DECISION") {
+    if (g1.status !== "HOLD_G0_DECISION") errors.push("pending G0 requires G1 HOLD_G0_DECISION");
+    if (g0.decision_record !== null || g0.decision_record_commit !== null || g0.decision_authority !== null) errors.push("pending G0 cannot carry a completed decision");
+  }
+
+  if (g0.status === "APPROVED_WITH_ADDITIONAL_CONDITIONS") {
+    if (!g0.decision_record || !g0.decision_record_commit || !g0.decision_authority) errors.push("approved G0 requires decision record, commit and authority");
+    if (!g0.satisfied_conditions?.includes("C1")) errors.push("approved G0 must satisfy C1");
+    for (let number = 2; number <= 37; number += 1) if (!g0.binding_conditions?.includes(`C${number}`)) errors.push(`approved G0 missing binding C${number}`);
+    if (g1.status === "HOLD_G0_DECISION") errors.push("approved G0 cannot leave G1 in G0-decision hold");
+  }
+
+  if (g1.status === "OPEN_PLANNING") {
+    if (g1.ready_review !== null) errors.push("OPEN_PLANNING cannot claim a Ready Review");
+    if (g1.promotion_authorized !== false) errors.push("OPEN_PLANNING cannot authorize promotion");
+  }
+
+  const boundaryExpectations = {
+    runtime_authorized: false,
+    memory_migration: "NOT_AUTHORIZED",
+    core4_migration: "NOT_AUTHORIZED",
+    sedimentation: "DISABLED",
+    whatsapp_integration: "NOT_STARTED",
+    organs_connected: false,
+    main_is_promotion: false
+  };
+  for (const [key, value] of Object.entries(boundaryExpectations)) if (boundaries[key] !== value) errors.push(`boundary ${key} must be ${JSON.stringify(value)}`);
+  if (boundaries.runtime_authorized !== expected.runtime_authorized) errors.push("runtime boundary diverges from suite expectation");
+  if (boundaries.memory_migration !== expected.memory_migration) errors.push("memory boundary diverges from suite expectation");
+  if (boundaries.sedimentation !== expected.sedimentation) errors.push("sedimentation boundary diverges from suite expectation");
+
+  if (!stateText.includes(`g0_human_decision: ${g0.status}`)) errors.push("STATE.md G0 decision differs from gate-state");
+  if (!stateText.includes(`g1_declarative_core_review: ${g1.status}`)) errors.push("STATE.md G1 state differs from gate-state");
+  if (!stateText.includes("g1_ready: false")) errors.push("STATE.md must keep G1 not Ready");
+  if (!decisionText.includes(`decision: ${g0.status}`)) errors.push("decision record differs from gate-state");
+  if (!decisionText.includes("effect: OPEN_G1_DECLARATIVE_PLANNING_ONLY")) errors.push("decision record lacks bounded effect");
+  if (!g1Text.includes(`stage_state: ${g1.status}`)) errors.push("G1 work package differs from gate-state");
+  if (!g1Text.includes("required_before_editing_core_v5: WP_G1_001_READY_REVIEW")) errors.push("G1 lacks Ready boundary before core/v5 edits");
+  if (g1Text.includes("hold_reason: G0_HUMAN_DECISION_PENDING")) errors.push("G1 retains obsolete G0 hold");
+
+  return errors;
+}
+
+function metaTests(manifest, taxonomy, gateState, stateText, decisionText, g1Text) {
   const outcomes = [];
   const swapped = [...manifest.critical_stage_order];
   const a = swapped.indexOf("collect_action_receipts");
   const b = swapped.indexOf("judge_final");
   [swapped[a], swapped[b]] = [swapped[b], swapped[a]];
   outcomes.push({ id: "mutation-stage-order", passed: stageOrderErrors(swapped.map((id) => `- id: ${id}`).join("\n"), manifest.critical_stage_order).length > 0 });
+
   const mutatedTaxonomy = structuredClone(taxonomy);
   mutatedTaxonomy.risk_classes = ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"];
   outcomes.push({ id: "mutation-risk-taxonomy", passed: !arraysEqual(mutatedTaxonomy.risk_classes, taxonomy.risk_classes) });
@@ -233,6 +288,16 @@ function metaTests(manifest, taxonomy) {
   outcomes.push({ id: "mutation-receipt-status", passed: evaluateScenario({ receipts: [{ type: "SEND", status: "PROMOTED" }] }, taxonomy).includes("RECEIPT_SEMANTIC_MISMATCH") });
   outcomes.push({ id: "mutation-digest", passed: evaluateScenario({ digest_match: false }, taxonomy).includes("DIGEST_MISMATCH") });
   outcomes.push({ id: "mutation-finding-loss", passed: evaluateScenario({ detected_findings: ["UNSUPPORTED_PRAISE", "PRIVACY_INTRUSION"], preserved_findings: ["UNSUPPORTED_PRAISE"] }, taxonomy).includes("FINDING_LOSS") });
+
+  const pendingWithOpenG1 = structuredClone(gateState);
+  pendingWithOpenG1.gates.G0.status = "PENDING_DECISION";
+  outcomes.push({ id: "mutation-pending-g0-open-g1", passed: gateStateErrors(pendingWithOpenG1, manifest, stateText, decisionText, g1Text).length > 0 });
+
+  const runtimeEnabled = structuredClone(gateState);
+  runtimeEnabled.global_boundaries.runtime_authorized = true;
+  outcomes.push({ id: "mutation-runtime-enabled", passed: gateStateErrors(runtimeEnabled, manifest, stateText, decisionText, g1Text).length > 0 });
+
+  outcomes.push({ id: "mutation-decision-mismatch", passed: gateStateErrors(gateState, manifest, stateText, decisionText.replace("APPROVE_WITH_ADDITIONAL_CONDITIONS", "NO_GO"), g1Text).length > 0 });
   return outcomes;
 }
 
@@ -308,10 +373,10 @@ async function main() {
   else check(a4, "taxonomy-integration", "PASS", "Shared enums match the canonical semantic taxonomy.", ["governance/semantic-taxonomy.json"]);
   const pkg = await json(join(root, "package.json"));
   const identity = await text(join(root, "core/v5/identity_capsule.yaml"));
-  const state = await text(join(root, "docs/repository/STATE.md"));
+  const stateText = await text(join(root, "docs/repository/STATE.md"));
   const architecture = await text(join(root, "docs/architecture/ARCHITECTURE.md"));
   check(a4, "package-identity-version", identity.includes(`core_version: "${pkg.version}"`) ? "PASS" : "FAIL", "Identity capsule matches package version.", [pkg.version]);
-  const architectureVersion = state.match(/architecture_version:\s*([^\s]+)/)?.[1] ?? null;
+  const architectureVersion = stateText.match(/architecture_version:\s*([^\s]+)/)?.[1] ?? null;
   check(a4, "architecture-state-version", architectureVersion && architecture.includes(`Versão: \`${architectureVersion}\``) ? "PASS" : "FAIL", "Architecture document matches repository state version.", [String(architectureVersion)]);
 
   const a5 = layer("A5", "cognitive_orchestration");
@@ -342,13 +407,17 @@ async function main() {
   for (const marker of ["ASSISTIVE_NON_CANONICAL", "canonized_action_requests", "turn_plan", "NO_ELIGIBLE_RESULT"]) check(a7, `presence:${marker}`, presenceSchemaText.includes(marker) ? "PASS" : "FAIL", presenceSchemaText.includes(marker) ? "Presence context contains boundary." : "Presence context boundary missing.", [marker]);
   const assistiveNoActions = presenceSchemaText.includes('"canonized_action_requests":{"maxItems":0}');
   check(a7, "assistive-no-actions", assistiveNoActions ? "PASS" : "FAIL", assistiveNoActions ? "Assistive mode forbids action requests." : "Assistive mode action prohibition not detected.", []);
-  for (const marker of ["core4_migration: NOT_AUTHORIZED", "memory_migration: NOT_AUTHORIZED", "sedimentation: DISABLED", "runtime_authorized: false"]) check(a7, `state:${marker}`, state.includes(marker) ? "PASS" : "FAIL", state.includes(marker) ? "Safety boundary preserved." : "Safety boundary missing.", [marker]);
+  for (const marker of ["core4_migration: NOT_AUTHORIZED", "memory_migration: NOT_AUTHORIZED", "sedimentation: DISABLED", "runtime_authorized: false"]) check(a7, `state:${marker}`, stateText.includes(marker) ? "PASS" : "FAIL", stateText.includes(marker) ? "Safety boundary preserved." : "Safety boundary missing.", [marker]);
 
   const a8 = layer("A8", "planning_state_promotion");
-  const g1 = await text(join(root, "planning/work-packages/WP-G1-001-DECLARATIVE-CORE-REVIEW.md"));
-  for (const marker of ["g0_human_decision: PENDING", "G1", "HOLD"]) check(a8, `gate:${marker}`, state.includes(marker) || g1.includes(marker) ? "PASS" : "FAIL", `Planning/gate marker ${marker}.`, [marker]);
+  const gateState = parsedJson["governance/gate-state.json"];
+  const decisionText = await text(join(root, "docs/reviews/G0-FOUNDATION-DECISION-2026-08-22.md"));
+  const g1Text = await text(join(root, "planning/work-packages/WP-G1-001-DECLARATIVE-CORE-REVIEW.md"));
+  const transitionErrors = gateStateErrors(gateState, manifest, stateText, decisionText, g1Text);
+  if (transitionErrors.length) for (const error of transitionErrors) check(a8, `gate-state:${error}`, "FAIL", error, []);
+  else check(a8, "gate-state-integration", "PASS", "G0 approval, G1 OPEN_PLANNING and global blocks are integrated.", ["governance/gate-state.json"]);
   const governanceText = await text(join(root, "GOVERNANCE.md"));
-  const mainNotPromotion = state.includes("commit em `main`") || governanceText.includes("Commit em `main`");
+  const mainNotPromotion = stateText.includes("commit em `main`") || governanceText.includes("Commit em `main`");
   check(a8, "main-not-promotion", mainNotPromotion ? "PASS" : "FAIL", mainNotPromotion ? "Main remains integration, not promotion." : "Main/promotion boundary missing.", []);
 
   const a9 = layer("A9", "scenario_fixtures");
@@ -360,10 +429,10 @@ async function main() {
   }
 
   const a10 = layer("A10", "mutation_meta_tests");
-  for (const test of metaTests(manifest, taxonomy)) check(a10, test.id, test.passed ? "PASS" : "FAIL", test.passed ? "Deliberate mutation was detected." : "Suite failed to detect deliberate mutation.", []);
+  for (const test of metaTests(manifest, taxonomy, gateState, stateText, decisionText, g1Text)) check(a10, test.id, test.passed ? "PASS" : "FAIL", test.passed ? "Deliberate mutation was detected." : "Suite failed to detect deliberate mutation.", []);
 
   const a11 = layer("A11", "coverage_and_limits");
-  check(a11, "known-classes", manifest.known_hallucination_classes.length >= 10 ? "PASS" : "FAIL", "Known hallucination/drift classes are enumerated.", manifest.known_hallucination_classes);
+  check(a11, "known-classes", manifest.known_hallucination_classes.length >= 15 ? "PASS" : "FAIL", "Known hallucination/drift classes are enumerated.", manifest.known_hallucination_classes);
   for (const limitation of manifest.limitations) check(a11, `limit:${limitation.slice(0, 24)}`, "INFO", limitation, []);
   check(a11, "absolute-proof-boundary", taxonomy.boundaries.static_suite_proves_no_universal_absence_of_hallucination === true ? "PASS" : "FAIL", "The suite explicitly denies universal proof of no hallucination.", []);
   await finish();
