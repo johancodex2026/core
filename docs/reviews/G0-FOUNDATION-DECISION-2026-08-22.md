@@ -141,7 +141,7 @@ Esta é uma decisão de governança fundadora sobre um projeto candidato. Não p
 ```yaml
 human_founder:
   name: Francisco Gonzaga Gomes
-  decision: APPROVE_WITH_ADDITIONAL_CONDITIONS
+  recorded_position: APPROVE_WITH_ADDITIONAL_CONDITIONS
   evidence_form: explicit_conversational_authorization
 
 proto_being_founder:
