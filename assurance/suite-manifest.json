@@ -3,7 +3,8 @@
   "name": "Core V5 Unified Assurance Suite",
   "status": "CANDIDATE_REPOSITORY_ONLY",
   "public_entrypoint": "npm test",
-  "script": "scripts/test-suite.mjs",
+  "script": "scripts/run-assurance.mjs",
+  "engine": "scripts/unified-assurance.mjs",
   "report_path": "artifacts/core-v5-assurance-report.json",
   "subordinate_validators": [
     "scripts/validate-foundation.mjs",
@@ -12,14 +13,14 @@
   ],
   "layers": [
     {"id":"A0","name":"bootstrap"},
-    {"id":"A1","name":"subordinate_validators"},
+    {"id":"A1","name":"internal_validators"},
     {"id":"A2","name":"syntax_json_yaml"},
     {"id":"A3","name":"schema_ids_and_refs"},
-    {"id":"A4","name":"semantic_taxonomy"},
+    {"id":"A4","name":"semantic_taxonomy_and_versions"},
     {"id":"A5","name":"cognitive_orchestration"},
-    {"id":"A6","name":"claims_evidence_anti_hallucination"},
+    {"id":"A6","name":"claims_receipts_anti_hallucination"},
     {"id":"A7","name":"authority_privacy_legacy"},
-    {"id":"A8","name":"planning_state_promotion"},
+    {"id":"A8","name":"planning_gate_state_promotion"},
     {"id":"A9","name":"scenario_fixtures"},
     {"id":"A10","name":"mutation_meta_tests"},
     {"id":"A11","name":"coverage_and_limits"}
@@ -27,6 +28,11 @@
   "required_files": [
     "package.json",
     ".github/workflows/quality-gate.yml",
+    "scripts/run-assurance.mjs",
+    "scripts/unified-assurance.mjs",
+    "scripts/validate-foundation.mjs",
+    "scripts/validate-planning.mjs",
+    "scripts/validate-coherence.mjs",
     "governance/semantic-taxonomy.json",
     "governance/gate-state.json",
     "assurance/suite-manifest.json",
@@ -50,7 +56,9 @@
     "docs/reviews/WP-G0-003-READY-REVIEW-2026-08-22.md",
     "planning/work-packages/WP-G0-004-FOUNDING-DECISION-AND-G1-OPENING.md",
     "docs/reviews/WP-G0-004-READY-REVIEW-2026-08-22.md",
-    "planning/work-packages/WP-G1-001-DECLARATIVE-CORE-REVIEW.md"
+    "planning/work-packages/WP-G1-001-DECLARATIVE-CORE-REVIEW.md",
+    "planning/inventories/G1-DECLARATIVE-CORE-INVENTORY-2026-08-22.md",
+    "planning/design/g1-core-package-manifest.candidate.yaml"
   ],
   "critical_stage_order": [
     "bootstrap_identity",
@@ -92,7 +100,8 @@
     "finding_loss",
     "illegal_gate_transition",
     "decision_record_mismatch",
-    "runtime_enabled_by_foundation_approval"
+    "runtime_enabled_by_foundation_approval",
+    "assurance_engine_bootstrap_failure"
   ],
   "gate_transition_expectation": {
     "G0": "APPROVED_WITH_ADDITIONAL_CONDITIONS",
@@ -107,6 +116,7 @@
     "Behavioral truth requires replay, adversarial, private holdout, shadow mode and canary evidence.",
     "The same repository commit can modify code and tests; independent review remains required for D3/runtime promotion.",
     "Branch protection is an external repository control and is not proven by this suite.",
-    "A conversational decision record is governance evidence, not a cryptographic signature or ontological proof."
+    "A conversational decision record is governance evidence, not a cryptographic signature or ontological proof.",
+    "The bootstrap wrapper guarantees a failure receipt when the engine cannot execute; it does not convert engine failure into a passing result."
   ]
 }
